@@ -30,20 +30,14 @@ Implementation must stay aligned with the source-of-truth strategy document, the
 
 ## Team Local Agent Setup
 
-After cloning the repository, each teammate connects their local AI tool with:
+After cloning the private repository, each teammate connects their local AI tool with the bootstrap script:
 
 ```bash
-python3 -m zhenzhi_knowledge --root . install \
-  --user-id <name> \
-  --ai-tool codex \
-  --agent-id agent.<name>.codex \
-  --default-project company-knowledge-core \
-  --remote https://github.com/meimei7959/company_knowledge_core.git \
-  --register-agent \
-  --agent-name "<Name> Codex"
+export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<team-token>
+bash scripts/setup-teammate.sh --user-id <name> --ai-tool codex
 ```
 
-This writes local connector files under `.zhenzhi/`:
+The script installs the local CLI package, registers the local Agent, points the production profile to the online API, and writes connector files under `.zhenzhi/`:
 
 - `config.json`: local Git/API profile and default Agent identity.
 - `agent-entrypoint.md`: fixed entrypoint for Codex, Antigravity, or other local Agents.
@@ -59,6 +53,14 @@ zhenzhi-knowledge start --project company-knowledge-core --agent agent.<name>.co
 zhenzhi-knowledge finish --project company-knowledge-core --agent agent.<name>.codex --summary "<summary>"
 zhenzhi-knowledge sync push
 ```
+
+Online API used by the bootstrap script:
+
+```txt
+http://124.221.138.151/knowledge-api
+```
+
+The API token is not stored in Git. Share `ZHENZHI_KNOWLEDGE_API_TOKEN_PROD` through a separate secure channel.
 
 ## Knowledge Intake Rules
 
