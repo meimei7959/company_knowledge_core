@@ -1003,7 +1003,7 @@ Use parser.
             self.assertIn("我识别到这是项目立项", reply)
             self.assertIn("工业软件点胶机", reply)
             self.assertIn("hanson", reply)
-            self.assertIn("@hanson", reply)
+            self.assertIn("通讯录读取权限", reply)
             self.assertFalse((root / "projects" / "gong-ye-ruan-jian-dian-jiao-ji").exists())
 
     def test_feishu_project_init_resolves_owner_name_from_map(self) -> None:

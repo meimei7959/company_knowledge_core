@@ -343,7 +343,7 @@ def help_text() -> str:
             "桢知知识机器人可用命令：",
             "1. 直接提问：检索已审核知识并回复来源。",
             "2. 申请知识工程 token：识别申请人，进入审批流程。",
-            "3. 立项申请：项目名称 <名称>，项目负责人 @负责人。",
+            "3. 立项申请：项目名称 <名称>，项目负责人 <姓名/手机号/邮箱>。",
             "4. 资料：<项目ID>\\n<内容>：保存项目原始资料并生成知识入库审批。",
             "5. 会议纪要：<项目ID>\\n<内容>：保存会议纪要并生成知识入库审批。",
             "6. 沉淀：<内容>：提交通用知识草稿。",
@@ -433,7 +433,7 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
         owner_open_id = lookup.get("openId", "")
         owner_lookup_message = lookup.get("message", "")
     if not project_name:
-        return "立项申请还缺项目名称。请发送：立项申请：项目名称 <名称>，项目负责人 @负责人。"
+        return "立项申请还缺项目名称。请发送：立项申请：项目名称 <名称>，项目负责人 <姓名/手机号/邮箱>。"
     if not owner_open_id:
         if owner_name:
             lines = [
@@ -445,12 +445,11 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
                 lines.append(f"识别结果: {owner_lookup_message}")
             lines.extend(
                 [
-                    "你可以补充负责人手机号/邮箱，或让管理员开通机器人通讯录读取权限/配置姓名映射。",
-                    f"临时兜底也可以发送：立项申请：项目名称 {project_name}，项目负责人 @{owner_name}",
+                    "请让管理员开通机器人通讯录读取权限，或配置姓名映射；也可以补充负责人手机号/邮箱等可唯一识别的信息。",
                 ]
             )
             return "\n".join(lines)
-        return "立项申请还缺项目负责人。请在消息里 @项目负责人，或让负责人本人发起立项。"
+        return "立项申请还缺项目负责人。请补充负责人姓名、手机号、邮箱，或让负责人本人发起立项。"
     project_id = normalize_project_id(project_name)
     project_path = make_project(bundle, project_id, project_name, owner_open_id)
     approval_line = trigger_approval_for_target(
