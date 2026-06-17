@@ -484,11 +484,12 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
                 lines.append(f"识别结果: {owner_lookup_message}")
             lines.extend(
                 [
-                    "请让管理员开通机器人通讯录读取权限，或配置姓名映射；也可以补充负责人手机号/邮箱等可唯一识别的信息。",
+                    "请 @ 一下负责人，或补充负责人手机号/邮箱等可唯一识别的信息。",
+                    "管理员也可以开通机器人通讯录读取权限，后续我就能按姓名列候选人。",
                 ]
             )
             return "\n".join(lines)
-        return "立项申请还缺项目负责人。请补充负责人姓名、手机号、邮箱，或让负责人本人发起立项。"
+        return "立项申请还缺项目负责人。请 @ 一下负责人，或补充负责人姓名、手机号、邮箱。"
     project_id = normalize_project_id(project_name)
     project_path = make_project(bundle, project_id, project_name, owner_open_id)
     approval_line = trigger_approval_for_target(
@@ -739,7 +740,7 @@ def lookup_feishu_user_by_name(settings: FeishuSettings, name: str) -> dict[str,
     except KnowledgeError as exc:
         message = str(exc)
         if "contact:" in message or "Access denied" in message or "99991672" in message:
-            return {"message": "机器人还没有通讯录读取权限，无法按姓名自动匹配负责人。需要开通 contact:contact.base:readonly 或 contact:contact:readonly_as_app。"}
+            return {"message": "机器人还没有通讯录读取权限，无法按姓名列出候选负责人。可以先 @ 负责人；也可以开通 contact:contact.base:readonly 或 contact:contact:readonly_as_app。"}
         return {"message": f"查询通讯录失败：{compact_snippet(message, 120)}"}
     normalized = normalize_person_name(name)
     matches = [user for user in users if user_matches_name(user, normalized)]
@@ -748,7 +749,11 @@ def lookup_feishu_user_by_name(settings: FeishuSettings, name: str) -> dict[str,
     if len(matches) > 1:
         names = "、".join(display_user_name(user) for user in matches[:5])
         return {"message": f"通讯录里找到多个可能负责人：{names}。请补充手机号/邮箱或直接 @负责人。"}
-    return {"message": "通讯录里没有找到唯一匹配的负责人。请补充手机号/邮箱，或让管理员配置姓名映射。"}
+    candidates = similar_feishu_users(users, normalized)
+    if candidates:
+        names = "、".join(display_user_name(user) for user in candidates[:5])
+        return {"message": f"通讯录里没有唯一匹配的负责人，相近候选有：{names}。请补充手机号/邮箱，或直接 @负责人。"}
+    return {"message": "通讯录里没有找到相近负责人。请补充手机号/邮箱，或直接 @负责人。"}
 
 
 def list_feishu_users(token: str, limit: int = 300) -> list[dict[str, Any]]:
@@ -780,6 +785,18 @@ def user_matches_name(user: dict[str, Any], normalized: str) -> bool:
         user.get("employee_no"),
     ]
     return any(normalize_person_name(str(value)) == normalized for value in fields if value)
+
+
+def similar_feishu_users(users: list[dict[str, Any]], normalized: str) -> list[dict[str, Any]]:
+    if not normalized:
+        return []
+    candidates: list[dict[str, Any]] = []
+    for user in users:
+        values = [user.get("name"), user.get("en_name"), user.get("nickname"), user.get("email"), user.get("mobile"), user.get("employee_no")]
+        normalized_values = [normalize_person_name(str(value)) for value in values if value]
+        if any(normalized in value or value in normalized for value in normalized_values):
+            candidates.append(user)
+    return candidates
 
 
 def display_user_name(user: dict[str, Any]) -> str:
