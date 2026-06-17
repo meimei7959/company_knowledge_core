@@ -855,6 +855,8 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=True,
+                approval_doc_wiki_node="",
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
             )
             sent: list[tuple[str, str]] = []
             original_send = feishu_module.send_feishu_message
@@ -920,6 +922,8 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=False,
+                approval_doc_wiki_node="",
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
             )
             created: dict[str, object] = {}
             original_create = feishu_module.create_feishu_approval_instance
@@ -957,6 +961,67 @@ Use parser.
                 self.assertEqual(created["form_values"]["owner_open_id"], "ou_owner")
             finally:
                 feishu_module.create_feishu_approval_instance = original_create
+
+    def test_feishu_approval_creates_change_doc_before_instance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            draft = root / "knowledge" / "engineering" / "example.md"
+            draft.parent.mkdir(parents=True, exist_ok=True)
+            draft.write_text("---\ntype: KnowledgeItem\nstatus: draft\nsourceRef: \"\"\n---\n\nnew policy draft\n", encoding="utf-8")
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=["ou_common"],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_wiki_node="GZ59w7hsNijjXYk9BNocCQjFnpc",
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+            )
+            created: dict[str, object] = {}
+            original_doc = feishu_module.create_approval_change_doc
+            original_instance = feishu_module.create_feishu_approval_instance
+
+            def fake_doc(_bundle, _settings, values):
+                created["doc_values"] = dict(values)
+                return {"url": "https://xcn68awb7dsi.feishu.cn/wiki/doc_node", "nodeToken": "doc_node", "objToken": "doc_obj"}
+
+            def fake_instance(_settings, requester_open_id, approval_code, approver_open_ids, form_values):
+                created["instance_values"] = dict(form_values)
+                return "approval_with_doc"
+
+            feishu_module.create_approval_change_doc = fake_doc
+            feishu_module.create_feishu_approval_instance = fake_instance
+            try:
+                reply = feishu_module.trigger_approval_for_target(
+                    Bundle(root),
+                    settings,
+                    {"openId": "ou_submitter", "messageId": "om1", "chatId": "oc1"},
+                    approval_type="knowledge_ingest",
+                    target_ref="knowledge/engineering/example.md",
+                    requested_status="verified",
+                    project_id="core",
+                    project_name="Core",
+                    owner_open_id="ou_owner",
+                    summary="change summary",
+                )
+                self.assertIn("审批说明", reply)
+                self.assertEqual(created["doc_values"]["object_path"], "knowledge/engineering/example.md")
+                self.assertEqual(created["instance_values"]["approval_doc_url"], "https://xcn68awb7dsi.feishu.cn/wiki/doc_node")
+                saved = json.loads((root / ".zhenzhi" / "approval-requests" / "approval_with_doc.json").read_text(encoding="utf-8"))
+                self.assertEqual(saved["approvalDocUrl"], "https://xcn68awb7dsi.feishu.cn/wiki/doc_node")
+            finally:
+                feishu_module.create_approval_change_doc = original_doc
+                feishu_module.create_feishu_approval_instance = original_instance
 
     def test_finish_requires_write_permission(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

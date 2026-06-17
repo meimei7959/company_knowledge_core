@@ -706,6 +706,25 @@ Agent Token：申请人/Agent 所属人 -> 固定负责人审批
 knowledge/audit/audit.<time>.md
 ```
 
+每次发起审批前，机器人会先创建一份“审批说明云文档”，并归档到统一审批知识库：
+
+```txt
+https://xcn68awb7dsi.feishu.cn/wiki/GZ59w7hsNijjXYk9BNocCQjFnpc
+```
+
+审批说明文档会写入：
+
+```txt
+- 审批类型、项目、提交人、负责人、目标对象。
+- 通过后状态和审批人需要决策的事项。
+- 拟入库或拟变更的草稿内容。
+- 来源材料摘要。
+- 相关 ConflictRecord。
+- 审批结果回调后的归档说明。
+```
+
+审批表单里的“变动说明”会带上这份云文档链接，审批人应以该文档作为主要审批依据。
+
 当前审批模板为 `知识库审批`，Code 为：
 
 ```txt
@@ -750,6 +769,8 @@ FEISHU_APPROVAL_WIDGET_DESCRIPTION=widget17816813651240001
 FEISHU_APPROVAL_TYPE_VALUE_AGENT_TOKEN=mqhqw8sk-3kt86yj7owt-0
 FEISHU_APPROVAL_TYPE_VALUE_PROJECT_INIT=mqhqw8sk-x7hpdoqx0p-0
 FEISHU_APPROVAL_TYPE_VALUE_KNOWLEDGE_INGEST=mqhqw8sk-kybdohz4afi-0
+FEISHU_APPROVAL_DOC_WIKI_NODE=GZ59w7hsNijjXYk9BNocCQjFnpc
+FEISHU_APPROVAL_DOC_DOMAIN=https://xcn68awb7dsi.feishu.cn
 ```
 
 如果审批模板使用“发起时指定审批人”，还需要配置：
@@ -768,11 +789,12 @@ http://124.221.138.151/knowledge-api/integrations/feishu/events
 
 ```txt
 1. 机器人收到资料后生成 draft。
-2. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
-3. 审核人在飞书审批中心或卡片里点通过/驳回。
-4. 审批回调进入知识工程。
-5. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
-6. 机器人私聊回推给提交人。
+2. 机器人创建审批说明云文档，并归档到审批知识库。
+3. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
+4. 审核人在飞书审批中心或卡片里打开说明文档并点通过/驳回。
+5. 审批回调进入知识工程。
+6. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
+7. 机器人私聊回推给提交人。
 ```
 
 应急兜底命令仍可用，但不作为日常主流程：

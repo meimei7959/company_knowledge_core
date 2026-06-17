@@ -6,6 +6,7 @@ import json
 import os
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -64,6 +65,8 @@ class FeishuSettings:
     security_reviewer_open_ids: list[str]
     project_reviewer_open_ids: dict[str, list[str]]
     token_send_on_approval: bool
+    approval_doc_wiki_node: str
+    approval_doc_domain: str
 
 
 def load_feishu_settings() -> FeishuSettings:
@@ -82,11 +85,20 @@ def load_feishu_settings() -> FeishuSettings:
         security_reviewer_open_ids=split_open_ids(os.environ.get("FEISHU_SECURITY_REVIEWER_OPEN_IDS", "")),
         project_reviewer_open_ids=parse_project_reviewer_map(os.environ.get("FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON", "{}")),
         token_send_on_approval=os.environ.get("FEISHU_TOKEN_SEND_ON_APPROVAL", "false").lower() == "true",
+        approval_doc_wiki_node=extract_wiki_token(os.environ.get("FEISHU_APPROVAL_DOC_WIKI_NODE", "").strip()),
+        approval_doc_domain=os.environ.get("FEISHU_APPROVAL_DOC_DOMAIN", "https://xcn68awb7dsi.feishu.cn").strip().rstrip("/"),
     )
 
 
 def split_open_ids(value: str) -> list[str]:
     return [part.strip() for part in value.split(",") if part.strip()]
+
+
+def extract_wiki_token(value: str) -> str:
+    if not value:
+        return ""
+    match = re.search(r"/wiki/([^/?#]+)", value)
+    return match.group(1) if match else value
 
 
 def parse_project_reviewer_map(raw: str) -> dict[str, list[str]]:
@@ -513,21 +525,25 @@ def trigger_approval_for_target(
     reviewers = reviewers_for(settings, approval_type, project_id)
     if not reviewers and approval_type == APPROVAL_TYPE_KNOWLEDGE_INGEST and owner_open_id:
         reviewers = [owner_open_id]
+    form_values = {
+        "approval_type": approval_type,
+        "object_path": target_ref,
+        "project_id": project_id,
+        "project_name": project_name,
+        "owner_open_id": owner_open_id or requester,
+        "requested_status": requested_status,
+        "submitter": requester,
+        "summary": compact_snippet(summary, 500),
+    }
+    approval_doc = create_approval_change_doc(bundle, settings, form_values)
+    if approval_doc.get("url"):
+        form_values["approval_doc_url"] = approval_doc["url"]
     instance_code = create_feishu_approval_instance(
         settings,
         requester_open_id=requester,
         approval_code=approval_code,
         approver_open_ids=reviewers,
-        form_values={
-            "approval_type": approval_type,
-            "object_path": target_ref,
-            "project_id": project_id,
-            "project_name": project_name,
-            "owner_open_id": owner_open_id or requester,
-            "requested_status": requested_status,
-            "submitter": requester,
-            "summary": compact_snippet(summary, 500),
-        },
+        form_values=form_values,
     )
     save_approval_request(
         bundle,
@@ -544,9 +560,15 @@ def trigger_approval_for_target(
             "submitterOpenId": requester,
             "chatId": incoming.get("chatId", ""),
             "messageId": incoming.get("messageId", ""),
+            "approvalDocUrl": approval_doc.get("url", ""),
+            "approvalDocNodeToken": approval_doc.get("nodeToken", ""),
+            "approvalDocObjToken": approval_doc.get("objToken", ""),
         },
     )
-    create_audit_log(bundle, requester, "feishu.approval.create", target_ref, after="pending", policy_result=approval_type, details=f"instanceCode: {instance_code}")
+    details = f"instanceCode: {instance_code}\napprovalDoc: {approval_doc.get('url', '')}"
+    create_audit_log(bundle, requester, "feishu.approval.create", target_ref, after="pending", policy_result=approval_type, details=details)
+    if approval_doc.get("url"):
+        return f"已发起飞书审批：{instance_code}\n审批说明: {approval_doc['url']}"
     return f"已发起飞书审批：{instance_code}"
 
 
@@ -635,7 +657,234 @@ def create_feishu_approval_instance(
     return instance_code
 
 
-def approval_form(values: dict[str, str]) -> list[dict[str, str]]:
+def create_approval_change_doc(bundle: Bundle, settings: FeishuSettings, values: dict[str, str]) -> dict[str, str]:
+    if not settings.approval_doc_wiki_node:
+        return {}
+    title = approval_doc_title(values)
+    markdown = build_approval_change_markdown(bundle, values, title)
+    token = get_tenant_access_token(settings)
+    parent = get_wiki_node(token, settings.approval_doc_wiki_node)
+    space_id = parent.get("space_id", "")
+    if not space_id:
+        raise KnowledgeError("Feishu approval doc create failed: parent wiki node missing space_id")
+    node = create_wiki_docx_node(token, space_id, settings.approval_doc_wiki_node, title)
+    obj_token = node.get("obj_token", "")
+    node_token = node.get("node_token", "")
+    if not obj_token or not node_token:
+        raise KnowledgeError("Feishu approval doc create failed: missing docx token")
+    append_docx_markdown(token, obj_token, markdown)
+    url = f"{settings.approval_doc_domain}/wiki/{node_token}"
+    return {"url": url, "nodeToken": node_token, "objToken": obj_token, "title": title}
+
+
+def approval_doc_title(values: dict[str, str]) -> str:
+    label = {
+        APPROVAL_TYPE_AGENT_TOKEN: "Agent Token",
+        APPROVAL_TYPE_PROJECT_INIT: "项目立项",
+        APPROVAL_TYPE_KNOWLEDGE_INGEST: "知识入库",
+    }.get(values.get("approval_type", ""), values.get("approval_type", "审批"))
+    project_name = values.get("project_name") or values.get("project_id") or "通用"
+    return f"{label}审批说明-{project_name}-{unique_time_id('doc')}"
+
+
+def build_approval_change_markdown(bundle: Bundle, values: dict[str, str], title: str) -> str:
+    target_ref = values.get("object_path", "")
+    target_path = bundle.root / target_ref if target_ref else None
+    target_text = safe_read_text(target_path) if target_path else ""
+    target_fm = parse_frontmatter(target_text)
+    source_text = ""
+    source_ref = str(target_fm.get("sourceRef", ""))
+    if source_ref and not source_ref.startswith("feishu://"):
+        source_text = safe_read_text(bundle.root / source_ref)
+    conflicts = related_conflict_refs(bundle, target_ref, values.get("project_id", ""))
+    decision = values.get("requested_status", "")
+    sections = [
+        f"# {title}",
+        "",
+        "## 审批结论待定",
+        "",
+        f"- 审批类型：{values.get('approval_type', '')}",
+        f"- 目标对象：{target_ref or '-'}",
+        f"- 项目：{values.get('project_name') or values.get('project_id') or '-'}",
+        f"- 项目ID：{values.get('project_id') or '-'}",
+        f"- 提交人：{values.get('submitter') or '-'}",
+        f"- 负责人：{values.get('owner_open_id') or '-'}",
+        f"- 通过后状态：{decision or '-'}",
+        "",
+        "## 审批人需要决定",
+        "",
+        f"- 同意：将目标对象推进到 `{decision}`，进入可复用知识/项目/Token 流程。",
+        "- 不同意：目标对象保持 draft/rejected，不进入正式知识库。",
+        "- 如发现冲突：以审批意见为准，后续由机器人记录 ConflictRecord 或修正草稿。",
+        "",
+        "## 变更摘要",
+        "",
+        values.get("summary", "") or "暂无摘要。",
+        "",
+        "## 拟入库或拟变更内容",
+        "",
+        fenced(target_text or "暂无目标文件内容。", "markdown"),
+    ]
+    if source_text:
+        sections.extend(["", "## 来源材料摘要", "", fenced(compact_snippet(source_text, 3000), "markdown")])
+    if conflicts:
+        sections.extend(["", "## 相关冲突记录", ""])
+        sections.extend([f"- {item}" for item in conflicts])
+    else:
+        sections.extend(["", "## 相关冲突记录", "", "- 暂未发现同目标或同项目的未解决冲突记录。"])
+    sections.extend(
+        [
+            "",
+            "## 归档说明",
+            "",
+            "- 本文档由知识工程机器人在发起飞书审批前自动生成。",
+            "- 审批结果回调后，知识工程会更新对象状态并写入 AuditLog。",
+            "- 本文档作为审批依据归档在审批知识库下，不作为正式业务知识直接检索复用。",
+        ]
+    )
+    return "\n".join(sections)
+
+
+def fenced(text: str, lang: str = "") -> str:
+    return f"```{lang}\n{text[:6000]}\n```"
+
+
+def safe_read_text(path: Path | None) -> str:
+    if not path or not path.exists() or not path.is_file():
+        return ""
+    return path.read_text(encoding="utf-8")
+
+
+def parse_frontmatter(text: str) -> dict[str, Any]:
+    if not text.startswith("---"):
+        return {}
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return {}
+    result: dict[str, Any] = {}
+    for line in parts[1].splitlines():
+        if ":" in line:
+            key, value = line.split(":", 1)
+            result[key.strip()] = value.strip().strip('"')
+    return result
+
+
+def related_conflict_refs(bundle: Bundle, target_ref: str, project_id: str) -> list[str]:
+    conflict_dir = bundle.root / "knowledge" / "conflicts"
+    if not conflict_dir.exists():
+        return []
+    needles = [item for item in [target_ref, project_id] if item]
+    matches: list[str] = []
+    for path in sorted(conflict_dir.glob("*.md")):
+        text = safe_read_text(path)
+        if any(needle in text for needle in needles):
+            matches.append(str(path.relative_to(bundle.root)))
+        if len(matches) >= 5:
+            break
+    return matches
+
+
+def get_wiki_node(token: str, node_token: str) -> dict[str, Any]:
+    params = urllib.parse.urlencode({"token": node_token})
+    result = feishu_json_request("GET", f"{FEISHU_API_BASE}/wiki/v2/spaces/get_node?{params}", token)
+    return result.get("data", {}).get("node", {})
+
+
+def create_wiki_docx_node(token: str, space_id: str, parent_node_token: str, title: str) -> dict[str, Any]:
+    result = feishu_json_request(
+        "POST",
+        f"{FEISHU_API_BASE}/wiki/v2/spaces/{urllib.parse.quote(space_id)}/nodes",
+        token,
+        {
+            "node_type": "origin",
+            "obj_type": "docx",
+            "parent_node_token": parent_node_token,
+            "title": title[:800],
+        },
+    )
+    return result.get("data", {}).get("node", {})
+
+
+def append_docx_markdown(token: str, document_id: str, markdown: str) -> None:
+    blocks = markdown_to_docx_blocks(markdown)
+    if not blocks:
+        return
+    for start in range(0, len(blocks), 40):
+        chunk = blocks[start : start + 40]
+        feishu_json_request(
+            "POST",
+            f"{FEISHU_API_BASE}/docx/v1/documents/{urllib.parse.quote(document_id)}/blocks/{urllib.parse.quote(document_id)}/children",
+            token,
+            {"index": -1, "children": chunk},
+        )
+
+
+def markdown_to_docx_blocks(markdown: str) -> list[dict[str, Any]]:
+    blocks: list[dict[str, Any]] = []
+    in_code = False
+    code_lines: list[str] = []
+    for raw_line in markdown.splitlines():
+        line = raw_line.rstrip()
+        if line.startswith("```"):
+            if in_code:
+                blocks.extend(text_blocks("\n".join(code_lines), prefix=""))
+                code_lines = []
+                in_code = False
+            else:
+                in_code = True
+            continue
+        if in_code:
+            code_lines.append(line)
+            continue
+        if not line.strip():
+            continue
+        blocks.extend(text_blocks(line))
+    if code_lines:
+        blocks.extend(text_blocks("\n".join(code_lines), prefix=""))
+    return blocks[:100]
+
+
+def text_blocks(text: str, prefix: str = "") -> list[dict[str, Any]]:
+    chunks = [text[i : i + 1800] for i in range(0, len(text), 1800)] or [""]
+    return [
+        {
+            "block_type": 2,
+            "text": {
+                "elements": [
+                    {
+                        "text_run": {
+                            "content": prefix + chunk,
+                            "text_element_style": {},
+                        }
+                    }
+                ],
+                "style": {},
+            },
+        }
+        for chunk in chunks
+        if chunk
+    ]
+
+
+def feishu_json_request(method: str, url: str, token: str, body: dict[str, Any] | None = None) -> dict[str, Any]:
+    data = json.dumps(body, ensure_ascii=False).encode("utf-8") if body is not None else None
+    req = urllib.request.Request(
+        url,
+        data=data,
+        method=method,
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as response:
+            result = json.loads(response.read().decode("utf-8"))
+    except urllib.error.URLError as exc:
+        raise KnowledgeError(f"Feishu API request failed: {exc}") from exc
+    if result.get("code") != 0:
+        raise KnowledgeError(f"Feishu API request failed: {result.get('msg') or result.get('code')}")
+    return result
+
+
+def approval_form(values: dict[str, str]) -> list[dict[str, Any]]:
     approval_type = values.get("approval_type", "")
     fields: list[dict[str, Any]] = [
         {
@@ -680,6 +929,7 @@ def approval_change_type_value(approval_type: str) -> str:
 
 def approval_description(values: dict[str, str]) -> str:
     parts = [
+        f"审批说明文档: {values.get('approval_doc_url', '') or '-'}",
         f"对象: {values.get('object_path', '')}",
         f"审批类型: {values.get('approval_type', '')}",
         f"项目ID: {values.get('project_id', '') or '-'}",
