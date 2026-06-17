@@ -692,12 +692,12 @@ reviewer:
 | 过期候选 | stale_candidate | stale 或 verified | Knowledge Reviewer |
 | 高风险、客户敏感、权限相关 | draft/open | verified/approved/rejected | Security Reviewer |
 
-主流程使用飞书审批模板。机器人收到资料、会议纪要、经验沉淀或 token 申请后，会按分类自动发起审批：
+主流程使用飞书审批模板。机器人收到 token 申请、立项申请、资料、会议纪要或经验沉淀后，会按三类业务单据自动发起审批：
 
 ```txt
-项目类：项目资料、会议纪要、项目经验 -> 项目负责人审批
-通用类：创建项目、token 申请、公司通用知识 -> 通用负责人审批
-安全类：客户敏感、高风险工具、权限变更 -> 安全负责人审批
+Agent Token：申请人/Agent 所属人 -> 固定负责人审批
+项目立项：项目名称 + 项目负责人 -> 固定负责人审批
+知识入库：项目名称 + 项目负责人 + 变动说明 -> 项目负责人审批
 ```
 
 审批通过或拒绝后，飞书会回调知识工程。知识工程会自动更新对象状态并写入：
@@ -706,27 +706,50 @@ reviewer:
 knowledge/audit/audit.<time>.md
 ```
 
-审批模板需要配置这些文本字段，字段 ID 建议与下面保持一致：
+当前审批模板为 `知识库审批`，Code 为：
 
 ```txt
-object_path
-approval_type
-project_id
-requested_status
-submitter
-summary
+0E70E2C7-8BCE-4F03-B368-D4902E64B15C
+```
+
+模板字段使用飞书后台生成的 widget id。当前线上模板字段为：
+
+```txt
+知识变动类型: widget17816810502430001
+项目名称: widget17816812084890001
+项目负责人: widget17816816166430001
+单选: widget17816812747070001
+所属人员: widget17816813081730001
+变动说明: widget17816813651240001
+```
+
+三类业务选项值为：
+
+```txt
+新增agent token: mqhqw8sk-3kt86yj7owt-0
+项目立项: mqhqw8sk-x7hpdoqx0p-0
+知识入库: mqhqw8sk-kybdohz4afi-0
 ```
 
 服务器 `.env` 需要配置：
 
 ```txt
 FEISHU_APPROVAL_ENABLED=true
-FEISHU_APPROVAL_CODE_PROJECT=<项目类审批模板 code>
-FEISHU_APPROVAL_CODE_COMMON=<通用类审批模板 code>
+FEISHU_APPROVAL_CODE_PROJECT=0E70E2C7-8BCE-4F03-B368-D4902E64B15C
+FEISHU_APPROVAL_CODE_COMMON=0E70E2C7-8BCE-4F03-B368-D4902E64B15C
 FEISHU_APPROVAL_CODE_SECURITY=<安全类审批模板 code>
 FEISHU_COMMON_REVIEWER_OPEN_IDS=<通用负责人 open_id>
 FEISHU_SECURITY_REVIEWER_OPEN_IDS=<安全负责人 open_id>
 FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON={"a":["ou_xxx"],"company-knowledge-core":["ou_xxx"]}
+FEISHU_APPROVAL_WIDGET_CHANGE_TYPE=widget17816810502430001
+FEISHU_APPROVAL_WIDGET_PROJECT_NAME=widget17816812084890001
+FEISHU_APPROVAL_WIDGET_PROJECT_OWNER=widget17816816166430001
+FEISHU_APPROVAL_WIDGET_SUB_TYPE=widget17816812747070001
+FEISHU_APPROVAL_WIDGET_MEMBER=widget17816813081730001
+FEISHU_APPROVAL_WIDGET_DESCRIPTION=widget17816813651240001
+FEISHU_APPROVAL_TYPE_VALUE_AGENT_TOKEN=mqhqw8sk-3kt86yj7owt-0
+FEISHU_APPROVAL_TYPE_VALUE_PROJECT_INIT=mqhqw8sk-x7hpdoqx0p-0
+FEISHU_APPROVAL_TYPE_VALUE_KNOWLEDGE_INGEST=mqhqw8sk-kybdohz4afi-0
 ```
 
 如果审批模板使用“发起时指定审批人”，还需要配置：
@@ -745,7 +768,7 @@ http://124.221.138.151/knowledge-api/integrations/feishu/events
 
 ```txt
 1. 机器人收到资料后生成 draft。
-2. 机器人按对象类型和项目负责人创建飞书审批实例。
+2. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
 3. 审核人在飞书审批中心或卡片里点通过/驳回。
 4. 审批回调进入知识工程。
 5. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。

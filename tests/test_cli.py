@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 
+import zhenzhi_knowledge.feishu as feishu_module
 from zhenzhi_knowledge.cli import main
 from zhenzhi_knowledge.core import Bundle
 from zhenzhi_knowledge.feishu import save_approval_request
@@ -545,7 +546,9 @@ Use parser.
             base = f"http://127.0.0.1:{server.server_port}"
             previous_api = os.environ.get("ZHENZHI_KNOWLEDGE_API_STAGING")
             previous_token = os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING")
+            previous_unsigned = os.environ.get("FEISHU_ALLOW_UNSIGNED_EVENTS")
             os.environ["ZHENZHI_KNOWLEDGE_API_STAGING"] = base
+            os.environ["FEISHU_ALLOW_UNSIGNED_EVENTS"] = "true"
             try:
                 health = json.load(urllib.request.urlopen(base + "/health"))
                 self.assertTrue(health["ok"])
@@ -683,6 +686,7 @@ Use parser.
                     "approval_test",
                     {
                         "instanceCode": "approval_test",
+                        "approvalCode": "approval_common",
                         "approvalType": "common",
                         "targetRef": str(callback_target.relative_to(root)),
                         "requestedStatus": "verified",
@@ -698,7 +702,7 @@ Use parser.
                         {
                             "schema": "2.0",
                             "header": {"event_type": "approval.instance.updated_v4"},
-                            "event": {"instance_code": "approval_test", "status": "APPROVED", "operator_id": {"open_id": "ou_reviewer"}},
+                            "event": {"instance_code": "approval_test", "approval_code": "approval_common", "status": "APPROVED", "operator_id": {"open_id": "ou_reviewer"}},
                         }
                     ).encode("utf-8"),
                     headers={"Content-Type": "application/json"},
@@ -707,6 +711,34 @@ Use parser.
                 callback_result = json.load(urllib.request.urlopen(approval_callback))
                 self.assertEqual(callback_result["status"], "verified")
                 self.assertIn("status: verified", callback_target.read_text(encoding="utf-8"))
+                repeat_callback = json.load(urllib.request.urlopen(approval_callback))
+                self.assertTrue(repeat_callback["idempotent"])
+                save_approval_request(
+                    Bundle(root),
+                    "approval_bad",
+                    {
+                        "instanceCode": "approval_bad",
+                        "approvalCode": "approval_common",
+                        "approvalType": "common",
+                        "targetRef": str(callback_target.relative_to(root)),
+                        "requestedStatus": "verified",
+                    },
+                )
+                bad_callback = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "approval.instance.updated_v4"},
+                            "event": {"instance_code": "approval_bad", "approval_code": "wrong", "status": "APPROVED"},
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with self.assertRaises(urllib.error.HTTPError) as bad_approval:
+                    urllib.request.urlopen(bad_callback)
+                self.assertEqual(bad_approval.exception.code, 400)
                 with self.assertRaises(urllib.error.HTTPError) as unauthorized:
                     urllib.request.urlopen(base + "/v0/snapshot")
                 self.assertEqual(unauthorized.exception.code, 401)
@@ -739,9 +771,192 @@ Use parser.
                     os.environ.pop("ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING", None)
                 else:
                     os.environ["ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING"] = previous_token
+                if previous_unsigned is None:
+                    os.environ.pop("FEISHU_ALLOW_UNSIGNED_EVENTS", None)
+                else:
+                    os.environ["FEISHU_ALLOW_UNSIGNED_EVENTS"] = previous_unsigned
                 server.shutdown()
                 thread.join(timeout=5)
                 server.server_close()
+
+    def test_feishu_webhook_requires_verification_token(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            try:
+                server = KnowledgeHTTPServer(("127.0.0.1", 0), Bundle(root), api_token="test-token")
+            except PermissionError as exc:
+                self.skipTest(f"socket bind not allowed in sandbox: {exc}")
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            base = f"http://127.0.0.1:{server.server_port}"
+            previous_token = os.environ.get("FEISHU_VERIFICATION_TOKEN")
+            previous_unsigned = os.environ.get("FEISHU_ALLOW_UNSIGNED_EVENTS")
+            try:
+                os.environ.pop("FEISHU_VERIFICATION_TOKEN", None)
+                os.environ.pop("FEISHU_ALLOW_UNSIGNED_EVENTS", None)
+                request = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps({"type": "url_verification", "challenge": "ok"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with self.assertRaises(urllib.error.HTTPError) as missing_token:
+                    urllib.request.urlopen(request)
+                self.assertEqual(missing_token.exception.code, 400)
+
+                os.environ["FEISHU_VERIFICATION_TOKEN"] = "expected-token"
+                bad_request = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps({"type": "url_verification", "challenge": "ok", "token": "wrong"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with self.assertRaises(urllib.error.HTTPError) as bad_token:
+                    urllib.request.urlopen(bad_request)
+                self.assertEqual(bad_token.exception.code, 400)
+
+                good_request = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps({"type": "url_verification", "challenge": "ok", "token": "expected-token"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                self.assertEqual(json.load(urllib.request.urlopen(good_request))["challenge"], "ok")
+            finally:
+                if previous_token is None:
+                    os.environ.pop("FEISHU_VERIFICATION_TOKEN", None)
+                else:
+                    os.environ["FEISHU_VERIFICATION_TOKEN"] = previous_token
+                if previous_unsigned is None:
+                    os.environ.pop("FEISHU_ALLOW_UNSIGNED_EVENTS", None)
+                else:
+                    os.environ["FEISHU_ALLOW_UNSIGNED_EVENTS"] = previous_unsigned
+                server.shutdown()
+                thread.join(timeout=5)
+                server.server_close()
+
+    def test_token_approval_sends_only_to_submitter_when_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=False,
+                approval_code_project="",
+                approval_code_common="",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=[],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=True,
+            )
+            sent: list[tuple[str, str]] = []
+            original_send = feishu_module.send_feishu_message
+            previous_token = os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN")
+            os.environ["ZHENZHI_KNOWLEDGE_API_TOKEN"] = "prod-token"
+            feishu_module.send_feishu_message = lambda _settings, open_id, text: sent.append((open_id, text)) is None or True
+            try:
+                result = feishu_module.handle_token_approval_result(
+                    Bundle(root),
+                    settings,
+                    {"targetRef": "token-request:om_test", "submitterOpenId": "ou_alice"},
+                    "ou_reviewer",
+                    True,
+                    "approval_token",
+                )
+                self.assertEqual(result["status"], "approved")
+                self.assertEqual(sent[0][0], "ou_alice")
+                self.assertIn("prod-token", sent[0][1])
+            finally:
+                feishu_module.send_feishu_message = original_send
+                if previous_token is None:
+                    os.environ.pop("ZHENZHI_KNOWLEDGE_API_TOKEN", None)
+                else:
+                    os.environ["ZHENZHI_KNOWLEDGE_API_TOKEN"] = previous_token
+
+    def test_feishu_approval_form_uses_knowledge_template_widgets(self) -> None:
+        form = feishu_module.approval_form(
+            {
+                "approval_type": "knowledge_ingest",
+                "object_path": "knowledge/engineering/example.md",
+                "project_id": "core",
+                "project_name": "Core",
+                "owner_open_id": "ou_owner",
+                "requested_status": "verified",
+                "submitter": "ou_submitter",
+                "summary": "knowledge draft",
+            }
+        )
+        by_id = {item["id"]: item for item in form}
+        self.assertEqual(by_id["widget17816810502430001"]["type"], "radioV2")
+        self.assertEqual(by_id["widget17816810502430001"]["value"], "mqhqw8sk-kybdohz4afi-0")
+        self.assertEqual(by_id["widget17816812084890001"]["value"], "Core")
+        self.assertEqual(by_id["widget17816816166430001"]["value"], ["ou_owner"])
+        self.assertEqual(by_id["widget17816813081730001"]["value"], ["ou_submitter"])
+        self.assertEqual(by_id["widget17816813651240001"]["type"], "document")
+
+    def test_feishu_project_init_creates_project_and_approval_request(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=["ou_common"],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+            )
+            created: dict[str, object] = {}
+            original_create = feishu_module.create_feishu_approval_instance
+            def fake_create_approval(_settings, requester_open_id, approval_code, approver_open_ids, form_values):
+                created.update(
+                    {
+                        "requester": requester_open_id,
+                        "approval_code": approval_code,
+                        "approvers": approver_open_ids,
+                        "form_values": form_values,
+                    }
+                )
+                return "approval_project_instance"
+
+            feishu_module.create_feishu_approval_instance = fake_create_approval
+            try:
+                reply = feishu_module.build_reply(
+                    Bundle(root),
+                    {
+                        "messageId": "om_project",
+                        "chatId": "oc_test",
+                        "chatType": "group",
+                        "text": "立项申请：项目名称 A项目，项目负责人 @Alice",
+                        "openId": "ou_submitter",
+                        "userId": "submitter",
+                        "mentionedOpenIds": "ou_owner",
+                    },
+                    settings,
+                )
+                self.assertIn("已生成项目立项草稿", reply)
+                self.assertTrue((root / "projects" / "a" / "project.md").exists())
+                self.assertEqual(created["approval_code"], "approval_project")
+                self.assertEqual(created["approvers"], ["ou_common"])
+                self.assertEqual(created["form_values"]["approval_type"], "project_init")
+                self.assertEqual(created["form_values"]["owner_open_id"], "ou_owner")
+            finally:
+                feishu_module.create_feishu_approval_instance = original_create
 
     def test_finish_requires_write_permission(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
