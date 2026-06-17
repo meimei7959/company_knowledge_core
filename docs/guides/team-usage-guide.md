@@ -679,6 +679,54 @@ reviewer:
 
 机器人回复必须带来源和状态，不让提交人误以为 draft 已经是正式知识。
 
+### 6.2 分级审核和飞书入口
+
+审核需要分级，不同对象由不同角色处理：
+
+| 对象 | 初始状态 | 通过后状态 | 审核人 |
+| --- | --- | --- | --- |
+| 普通知识、经验、会议整理 | draft | verified | Knowledge Reviewer / Project Owner |
+| 项目原始资料 SourceMaterial | draft | verified | Project Owner |
+| 工具 ToolAsset | testing | approved | Tool Owner |
+| 冲突 ConflictRecord | open | resolved | Project Owner / Knowledge Reviewer |
+| 过期候选 | stale_candidate | stale 或 verified | Knowledge Reviewer |
+| 高风险、客户敏感、权限相关 | draft/open | verified/approved/rejected | Security Reviewer |
+
+当前最小闭环通过飞书机器人完成：
+
+```txt
+待审核
+通过 knowledge/engineering/<file>.md
+驳回 knowledge/engineering/<file>.md
+```
+
+机器人会更新对象状态并写入：
+
+```txt
+knowledge/audit/audit.<time>.md
+```
+
+因此用户不需要先去 Git 仓库里找审批项，可以在飞书里问机器人：
+
+```txt
+待审核
+```
+
+机器人会返回待审核队列和对象路径。审核人再通过路径处理。
+
+后续可以升级为飞书审批：
+
+```txt
+1. 机器人收到资料后生成 draft。
+2. 机器人按对象类型和项目负责人创建飞书审批实例。
+3. 审核人在飞书审批中心或卡片里点通过/驳回。
+4. 审批回调进入知识工程。
+5. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
+6. 机器人私聊回推给提交人。
+```
+
+接飞书审批前，需要先在飞书管理后台配置审批模板，并取得对应 `approval_code`。没有审批模板时，先使用机器人命令审核。
+
 ## 7. 给我或 Agent 填什么信息
 
 启动一个新同事：

@@ -8,9 +8,23 @@ import re
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
-from .core import Bundle, KnowledgeError, create_audit_log, ensure_dir, render_doc, search_retrieval, slug, unique_time_id, utc_now, write_text
+from .core import (
+    Bundle,
+    KnowledgeError,
+    create_audit_log,
+    ensure_dir,
+    list_review_queue,
+    render_doc,
+    review_path,
+    search_retrieval,
+    slug,
+    unique_time_id,
+    utc_now,
+    write_text,
+)
 
 
 FEISHU_API_BASE = "https://open.feishu.cn/open-apis"
@@ -129,6 +143,9 @@ def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettin
     lowered = text.lower()
     if lowered in {"/help", "help", "帮助", "/帮助"}:
         return help_text()
+    review_reply = handle_review_command(bundle, incoming, text)
+    if review_reply:
+        return review_reply
     if "token" in lowered or "令牌" in text or "申请知识工程" in text:
         return token_request_reply(incoming, settings)
     material = parse_project_material(text)
@@ -170,7 +187,10 @@ def help_text() -> str:
             "3. 沉淀：<内容>：提交待审核知识草稿。",
             "4. 资料：<项目ID>\\n<内容>：保存项目原始资料并生成整理草稿。",
             "5. 会议纪要：<项目ID>\\n<内容>：保存会议纪要并生成整理草稿。",
-            "6. 帮助：查看命令。",
+            "6. 待审核：查看待审核队列。",
+            "7. 通过 <对象路径>：按对象类型升级状态。",
+            "8. 驳回 <对象路径>：标记 rejected。",
+            "9. 帮助：查看命令。",
         ]
     )
 
@@ -192,6 +212,88 @@ def token_request_reply(incoming: dict[str, str], settings: FeishuSettings) -> s
             "bash scripts/setup-teammate.sh --user-id <你的名字> --ai-tool codex",
         ]
     )
+
+
+def handle_review_command(bundle: Bundle, incoming: dict[str, str], text: str) -> str:
+    stripped = text.strip()
+    if stripped in {"待审核", "/待审核", "review list", "/review list"}:
+        return render_review_queue(bundle)
+    approve_target = parse_target_command(stripped, ["通过", "审核通过", "approve", "/approve"])
+    if approve_target:
+        return review_target_from_feishu(bundle, incoming, approve_target, "")
+    reject_target = parse_target_command(stripped, ["驳回", "拒绝", "reject", "/reject"])
+    if reject_target:
+        return review_target_from_feishu(bundle, incoming, reject_target, "rejected")
+    return ""
+
+
+def render_review_queue(bundle: Bundle) -> str:
+    queue = list_review_queue(bundle)
+    if not queue:
+        return "当前没有待审核对象。"
+    lines = ["待审核队列："]
+    for idx, item in enumerate(queue[:10], 1):
+        lines.append(f"{idx}. {item['path']}")
+        lines.append(f"   {item['type']} / {item['status']} / owner={item['owner'] or 'unknown'}")
+    if len(queue) > 10:
+        lines.append(f"还有 {len(queue) - 10} 条未显示。")
+    lines.append("审核命令：通过 <对象路径>；驳回 <对象路径>。")
+    return "\n".join(lines)
+
+
+def parse_target_command(text: str, prefixes: list[str]) -> str:
+    for prefix in prefixes:
+        if text == prefix:
+            return ""
+        if text.startswith(prefix + " "):
+            return text[len(prefix) :].strip()
+        if text.startswith(prefix + "："):
+            return text[len(prefix) + 1 :].strip()
+        if text.startswith(prefix + ":"):
+            return text[len(prefix) + 1 :].strip()
+    return ""
+
+
+def review_target_from_feishu(bundle: Bundle, incoming: dict[str, str], target: str, explicit_status: str) -> str:
+    target = target.strip()
+    if not target:
+        return "请带上对象路径，例如：通过 knowledge/engineering/xxx.md"
+    status = explicit_status or next_review_status(bundle, target)
+    reviewer = incoming.get("openId") or incoming.get("userId") or "feishu-reviewer"
+    audit_path = review_path(bundle, Path(target), status, reviewer)
+    return "\n".join(
+        [
+            "审核已处理。",
+            f"对象: {target}",
+            f"状态: {status}",
+            f"审核人: {reviewer}",
+            f"审计: {audit_path.relative_to(bundle.root)}",
+        ]
+    )
+
+
+def next_review_status(bundle: Bundle, target: str) -> str:
+    path = bundle.root / target
+    if not path.exists():
+        raise KnowledgeError(f"target not found: {target}")
+    text = path.read_text(encoding="utf-8")
+    frontmatter: dict[str, str] = {}
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        if len(parts) >= 3:
+            for line in parts[1].splitlines():
+                if ":" in line:
+                    key, value = line.split(":", 1)
+                    frontmatter[key.strip()] = value.strip().strip('"')
+    object_type = frontmatter.get("type", "")
+    status = frontmatter.get("status", "")
+    if status == "testing" or object_type == "ToolAsset":
+        return "approved"
+    if status == "open":
+        return "resolved"
+    if status == "stale_candidate":
+        return "stale"
+    return "verified"
 
 
 def parse_intake(text: str) -> str:

@@ -543,7 +543,55 @@ Use parser.
                 material_result = json.load(urllib.request.urlopen(feishu_material))
                 self.assertIn("原始资料", material_result["reply"])
                 self.assertTrue(list((root / "projects" / "a" / "sources").glob("source.*.md")))
-                self.assertTrue(list((root / "knowledge" / "engineering").glob("feishu-material.*.md")))
+                material_drafts = list((root / "knowledge" / "engineering").glob("feishu-material.*.md"))
+                self.assertTrue(material_drafts)
+                review_list = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "im.message.receive_v1"},
+                            "event": {
+                                "sender": {"sender_id": {"open_id": "ou_reviewer", "user_id": "reviewer"}},
+                                "message": {
+                                    "message_id": "om_review_list",
+                                    "chat_id": "oc_test",
+                                    "chat_type": "group",
+                                    "message_type": "text",
+                                    "content": json.dumps({"text": "待审核"}),
+                                },
+                            },
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                self.assertIn("待审核队列", json.load(urllib.request.urlopen(review_list))["reply"])
+                target = str(material_drafts[0].relative_to(root))
+                review_approve = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "im.message.receive_v1"},
+                            "event": {
+                                "sender": {"sender_id": {"open_id": "ou_reviewer", "user_id": "reviewer"}},
+                                "message": {
+                                    "message_id": "om_review_approve",
+                                    "chat_id": "oc_test",
+                                    "chat_type": "group",
+                                    "message_type": "text",
+                                    "content": json.dumps({"text": f"通过 {target}"}),
+                                },
+                            },
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                approve_result = json.load(urllib.request.urlopen(review_approve))
+                self.assertIn("状态: verified", approve_result["reply"])
+                self.assertIn("status: verified", material_drafts[0].read_text(encoding="utf-8"))
                 with self.assertRaises(urllib.error.HTTPError) as unauthorized:
                     urllib.request.urlopen(base + "/v0/snapshot")
                 self.assertEqual(unauthorized.exception.code, 401)
