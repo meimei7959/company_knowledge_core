@@ -494,12 +494,7 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
     )
     return "\n".join(
         [
-            "已生成项目立项草稿。",
-            f"项目: {project_name}",
-            f"项目ID: {project_id}",
-            f"项目负责人: {owner_open_id}",
-            f"项目卡: {project_path.relative_to(bundle.root)}",
-            "状态: draft",
+            f"项目草稿已创建：{project_name}",
             approval_line,
         ]
     )
@@ -620,16 +615,40 @@ def trigger_approval_for_target(
         "submitter": requester,
         "summary": compact_snippet(summary, 500),
     }
-    approval_doc = create_approval_change_doc(bundle, settings, form_values)
+    approval_doc: dict[str, str] = {}
+    try:
+        approval_doc = create_approval_change_doc(bundle, settings, form_values)
+    except KnowledgeError as exc:
+        create_audit_log(
+            bundle,
+            requester,
+            "feishu.approval_doc.failed",
+            target_ref,
+            after="failed",
+            policy_result=approval_type,
+            details=compact_snippet(str(exc), 500),
+        )
     if approval_doc.get("url"):
         form_values["approval_doc_url"] = approval_doc["url"]
-    instance_code = create_feishu_approval_instance(
-        settings,
-        requester_open_id=requester,
-        approval_code=approval_code,
-        approver_open_ids=reviewers,
-        form_values=form_values,
-    )
+    try:
+        instance_code = create_feishu_approval_instance(
+            settings,
+            requester_open_id=requester,
+            approval_code=approval_code,
+            approver_open_ids=reviewers,
+            form_values=form_values,
+        )
+    except (KnowledgeError, urllib.error.URLError) as exc:
+        create_audit_log(
+            bundle,
+            requester,
+            "feishu.approval.failed",
+            target_ref,
+            after="failed",
+            policy_result=approval_type,
+            details=compact_snippet(str(exc), 500),
+        )
+        return f"审批发起失败：{compact_snippet(str(exc), 80)}"
     save_approval_request(
         bundle,
         instance_code,

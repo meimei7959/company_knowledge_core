@@ -955,7 +955,7 @@ Use parser.
                     },
                     settings,
                 )
-                self.assertIn("已生成项目立项草稿", reply)
+                self.assertIn("项目草稿已创建", reply)
                 self.assertTrue((root / "projects" / "a" / "project.md").exists())
                 self.assertEqual(created["approval_code"], "approval_project")
                 self.assertEqual(created["approvers"], ["ou_common"])
@@ -1044,8 +1044,8 @@ Use parser.
                     },
                     settings,
                 )
-                self.assertIn("已生成项目立项草稿", reply)
-                self.assertIn("ou_hanson", reply)
+                self.assertIn("项目草稿已创建", reply)
+                self.assertIn("已发起飞书审批", reply)
             finally:
                 feishu_module.create_feishu_approval_instance = original_create
 
