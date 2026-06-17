@@ -843,7 +843,7 @@ Use parser.
             settings = feishu_module.FeishuSettings(
                 app_id="",
                 app_secret="",
-                verification_token="",
+                verification_token="expected-token",
                 reply_enabled=False,
                 token_auto_approve=False,
                 approval_enabled=False,
@@ -911,7 +911,7 @@ Use parser.
             settings = feishu_module.FeishuSettings(
                 app_id="",
                 app_secret="",
-                verification_token="",
+                verification_token="expected-token",
                 reply_enabled=False,
                 token_auto_approve=False,
                 approval_enabled=True,
@@ -1049,6 +1049,56 @@ Use parser.
                 self.assertIn("ou_hanson", reply)
             finally:
                 feishu_module.create_feishu_approval_instance = original_create
+
+    def test_feishu_message_reply_failure_does_not_fail_event(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="app",
+                app_secret="secret",
+                verification_token="expected-token",
+                reply_enabled=True,
+                token_auto_approve=False,
+                approval_enabled=False,
+                approval_code_project="",
+                approval_code_common="",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=[],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_wiki_node="",
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                user_open_id_map={},
+            )
+            original_send = feishu_module.send_feishu_reply
+            feishu_module.send_feishu_reply = lambda *_args, **_kwargs: (_ for _ in ()).throw(feishu_module.KnowledgeError("reply failed"))
+            try:
+                result = feishu_module.handle_feishu_event(
+                    Bundle(root),
+                    {
+                        "schema": "2.0",
+                        "header": {"event_type": "im.message.receive_v1", "token": "expected-token"},
+                        "event": {
+                            "sender": {"sender_id": {"open_id": "ou_alice", "user_id": "alice"}},
+                            "message": {
+                                "message_id": "om_bad_reply",
+                                "chat_id": "oc_test",
+                                "chat_type": "group",
+                                "message_type": "text",
+                                "content": json.dumps({"text": "创建一个项目，名字叫做工业软件点胶机。项目负责人是hanson"}),
+                            },
+                        },
+                    },
+                    settings,
+                )
+                self.assertTrue(result["ok"])
+                self.assertFalse(result["sent"])
+                self.assertIn("reply failed", result["replyError"])
+            finally:
+                feishu_module.send_feishu_reply = original_send
 
     def test_feishu_approval_creates_change_doc_before_instance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

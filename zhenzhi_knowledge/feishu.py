@@ -148,9 +148,17 @@ def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: Feish
     reply = build_reply(bundle, incoming, settings)
     create_feishu_audit(bundle, incoming, reply)
     sent = False
+    reply_error = ""
     if settings.reply_enabled and settings.app_id and settings.app_secret:
-        sent = send_feishu_reply(settings, incoming["messageId"], reply)
-    return {"ok": True, "reply": reply, "sent": sent}
+        try:
+            sent = send_feishu_reply(settings, incoming["messageId"], reply)
+        except (KnowledgeError, urllib.error.URLError) as exc:
+            reply_error = str(exc)
+            create_audit_log(bundle, incoming.get("openId") or incoming.get("userId") or "feishu-user", "feishu.reply.failed", incoming.get("messageId", ""), after="failed", policy_result="bot_gateway", details=reply_error)
+    result: dict[str, Any] = {"ok": True, "reply": reply, "sent": sent}
+    if reply_error:
+        result["replyError"] = reply_error
+    return result
 
 
 def is_url_verification(payload: dict[str, Any]) -> bool:
