@@ -22,7 +22,7 @@ services:
       - /bin/sh
       - -c
       - |
-        zhenzhi-knowledge --root /knowledge validate
-        zhenzhi-knowledge --root /knowledge index rebuild
-        zhenzhi-knowledge --root /knowledge rag rebuild
-        zhenzhi-knowledge --root /knowledge api serve --host 0.0.0.0 --port 8765
+        python -m zhenzhi_knowledge --root /knowledge validate
+        python -m zhenzhi_knowledge --root /knowledge index rebuild
+        python -m zhenzhi_knowledge --root /knowledge rag rebuild
+        python -m zhenzhi_knowledge --root /knowledge api serve --host 0.0.0.0 --port 8765
