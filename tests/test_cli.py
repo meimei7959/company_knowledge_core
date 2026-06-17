@@ -9,6 +9,7 @@ from pathlib import Path
 
 from zhenzhi_knowledge.cli import main
 from zhenzhi_knowledge.core import Bundle
+from zhenzhi_knowledge.feishu import save_approval_request
 from zhenzhi_knowledge.server import KnowledgeHTTPServer
 
 
@@ -110,6 +111,36 @@ Structured knowledge only.
                 encoding="utf-8",
             )
             self.assertEqual(main(["--root", str(root), "validate"]), 0)
+
+    def test_validate_blocks_approved_tool_without_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            tool = root / "tools" / "tool.parser.md"
+            tool.write_text(
+                """---
+type: ToolAsset
+title: Parser
+description: Parser tool.
+timestamp: 2026-06-17T00:00:00Z
+toolId: tool.parser
+owner: alice
+repoRef: git@example.com:zhenzhi/parser.git
+entrypoint: cli://parser
+version: 0.1.0
+status: approved
+scope: company
+riskLevel: L1
+lastVerifiedAt: ""
+---
+
+## Usage
+
+Parse documents.
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(main(["--root", str(root), "validate"]), 1)
 
     def test_register_start_finish_review_validate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -262,12 +293,16 @@ Parser work should preserve source references in Agent output.
             )
             runs = list((root / "runs" / "core").glob("*.md"))
             self.assertEqual(len(runs), 1)
-            self.assertIn("knowledge/engineering/parser-context.md", runs[0].read_text(encoding="utf-8"))
+            run_text = runs[0].read_text(encoding="utf-8")
+            self.assertIn("knowledge/engineering/parser-context.md", run_text)
+            self.assertIn(".zhenzhi/context/context.", run_text)
+            self.assertNotIn("TBD", run_text)
             self.assertEqual(main(["--root", str(root), "review", "update", "--target", str(runs[0]), "--status", "verified", "--reviewer", "alice"]), 0)
             self.assertTrue(list((root / "knowledge" / "audit").glob("*.md")))
             self.assertTrue((root / "knowledge" / "policies" / "policy.alice.md").exists())
             self.assertEqual(main(["--root", str(root), "review", "list"]), 0)
             self.assertEqual(main(["--root", str(root), "review", "bulk", "--type", "ToolAsset", "--from-status", "testing", "--to-status", "approved", "--reviewer", "alice", "--limit", "1"]), 0)
+            self.assertIn("lastVerifiedAt:", (root / "tools" / "tool.parser.md").read_text(encoding="utf-8"))
             self.assertEqual(
                 main(
                     [
@@ -376,6 +411,56 @@ Parser work should preserve source references in Agent output.
             self.assertEqual(main(["--root", str(root), "api", "export"]), 0)
             self.assertEqual(main(["--root", str(root), "gateway", "context", "--project", "core", "--agent", "agent.alice.builder", "--task", "gateway test"]), 0)
             self.assertEqual(main(["--root", str(root), "validate"]), 0)
+
+    def test_finish_requires_current_context_pack(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            self.assertEqual(main(["--root", str(root), "init", "--user-id", "alice"]), 0)
+            self.assertEqual(main(["--root", str(root), "agent", "register", "--agent-id", "agent.alice.builder", "--name", "Alice Builder", "--owner", "alice", "--purpose", "local development"]), 0)
+            self.assertEqual(main(["--root", str(root), "project", "register", "--project-id", "core", "--name", "Core", "--owner", "alice"]), 0)
+            self.assertEqual(main(["--root", str(root), "policy", "register", "--policy-id", "policy.alice", "--title", "Alice Policy", "--agent-id", "agent.alice.builder", "--owner", "alice", "--allow-project", "core", "--allow-scope", "engineering", "--allow-risk", "L1"]), 0)
+            self.assertEqual(main(["--root", str(root), "review", "update", "--target", "knowledge/policies/policy.alice.md", "--status", "active", "--reviewer", "alice"]), 0)
+            self.assertEqual(main(["--root", str(root), "finish", "--project", "core", "--agent", "agent.alice.builder", "--summary", "should fail"]), 2)
+
+    def test_eval_requires_all_declared_terms(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            self.assertEqual(main(["--root", str(root), "agent", "register", "--agent-id", "agent.alice.builder", "--name", "Alice Builder", "--owner", "alice", "--purpose", "local development"]), 0)
+            eval_dir = root / "knowledge" / "evals"
+            eval_dir.mkdir(parents=True, exist_ok=True)
+            (eval_dir / "eval.agent.workflow.md").write_text(
+                """---
+type: EvalCase
+title: Agent workflow eval
+description: Agent workflow must write traceable memory.
+timestamp: 2026-06-17T00:00:00Z
+evalId: eval.agent.workflow
+owner: alice
+status: verified
+targetRef: agents/agent.alice.builder.md
+expected: AgentRun
+requires:
+  - contextRefs
+  - knowledgeUsed
+  - sourceRef
+---
+
+## Input
+
+Run start and finish.
+
+## Expected
+
+AgentRun with contextRefs, knowledgeUsed, and sourceRef.
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(main(["--root", str(root), "eval", "run", "--eval-id", "eval.agent.workflow", "--actual", "AgentRun contextRefs", "--runner", "alice"]), 0)
+            eval_runs = sorted((root / "knowledge" / "eval-runs").glob("*.md"))
+            self.assertIn("result: fail", eval_runs[-1].read_text(encoding="utf-8"))
+            self.assertTrue(list((root / "knowledge" / "engineering").glob("eval-failure-*.md")))
 
     def test_stale_scan_marks_verified_tool_linked_knowledge(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -592,6 +677,36 @@ Use parser.
                 approve_result = json.load(urllib.request.urlopen(review_approve))
                 self.assertIn("状态: verified", approve_result["reply"])
                 self.assertIn("status: verified", material_drafts[0].read_text(encoding="utf-8"))
+                callback_target = list((root / "knowledge" / "engineering").glob("feishu-intake.*.md"))[0]
+                save_approval_request(
+                    Bundle(root),
+                    "approval_test",
+                    {
+                        "instanceCode": "approval_test",
+                        "approvalType": "common",
+                        "targetRef": str(callback_target.relative_to(root)),
+                        "requestedStatus": "verified",
+                        "projectId": "",
+                        "submitterOpenId": "ou_alice",
+                        "chatId": "oc_test",
+                        "messageId": "om_intake",
+                    },
+                )
+                approval_callback = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "approval.instance.updated_v4"},
+                            "event": {"instance_code": "approval_test", "status": "APPROVED", "operator_id": {"open_id": "ou_reviewer"}},
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                callback_result = json.load(urllib.request.urlopen(approval_callback))
+                self.assertEqual(callback_result["status"], "verified")
+                self.assertIn("status: verified", callback_target.read_text(encoding="utf-8"))
                 with self.assertRaises(urllib.error.HTTPError) as unauthorized:
                     urllib.request.urlopen(base + "/v0/snapshot")
                 self.assertEqual(unauthorized.exception.code, 401)

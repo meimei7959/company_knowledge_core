@@ -692,29 +692,56 @@ reviewer:
 | 过期候选 | stale_candidate | stale 或 verified | Knowledge Reviewer |
 | 高风险、客户敏感、权限相关 | draft/open | verified/approved/rejected | Security Reviewer |
 
-当前最小闭环通过飞书机器人完成：
+主流程使用飞书审批模板。机器人收到资料、会议纪要、经验沉淀或 token 申请后，会按分类自动发起审批：
 
 ```txt
-待审核
-通过 knowledge/engineering/<file>.md
-驳回 knowledge/engineering/<file>.md
+项目类：项目资料、会议纪要、项目经验 -> 项目负责人审批
+通用类：创建项目、token 申请、公司通用知识 -> 通用负责人审批
+安全类：客户敏感、高风险工具、权限变更 -> 安全负责人审批
 ```
 
-机器人会更新对象状态并写入：
+审批通过或拒绝后，飞书会回调知识工程。知识工程会自动更新对象状态并写入：
 
 ```txt
 knowledge/audit/audit.<time>.md
 ```
 
-因此用户不需要先去 Git 仓库里找审批项，可以在飞书里问机器人：
+审批模板需要配置这些文本字段，字段 ID 建议与下面保持一致：
 
 ```txt
-待审核
+object_path
+approval_type
+project_id
+requested_status
+submitter
+summary
 ```
 
-机器人会返回待审核队列和对象路径。审核人再通过路径处理。
+服务器 `.env` 需要配置：
 
-后续可以升级为飞书审批：
+```txt
+FEISHU_APPROVAL_ENABLED=true
+FEISHU_APPROVAL_CODE_PROJECT=<项目类审批模板 code>
+FEISHU_APPROVAL_CODE_COMMON=<通用类审批模板 code>
+FEISHU_APPROVAL_CODE_SECURITY=<安全类审批模板 code>
+FEISHU_COMMON_REVIEWER_OPEN_IDS=<通用负责人 open_id>
+FEISHU_SECURITY_REVIEWER_OPEN_IDS=<安全负责人 open_id>
+FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON={"a":["ou_xxx"],"company-knowledge-core":["ou_xxx"]}
+```
+
+如果审批模板使用“发起时指定审批人”，还需要配置：
+
+```txt
+FEISHU_APPROVAL_NODE_APPROVER_KEY=<审批节点 key>
+```
+
+审批回调仍使用同一个事件地址：
+
+```txt
+http://124.221.138.151/knowledge-api/integrations/feishu/events
+```
+
+完整流程：
 
 ```txt
 1. 机器人收到资料后生成 draft。
@@ -725,7 +752,13 @@ knowledge/audit/audit.<time>.md
 6. 机器人私聊回推给提交人。
 ```
 
-接飞书审批前，需要先在飞书管理后台配置审批模板，并取得对应 `approval_code`。没有审批模板时，先使用机器人命令审核。
+应急兜底命令仍可用，但不作为日常主流程：
+
+```txt
+待审核
+通过 knowledge/engineering/<file>.md
+驳回 knowledge/engineering/<file>.md
+```
 
 ## 7. 给我或 Agent 填什么信息
 

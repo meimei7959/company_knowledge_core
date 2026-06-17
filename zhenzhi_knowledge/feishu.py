@@ -38,6 +38,15 @@ class FeishuSettings:
     verification_token: str
     reply_enabled: bool
     token_auto_approve: bool
+    approval_enabled: bool
+    approval_code_project: str
+    approval_code_common: str
+    approval_code_security: str
+    approval_node_approver_key: str
+    common_reviewer_open_ids: list[str]
+    security_reviewer_open_ids: list[str]
+    project_reviewer_open_ids: dict[str, list[str]]
+    token_send_on_approval: bool
 
 
 def load_feishu_settings() -> FeishuSettings:
@@ -47,7 +56,36 @@ def load_feishu_settings() -> FeishuSettings:
         verification_token=os.environ.get("FEISHU_VERIFICATION_TOKEN", "").strip(),
         reply_enabled=os.environ.get("FEISHU_REPLY_ENABLED", "true").lower() != "false",
         token_auto_approve=os.environ.get("FEISHU_TOKEN_AUTO_APPROVE", "false").lower() == "true",
+        approval_enabled=os.environ.get("FEISHU_APPROVAL_ENABLED", "false").lower() == "true",
+        approval_code_project=os.environ.get("FEISHU_APPROVAL_CODE_PROJECT", "").strip(),
+        approval_code_common=os.environ.get("FEISHU_APPROVAL_CODE_COMMON", "").strip(),
+        approval_code_security=os.environ.get("FEISHU_APPROVAL_CODE_SECURITY", "").strip(),
+        approval_node_approver_key=os.environ.get("FEISHU_APPROVAL_NODE_APPROVER_KEY", "").strip(),
+        common_reviewer_open_ids=split_open_ids(os.environ.get("FEISHU_COMMON_REVIEWER_OPEN_IDS", "")),
+        security_reviewer_open_ids=split_open_ids(os.environ.get("FEISHU_SECURITY_REVIEWER_OPEN_IDS", "")),
+        project_reviewer_open_ids=parse_project_reviewer_map(os.environ.get("FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON", "{}")),
+        token_send_on_approval=os.environ.get("FEISHU_TOKEN_SEND_ON_APPROVAL", "false").lower() == "true",
     )
+
+
+def split_open_ids(value: str) -> list[str]:
+    return [part.strip() for part in value.split(",") if part.strip()]
+
+
+def parse_project_reviewer_map(raw: str) -> dict[str, list[str]]:
+    try:
+        parsed = json.loads(raw or "{}")
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    result: dict[str, list[str]] = {}
+    for key, value in parsed.items():
+        if isinstance(value, list):
+            result[str(key)] = [str(item).strip() for item in value if str(item).strip()]
+        elif isinstance(value, str):
+            result[str(key)] = split_open_ids(value)
+    return result
 
 
 def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: FeishuSettings | None = None) -> dict[str, Any]:
@@ -59,6 +97,8 @@ def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: Feish
         return {"challenge": extract_challenge(payload)}
     verify_event_token(payload, settings)
     event_type = extract_event_type(payload)
+    if is_approval_event(payload, event_type):
+        return handle_approval_event(bundle, payload, settings)
     if event_type != "im.message.receive_v1":
         return {"ok": True, "ignored": event_type or "unknown"}
     incoming = parse_message_event(payload)
@@ -88,6 +128,14 @@ def extract_challenge(payload: dict[str, Any]) -> str:
 def extract_event_type(payload: dict[str, Any]) -> str:
     header = payload.get("header") or {}
     return str(header.get("event_type") or payload.get("type") or "")
+
+
+def is_approval_event(payload: dict[str, Any], event_type: str) -> bool:
+    if "approval" in event_type.lower():
+        return True
+    event = payload.get("event") or {}
+    legacy_type = str(event.get("type") or payload.get("type") or "").lower()
+    return "approval" in legacy_type or bool(deep_find(payload, "instance_code"))
 
 
 def verify_event_token(payload: dict[str, Any], settings: FeishuSettings) -> None:
@@ -147,10 +195,20 @@ def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettin
     if review_reply:
         return review_reply
     if "token" in lowered or "令牌" in text or "申请知识工程" in text:
-        return token_request_reply(incoming, settings)
+        return token_request_reply(bundle, incoming, settings)
     material = parse_project_material(text)
     if material:
         source_path, knowledge_path = create_project_material_drafts(bundle, incoming, material)
+        approval_line = trigger_approval_for_target(
+            bundle,
+            settings,
+            incoming,
+            approval_type="project",
+            target_ref=knowledge_path,
+            requested_status="verified",
+            project_id=material["projectId"],
+            summary=material["body"],
+        )
         return "\n".join(
             [
                 "已保存为项目资料草稿，并生成待审核知识草稿。",
@@ -158,13 +216,23 @@ def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettin
                 f"原始资料: {source_path}",
                 f"整理草稿: {knowledge_path}",
                 "状态: draft",
-                "审核通过前不会进入正式知识。",
+                approval_line,
             ]
         )
     intake = parse_intake(text)
     if intake:
         path = create_intake_draft(bundle, incoming, intake)
-        return f"已生成待审核知识草稿：{path}\n状态: draft\n审核通过前不会进入正式知识。"
+        approval_line = trigger_approval_for_target(
+            bundle,
+            settings,
+            incoming,
+            approval_type="common",
+            target_ref=path,
+            requested_status="verified",
+            project_id="",
+            summary=intake,
+        )
+        return f"已生成待审核知识草稿：{path}\n状态: draft\n{approval_line}"
     chunks = [row for row in search_retrieval(bundle, text, limit=8) if row.get("status") in FORMAL_STATUSES]
     if not chunks:
         return "我没有在已审核知识里找到可靠答案。你可以换个关键词，或发送“沉淀：...”提交一条待审核知识。"
@@ -187,19 +255,27 @@ def help_text() -> str:
             "3. 沉淀：<内容>：提交待审核知识草稿。",
             "4. 资料：<项目ID>\\n<内容>：保存项目原始资料并生成整理草稿。",
             "5. 会议纪要：<项目ID>\\n<内容>：保存会议纪要并生成整理草稿。",
-            "6. 待审核：查看待审核队列。",
-            "7. 通过 <对象路径>：按对象类型升级状态。",
-            "8. 驳回 <对象路径>：标记 rejected。",
-            "9. 帮助：查看命令。",
+            "6. 审批会按项目类/通用类/安全类自动发起飞书审批。",
+            "7. 帮助：查看命令。",
         ]
     )
 
 
-def token_request_reply(incoming: dict[str, str], settings: FeishuSettings) -> str:
+def token_request_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings) -> str:
     if incoming.get("chatType") != "p2p":
         return "我识别到 token 申请。为避免泄露，请私聊我发送“申请知识工程 token”，我不会在群里发送 token。"
+    approval_line = trigger_approval_for_target(
+        bundle,
+        settings,
+        incoming,
+        approval_type="common",
+        target_ref=f"token-request:{incoming.get('messageId')}",
+        requested_status="approved",
+        project_id="",
+        summary="知识工程 API Token 申请",
+    )
     if not settings.token_auto_approve:
-        return "已收到你的知识工程 token 申请。我已记录你的飞书身份，负责人审批后会私发初始化命令。"
+        return f"已收到你的知识工程 token 申请。我已记录你的飞书身份。\n{approval_line}"
     token = os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN", "").strip()
     if not token:
         return "token 自动发放未完成：服务器没有配置 ZHENZHI_KNOWLEDGE_API_TOKEN。"
@@ -294,6 +370,207 @@ def next_review_status(bundle: Bundle, target: str) -> str:
     if status == "stale_candidate":
         return "stale"
     return "verified"
+
+
+def trigger_approval_for_target(
+    bundle: Bundle,
+    settings: FeishuSettings,
+    incoming: dict[str, str],
+    approval_type: str,
+    target_ref: str,
+    requested_status: str,
+    project_id: str,
+    summary: str,
+) -> str:
+    if not settings.approval_enabled:
+        return "审批未启用：已保留为 draft，等待审批模板配置。"
+    approval_code = approval_code_for_type(settings, approval_type)
+    if not approval_code:
+        return f"审批模板未配置：缺少 {approval_type} 类 approval_code，已保留为 draft。"
+    requester = incoming.get("openId") or incoming.get("userId")
+    if not requester:
+        return "审批未发起：无法识别提交人飞书身份。"
+    reviewers = reviewers_for(settings, approval_type, project_id)
+    instance_code = create_feishu_approval_instance(
+        settings,
+        requester_open_id=requester,
+        approval_code=approval_code,
+        approver_open_ids=reviewers,
+        form_values={
+            "object_path": target_ref,
+            "approval_type": approval_type,
+            "project_id": project_id,
+            "requested_status": requested_status,
+            "submitter": requester,
+            "summary": compact_snippet(summary, 500),
+        },
+    )
+    save_approval_request(
+        bundle,
+        instance_code,
+        {
+            "instanceCode": instance_code,
+            "approvalType": approval_type,
+            "targetRef": target_ref,
+            "requestedStatus": requested_status,
+            "projectId": project_id,
+            "submitterOpenId": requester,
+            "chatId": incoming.get("chatId", ""),
+            "messageId": incoming.get("messageId", ""),
+        },
+    )
+    create_audit_log(bundle, requester, "feishu.approval.create", target_ref, after="pending", policy_result=approval_type, details=f"instanceCode: {instance_code}")
+    return f"已发起飞书审批：{instance_code}"
+
+
+def approval_code_for_type(settings: FeishuSettings, approval_type: str) -> str:
+    if approval_type == "project":
+        return settings.approval_code_project or settings.approval_code_common
+    if approval_type == "security":
+        return settings.approval_code_security or settings.approval_code_common
+    return settings.approval_code_common
+
+
+def reviewers_for(settings: FeishuSettings, approval_type: str, project_id: str) -> list[str]:
+    if approval_type == "project":
+        return settings.project_reviewer_open_ids.get(project_id, []) or settings.common_reviewer_open_ids
+    if approval_type == "security":
+        return settings.security_reviewer_open_ids or settings.common_reviewer_open_ids
+    return settings.common_reviewer_open_ids
+
+
+def create_feishu_approval_instance(
+    settings: FeishuSettings,
+    requester_open_id: str,
+    approval_code: str,
+    approver_open_ids: list[str],
+    form_values: dict[str, str],
+) -> str:
+    token = get_tenant_access_token(settings)
+    url = f"{FEISHU_API_BASE}/approval/v4/instances?user_id_type=open_id"
+    body: dict[str, Any] = {
+        "approval_code": approval_code,
+        "user_id": requester_open_id,
+        "form": json.dumps(approval_form(form_values), ensure_ascii=False),
+        "uuid": unique_time_id("approval-request"),
+    }
+    if settings.approval_node_approver_key and approver_open_ids:
+        body["node_approver_user_id_list"] = [{"key": settings.approval_node_approver_key, "value": approver_open_ids}]
+    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"},
+    )
+    with urllib.request.urlopen(req, timeout=10) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    if result.get("code") != 0:
+        raise KnowledgeError(f"Feishu approval create failed: {result.get('msg') or result.get('code')}")
+    data_obj = result.get("data") or {}
+    instance_code = str(data_obj.get("instance_code") or data_obj.get("instanceCode") or "")
+    if not instance_code:
+        raise KnowledgeError("Feishu approval create failed: missing instance_code")
+    return instance_code
+
+
+def approval_form(values: dict[str, str]) -> list[dict[str, str]]:
+    field_map = {
+        "object_path": os.environ.get("FEISHU_APPROVAL_FIELD_OBJECT_PATH", "object_path"),
+        "approval_type": os.environ.get("FEISHU_APPROVAL_FIELD_APPROVAL_TYPE", "approval_type"),
+        "project_id": os.environ.get("FEISHU_APPROVAL_FIELD_PROJECT_ID", "project_id"),
+        "requested_status": os.environ.get("FEISHU_APPROVAL_FIELD_REQUESTED_STATUS", "requested_status"),
+        "submitter": os.environ.get("FEISHU_APPROVAL_FIELD_SUBMITTER", "submitter"),
+        "summary": os.environ.get("FEISHU_APPROVAL_FIELD_SUMMARY", "summary"),
+    }
+    fields: list[dict[str, str]] = []
+    for key, field_id in field_map.items():
+        if not field_id:
+            continue
+        fields.append({"id": field_id, "type": "input", "value": values.get(key, "")})
+    return fields
+
+
+def approval_request_dir(bundle: Bundle) -> Path:
+    path = bundle.zz_dir / "approval-requests"
+    ensure_dir(path)
+    return path
+
+
+def save_approval_request(bundle: Bundle, instance_code: str, data: dict[str, str]) -> None:
+    path = approval_request_dir(bundle) / f"{slug(instance_code)}.json"
+    write_text(path, json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+
+
+def load_approval_request(bundle: Bundle, instance_code: str) -> dict[str, str]:
+    path = approval_request_dir(bundle) / f"{slug(instance_code)}.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def handle_approval_event(bundle: Bundle, payload: dict[str, Any], settings: FeishuSettings) -> dict[str, Any]:
+    instance_code = str(deep_find(payload, "instance_code") or deep_find(payload, "instanceCode") or "")
+    status = str(deep_find(payload, "status") or deep_find(payload, "approval_status") or "").upper()
+    if not instance_code:
+        return {"ok": True, "ignored": "approval_event_without_instance_code"}
+    request = load_approval_request(bundle, instance_code)
+    if not request:
+        return {"ok": True, "ignored": "unknown_approval_instance", "instanceCode": instance_code}
+    reviewer = str(deep_find(payload, "open_id") or deep_find(payload, "operator_id") or "feishu-approval")
+    target_ref = request.get("targetRef", "")
+    approved = status in {"APPROVED", "PASS", "AGREE", "APPROVE", "APPROVAL_APPROVED"}
+    rejected = status in {"REJECTED", "REJECT", "REFUSED", "DENIED", "CANCELED", "CANCELLED"}
+    if not approved and not rejected:
+        return {"ok": True, "ignored": "approval_status_not_final", "status": status, "instanceCode": instance_code}
+    if target_ref.startswith("token-request:"):
+        return handle_token_approval_result(bundle, settings, request, reviewer, approved, instance_code)
+    new_status = request.get("requestedStatus", "verified") if approved else "rejected"
+    audit_path = review_path(bundle, Path(target_ref), new_status, reviewer)
+    create_audit_log(bundle, reviewer, "feishu.approval.callback", target_ref, after=new_status, policy_result=request.get("approvalType", ""), details=f"instanceCode: {instance_code}\nstatus: {status}")
+    return {"ok": True, "instanceCode": instance_code, "targetRef": target_ref, "status": new_status, "auditRef": str(audit_path.relative_to(bundle.root))}
+
+
+def handle_token_approval_result(bundle: Bundle, settings: FeishuSettings, request: dict[str, str], reviewer: str, approved: bool, instance_code: str) -> dict[str, Any]:
+    submitter = request.get("submitterOpenId", "")
+    if approved and settings.token_send_on_approval and submitter:
+        token = os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN", "").strip()
+        if token:
+            send_feishu_message(
+                settings,
+                submitter,
+                "\n".join(
+                    [
+                        "你的知识工程 token 申请已通过。",
+                        "初始化命令：",
+                        "git clone https://github.com/meimei7959/company_knowledge_core.git",
+                        "cd company_knowledge_core",
+                        f"export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD={token}",
+                        "bash scripts/setup-teammate.sh --user-id <你的名字> --ai-tool codex",
+                    ]
+                ),
+            )
+    elif not approved and submitter:
+        send_feishu_message(settings, submitter, "你的知识工程 token 申请未通过。")
+    result = "approved" if approved else "rejected"
+    create_audit_log(bundle, reviewer, "feishu.token.approval", request.get("targetRef", ""), after=result, policy_result="common", details=f"instanceCode: {instance_code}")
+    return {"ok": True, "instanceCode": instance_code, "targetRef": request.get("targetRef", ""), "status": result}
+
+
+def deep_find(value: Any, key: str) -> Any:
+    if isinstance(value, dict):
+        if key in value:
+            return value[key]
+        for child in value.values():
+            found = deep_find(child, key)
+            if found not in (None, ""):
+                return found
+    elif isinstance(value, list):
+        for item in value:
+            found = deep_find(item, key)
+            if found not in (None, ""):
+                return found
+    return None
 
 
 def parse_intake(text: str) -> str:
@@ -493,6 +770,33 @@ def send_feishu_reply(settings: FeishuSettings, message_id: str, text: str) -> b
         result = json.loads(response.read().decode("utf-8"))
     if result.get("code") != 0:
         raise KnowledgeError(f"Feishu reply failed: {result.get('msg') or result.get('code')}")
+    return True
+
+
+def send_feishu_message(settings: FeishuSettings, open_id: str, text: str) -> bool:
+    if not open_id:
+        return False
+    token = get_tenant_access_token(settings)
+    url = f"{FEISHU_API_BASE}/im/v1/messages?receive_id_type=open_id"
+    body = {
+        "receive_id": open_id,
+        "msg_type": "text",
+        "content": json.dumps({"text": text}, ensure_ascii=False),
+    }
+    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+        },
+    )
+    with urllib.request.urlopen(req, timeout=8) as response:
+        result = json.loads(response.read().decode("utf-8"))
+    if result.get("code") != 0:
+        raise KnowledgeError(f"Feishu message send failed: {result.get('msg') or result.get('code')}")
     return True
 
 
