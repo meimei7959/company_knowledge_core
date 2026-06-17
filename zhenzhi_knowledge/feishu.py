@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hmac
+import hashlib
 import json
 import os
 import re
@@ -9,7 +10,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
-from .core import Bundle, KnowledgeError, create_audit_log, ensure_dir, render_doc, search_retrieval, unique_time_id, utc_now, write_text
+from .core import Bundle, KnowledgeError, create_audit_log, ensure_dir, render_doc, search_retrieval, slug, unique_time_id, utc_now, write_text
 
 
 FEISHU_API_BASE = "https://open.feishu.cn/open-apis"
@@ -130,6 +131,19 @@ def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettin
         return help_text()
     if "token" in lowered or "令牌" in text or "申请知识工程" in text:
         return token_request_reply(incoming, settings)
+    material = parse_project_material(text)
+    if material:
+        source_path, knowledge_path = create_project_material_drafts(bundle, incoming, material)
+        return "\n".join(
+            [
+                "已保存为项目资料草稿，并生成待审核知识草稿。",
+                f"项目: {material['projectId']}",
+                f"原始资料: {source_path}",
+                f"整理草稿: {knowledge_path}",
+                "状态: draft",
+                "审核通过前不会进入正式知识。",
+            ]
+        )
     intake = parse_intake(text)
     if intake:
         path = create_intake_draft(bundle, incoming, intake)
@@ -154,7 +168,9 @@ def help_text() -> str:
             "1. 直接提问：检索已审核知识并回复来源。",
             "2. 申请知识工程 token：识别申请人，进入审批流程。",
             "3. 沉淀：<内容>：提交待审核知识草稿。",
-            "4. 帮助：查看命令。",
+            "4. 资料：<项目ID>\\n<内容>：保存项目原始资料并生成整理草稿。",
+            "5. 会议纪要：<项目ID>\\n<内容>：保存会议纪要并生成整理草稿。",
+            "6. 帮助：查看命令。",
         ]
     )
 
@@ -220,6 +236,108 @@ def create_intake_draft(bundle: Bundle, incoming: dict[str, str], content: str) 
     )
     write_text(path, render_doc(frontmatter, body))
     return str(path.relative_to(bundle.root))
+
+
+def parse_project_material(text: str) -> dict[str, str]:
+    patterns = [
+        r"^(?P<kind>资料|项目资料|会议纪要|会议记录|原始资料)[:：]\s*(?P<project>[A-Za-z0-9._\-\u4e00-\u9fff]+)\s*[\n，,：:]\s*(?P<body>.+)$",
+        r"^(?P<project>[A-Za-z0-9._\-\u4e00-\u9fff]+)\s*(?P<kind>资料|项目资料|会议纪要|会议记录|原始资料)[:：]\s*(?P<body>.+)$",
+        r"^(?P<project>[A-Za-z0-9._\-\u4e00-\u9fff]+项目).*(?P<kind>资料|会议纪要|会议记录|原始资料).*[。:：]\s*(?P<body>.+)$",
+    ]
+    normalized = text.strip()
+    for pattern in patterns:
+        match = re.match(pattern, normalized, re.DOTALL)
+        if match:
+            project_raw = match.group("project").strip()
+            body = match.group("body").strip()
+            if not body:
+                return {}
+            source_type = "meeting_notes" if "会议" in match.group("kind") else "project_material"
+            return {"projectId": normalize_project_id(project_raw), "projectRaw": project_raw, "sourceType": source_type, "body": body}
+    return {}
+
+
+def normalize_project_id(project_raw: str) -> str:
+    try:
+        return slug(project_raw)
+    except KnowledgeError:
+        digest = hashlib.sha1(project_raw.encode("utf-8")).hexdigest()[:8]
+        return f"project-{digest}"
+
+
+def create_project_material_drafts(bundle: Bundle, incoming: dict[str, str], material: dict[str, str]) -> tuple[str, str]:
+    content = material["body"]
+    if looks_like_secret(content):
+        raise KnowledgeError("material looks like it contains a secret; refusing to store it")
+    owner = incoming.get("openId") or incoming.get("userId") or "feishu-user"
+    project_id = material["projectId"]
+    source_id = unique_time_id("source")
+    source_path = bundle.root / "projects" / project_id / "sources" / f"{source_id}.md"
+    ensure_dir(source_path.parent)
+    source_ref = f"feishu://message/{incoming.get('messageId')}"
+    source_fm = {
+        "type": "SourceMaterial",
+        "title": source_id,
+        "timestamp": utc_now(),
+        "sourceId": source_id,
+        "sourceType": material["sourceType"],
+        "sourceRef": source_ref,
+        "owner": owner,
+        "status": "draft",
+        "sensitivity": "internal",
+        "projectId": project_id,
+        "submittedBy": owner,
+        "reviewStatus": "pending",
+    }
+    source_body = "\n".join(
+        [
+            "## Summary",
+            "",
+            compact_snippet(content, 240),
+            "",
+            "## Original Text",
+            "",
+            content,
+            "",
+            "## Handling Notes",
+            "",
+            "- Created from Feishu bot intake.",
+            "- Treat as source material, not verified knowledge.",
+        ]
+    )
+    write_text(source_path, render_doc(source_fm, source_body))
+
+    knowledge_id = unique_time_id("feishu-material")
+    knowledge_path = bundle.root / "knowledge" / "engineering" / f"{knowledge_id}.md"
+    ensure_dir(knowledge_path.parent)
+    knowledge_fm = {
+        "type": "KnowledgeItem",
+        "title": knowledge_id,
+        "timestamp": utc_now(),
+        "owner": owner,
+        "status": "draft",
+        "scope": "engineering",
+        "projectId": project_id,
+        "sourceRef": str(source_path.relative_to(bundle.root)),
+        "confidence": "medium",
+        "submittedBy": owner,
+        "reviewStatus": "pending",
+    }
+    knowledge_body = "\n".join(
+        [
+            "## Draft Summary",
+            "",
+            compact_snippet(content, 500),
+            "",
+            "## Review Checklist",
+            "",
+            "- Confirm projectId is correct.",
+            "- Extract decisions, risks, todos, and reusable lessons if needed.",
+            "- Keep as draft until human review.",
+        ]
+    )
+    write_text(knowledge_path, render_doc(knowledge_fm, knowledge_body))
+    return str(source_path.relative_to(bundle.root)), str(knowledge_path.relative_to(bundle.root))
 
 
 def looks_like_secret(text: str) -> bool:

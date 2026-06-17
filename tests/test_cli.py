@@ -519,6 +519,31 @@ Use parser.
                 )
                 intake_result = json.load(urllib.request.urlopen(feishu_intake))
                 self.assertIn("KnowledgeItem", (root / "knowledge" / "engineering" / Path(intake_result["reply"].split("：", 1)[1].splitlines()[0]).name).read_text(encoding="utf-8"))
+                feishu_material = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "im.message.receive_v1"},
+                            "event": {
+                                "sender": {"sender_id": {"open_id": "ou_alice", "user_id": "alice"}},
+                                "message": {
+                                    "message_id": "om_material",
+                                    "chat_id": "oc_test",
+                                    "chat_type": "group",
+                                    "message_type": "text",
+                                    "content": json.dumps({"text": "会议纪要：A项目\n今天确认先做机器人资料入口，原始资料保存为 SourceMaterial。"}),
+                                },
+                            },
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                material_result = json.load(urllib.request.urlopen(feishu_material))
+                self.assertIn("原始资料", material_result["reply"])
+                self.assertTrue(list((root / "projects" / "a" / "sources").glob("source.*.md")))
+                self.assertTrue(list((root / "knowledge" / "engineering").glob("feishu-material.*.md")))
                 with self.assertRaises(urllib.error.HTTPError) as unauthorized:
                     urllib.request.urlopen(base + "/v0/snapshot")
                 self.assertEqual(unauthorized.exception.code, 401)
