@@ -427,20 +427,29 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
     project_name = project_intake.get("projectName", "").strip()
     owner_name = project_intake.get("ownerName", "").strip()
     owner_open_id = first_mentioned_open_id(incoming) or resolve_person_open_id(settings, owner_name)
+    owner_lookup_message = ""
+    if not owner_open_id and owner_name:
+        lookup = lookup_feishu_user_by_name(settings, owner_name)
+        owner_open_id = lookup.get("openId", "")
+        owner_lookup_message = lookup.get("message", "")
     if not project_name:
         return "立项申请还缺项目名称。请发送：立项申请：项目名称 <名称>，项目负责人 @负责人。"
     if not owner_open_id:
         if owner_name:
-            return "\n".join(
+            lines = [
+                "我识别到这是项目立项，但还不能发起审批。",
+                f"项目名称: {project_name}",
+                f"负责人姓名: {owner_name}",
+            ]
+            if owner_lookup_message:
+                lines.append(f"识别结果: {owner_lookup_message}")
+            lines.extend(
                 [
-                    "我识别到这是项目立项，但还不能发起审批。",
-                    f"项目名称: {project_name}",
-                    f"负责人姓名: {owner_name}",
-                    "原因: 飞书审批的“项目负责人”字段需要负责人 open_id，普通文本姓名无法稳定匹配。",
-                    f"请重新发送：立项申请：项目名称 {project_name}，项目负责人 @{owner_name}",
-                    "或者让管理员配置 FEISHU_USER_OPEN_ID_MAP_JSON，把 hanson 这类姓名映射到飞书 open_id。",
+                    "你可以补充负责人手机号/邮箱，或让管理员开通机器人通讯录读取权限/配置姓名映射。",
+                    f"临时兜底也可以发送：立项申请：项目名称 {project_name}，项目负责人 @{owner_name}",
                 ]
             )
+            return "\n".join(lines)
         return "立项申请还缺项目负责人。请在消息里 @项目负责人，或让负责人本人发起立项。"
     project_id = normalize_project_id(project_name)
     project_path = make_project(bundle, project_id, project_name, owner_open_id)
@@ -679,6 +688,64 @@ def resolve_person_open_id(settings: FeishuSettings, name: str) -> str:
 
 def normalize_person_name(name: str) -> str:
     return re.sub(r"\s+", "", name).strip("@").lower()
+
+
+def lookup_feishu_user_by_name(settings: FeishuSettings, name: str) -> dict[str, str]:
+    if not name:
+        return {}
+    if not settings.app_id or not settings.app_secret:
+        return {"message": "机器人未配置飞书应用凭证，无法查询通讯录。"}
+    try:
+        token = get_tenant_access_token(settings)
+        users = list_feishu_users(token, limit=300)
+    except KnowledgeError as exc:
+        message = str(exc)
+        if "contact:" in message or "Access denied" in message or "99991672" in message:
+            return {"message": "机器人还没有通讯录读取权限，无法按姓名自动匹配负责人。需要开通 contact:contact.base:readonly 或 contact:contact:readonly_as_app。"}
+        return {"message": f"查询通讯录失败：{compact_snippet(message, 120)}"}
+    normalized = normalize_person_name(name)
+    matches = [user for user in users if user_matches_name(user, normalized)]
+    if len(matches) == 1:
+        return {"openId": str(matches[0].get("open_id") or matches[0].get("openId") or ""), "message": f"已从通讯录匹配负责人：{display_user_name(matches[0])}"}
+    if len(matches) > 1:
+        names = "、".join(display_user_name(user) for user in matches[:5])
+        return {"message": f"通讯录里找到多个可能负责人：{names}。请补充手机号/邮箱或直接 @负责人。"}
+    return {"message": "通讯录里没有找到唯一匹配的负责人。请补充手机号/邮箱，或让管理员配置姓名映射。"}
+
+
+def list_feishu_users(token: str, limit: int = 300) -> list[dict[str, Any]]:
+    users: list[dict[str, Any]] = []
+    page_token = ""
+    while len(users) < limit:
+        params = {"user_id_type": "open_id", "page_size": "100"}
+        if page_token:
+            params["page_token"] = page_token
+        query = urllib.parse.urlencode(params)
+        result = feishu_json_request("GET", f"{FEISHU_API_BASE}/contact/v3/users?{query}", token)
+        data = result.get("data", {})
+        items = data.get("items") or data.get("users") or []
+        if isinstance(items, list):
+            users.extend([item for item in items if isinstance(item, dict)])
+        if not data.get("has_more") or not data.get("page_token"):
+            break
+        page_token = str(data.get("page_token"))
+    return users[:limit]
+
+
+def user_matches_name(user: dict[str, Any], normalized: str) -> bool:
+    fields = [
+        user.get("name"),
+        user.get("en_name"),
+        user.get("nickname"),
+        user.get("email"),
+        user.get("mobile"),
+        user.get("employee_no"),
+    ]
+    return any(normalize_person_name(str(value)) == normalized for value in fields if value)
+
+
+def display_user_name(user: dict[str, Any]) -> str:
+    return str(user.get("name") or user.get("en_name") or user.get("email") or user.get("open_id") or "unknown")
 
 
 def create_feishu_approval_instance(
