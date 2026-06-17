@@ -132,6 +132,7 @@ def parse_user_open_id_map(raw: str) -> dict[str, str]:
 def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: FeishuSettings | None = None) -> dict[str, Any]:
     settings = settings or load_feishu_settings()
     if "encrypt" in payload:
+        create_feishu_reject_audit(bundle, payload, settings, "encrypted Feishu event")
         raise KnowledgeError("encrypted Feishu events are not supported yet; disable event encryption or add FEISHU_ENCRYPT_KEY support")
     if is_url_verification(payload):
         try:
