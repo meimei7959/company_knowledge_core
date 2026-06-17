@@ -15,6 +15,10 @@ OKF-compatible Git Bundle
 -> review, sync, audit
 ```
 
+Team usage guide:
+
+- [桢知知识工程团队使用指南](docs/guides/team-usage-guide.md)
+
 ## Current Phase
 
 Do not build a large platform first. Build and verify the team workflow:
