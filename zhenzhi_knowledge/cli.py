@@ -15,6 +15,7 @@ from .core import (
     find_bundle_root,
     finish_task,
     git,
+    install_connector,
     load_config,
     make_agent,
     make_project,
@@ -56,6 +57,17 @@ def make_parser() -> argparse.ArgumentParser:
     p_init.add_argument("--ai-tool", default="codex")
     p_init.add_argument("--agent-id", default=None)
     p_init.add_argument("--remote", default="")
+
+    p_install = sub.add_parser("install")
+    p_install.add_argument("--user-id", default=os.environ.get("USER", "unknown"))
+    p_install.add_argument("--ai-tool", default="codex")
+    p_install.add_argument("--agent-id", default=None)
+    p_install.add_argument("--remote", default="")
+    p_install.add_argument("--default-project", default="")
+    p_install.add_argument("--register-agent", action="store_true")
+    p_install.add_argument("--agent-name", default="")
+    p_install.add_argument("--purpose", default="local AI development")
+    p_install.add_argument("--no-rebuild-index", action="store_true")
 
     sub.add_parser("status")
     p_profile = sub.add_parser("profile")
@@ -301,6 +313,22 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "init":
             cmd_init(bundle, args)
+        elif args.command == "install":
+            agent_id = args.agent_id or f"agent.{args.user_id}.builder"
+            paths = install_connector(
+                bundle,
+                args.user_id,
+                args.ai_tool,
+                agent_id,
+                args.remote,
+                args.default_project,
+                args.register_agent,
+                args.agent_name,
+                args.purpose,
+                not args.no_rebuild_index,
+            )
+            for path in paths:
+                print(path)
         elif args.command == "status":
             cmd_status(bundle)
         elif args.command == "profile":

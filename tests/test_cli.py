@@ -21,6 +21,60 @@ def write_minimal_bundle(root: Path) -> None:
 
 
 class CliTests(unittest.TestCase):
+    def test_install_writes_local_agent_entrypoints(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            self.assertEqual(
+                main(
+                    [
+                        "--root",
+                        str(root),
+                        "project",
+                        "register",
+                        "--project-id",
+                        "core",
+                        "--name",
+                        "Core",
+                        "--owner",
+                        "alice",
+                    ]
+                ),
+                0,
+            )
+            self.assertEqual(
+                main(
+                    [
+                        "--root",
+                        str(root),
+                        "install",
+                        "--user-id",
+                        "alice",
+                        "--ai-tool",
+                        "codex",
+                        "--agent-id",
+                        "agent.alice.codex",
+                        "--remote",
+                        "https://github.com/meimei7959/company_knowledge_core.git",
+                        "--default-project",
+                        "core",
+                        "--register-agent",
+                        "--agent-name",
+                        "Alice Codex",
+                    ]
+                ),
+                0,
+            )
+            config_text = (root / ".zhenzhi" / "config.json").read_text(encoding="utf-8")
+            self.assertIn('"defaultProjectId": "core"', config_text)
+            self.assertIn("company_knowledge_core.git", config_text)
+            entrypoint = (root / ".zhenzhi" / "agent-entrypoint.md").read_text(encoding="utf-8")
+            self.assertIn("zhenzhi-knowledge start --project core --agent agent.alice.codex", entrypoint)
+            self.assertIn("zhenzhi-knowledge finish --project core --agent agent.alice.codex", entrypoint)
+            self.assertTrue((root / ".zhenzhi" / "codex-start.md").exists())
+            self.assertTrue((root / ".zhenzhi" / "antigravity-start.md").exists())
+            self.assertTrue((root / "agents" / "agent.alice.codex.md").exists())
+
     def test_register_start_finish_review_validate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

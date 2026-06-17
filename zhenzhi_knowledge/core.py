@@ -135,9 +135,12 @@ def save_config(bundle: Bundle, config: dict[str, Any]) -> None:
 
 def default_config(bundle: Bundle, user_id: str, ai_tool: str, agent_id: str, remote: str | None) -> dict[str, Any]:
     return {
+        "schemaVersion": "v0.1",
         "userId": user_id,
         "defaultAiTool": ai_tool,
         "defaultAgentId": agent_id,
+        "defaultProjectId": "",
+        "entrypointPath": ".zhenzhi/agent-entrypoint.md",
         "activeProfile": "local",
         "profiles": {
             "local": {
@@ -155,6 +158,140 @@ def default_config(bundle: Bundle, user_id: str, ai_tool: str, agent_id: str, re
             },
         },
     }
+
+
+def render_local_start_prompt(ai_tool: str, project_id: str, agent_id: str) -> str:
+    tool_name = "Codex" if ai_tool == "codex" else "Antigravity" if ai_tool == "antigravity" else ai_tool
+    return f"""# {tool_name} Knowledge Start
+
+Use this file before formal work in this repository.
+
+```txt
+projectId: {project_id or "<project-id>"}
+agentId: {agent_id}
+task: <task>
+
+Before work:
+1. Run `zhenzhi-knowledge sync pull`.
+2. Run `zhenzhi-knowledge start --project {project_id or "<project-id>"} --agent {agent_id} --task "<task>"`.
+3. Read `.zhenzhi/context/current.md`.
+
+During work:
+- Use only registered ToolAsset records.
+- Respect Policy Result, allowed scopes, and allowed tool risk levels.
+- Preserve sourceRef for knowledge used.
+
+After work:
+1. Run `zhenzhi-knowledge finish --project {project_id or "<project-id>"} --agent {agent_id} --summary "<summary>"`.
+2. State knowledge refs used.
+3. State drafts or ToolAsset updates written.
+```
+"""
+
+
+def render_agent_entrypoint(bundle: Bundle, config: dict[str, Any]) -> str:
+    active_name = config.get("activeProfile", "local")
+    active_profile = config.get("profiles", {}).get(active_name, {})
+    agent_id = config.get("defaultAgentId", "")
+    project_id = config.get("defaultProjectId", "")
+    remote = active_profile.get("remote", "")
+    api_base = active_profile.get("apiBaseUrl", "")
+    return f"""# Zhenzhi Knowledge Agent Entrypoint
+
+This file connects local AI tools to the company knowledge bundle.
+
+## Identity
+
+- userId: {config.get("userId", "")}
+- defaultAiTool: {config.get("defaultAiTool", "")}
+- defaultAgentId: {agent_id}
+- defaultProjectId: {project_id or "unset"}
+
+## Repository
+
+- knowledgeRepo: {bundle.root}
+- remote: {remote or "unset"}
+- activeProfile: {active_name}
+- backend: {active_profile.get("backend", "")}
+- apiBaseUrl: {api_base or "unset"}
+
+## Required Workflow
+
+Before work:
+
+```bash
+zhenzhi-knowledge sync pull
+zhenzhi-knowledge start --project {project_id or "<project-id>"} --agent {agent_id} --task "<task>"
+```
+
+Then read:
+
+```bash
+.zhenzhi/context/current.md
+```
+
+During work:
+
+- Search knowledge with `zhenzhi-knowledge rag search --query "<query>"`.
+- Use only registered tools from the context pack or `zhenzhi-knowledge index search --type ToolAsset`.
+- Register reusable tools with `zhenzhi-knowledge tool register`.
+- Do not store secrets in knowledge files, prompts, logs, or audit details.
+- Do not promote facts or tools directly to verified/approved without review.
+
+After work:
+
+```bash
+zhenzhi-knowledge finish --project {project_id or "<project-id>"} --agent {agent_id} --summary "<summary>"
+zhenzhi-knowledge sync push
+```
+
+## Useful Commands
+
+```bash
+zhenzhi-knowledge status
+zhenzhi-knowledge index rebuild
+zhenzhi-knowledge rag rebuild
+zhenzhi-knowledge review list
+zhenzhi-knowledge audit search --agent-id {agent_id}
+```
+"""
+
+
+def install_connector(
+    bundle: Bundle,
+    user_id: str,
+    ai_tool: str,
+    agent_id: str,
+    remote: str,
+    default_project: str,
+    register_agent: bool = False,
+    agent_name: str = "",
+    purpose: str = "local AI development",
+    rebuild_indexes: bool = True,
+) -> list[Path]:
+    config = default_config(bundle, user_id, ai_tool, agent_id, remote)
+    config["defaultProjectId"] = slug(default_project) if default_project else ""
+    save_config(bundle, config)
+
+    written: list[Path] = [bundle.config_path]
+    write_text(bundle.zz_dir / "agent-entrypoint.md", render_agent_entrypoint(bundle, config))
+    written.append(bundle.zz_dir / "agent-entrypoint.md")
+    write_text(bundle.zz_dir / "codex-start.md", render_local_start_prompt("codex", config["defaultProjectId"], agent_id))
+    written.append(bundle.zz_dir / "codex-start.md")
+    write_text(bundle.zz_dir / "antigravity-start.md", render_local_start_prompt("antigravity", config["defaultProjectId"], agent_id))
+    written.append(bundle.zz_dir / "antigravity-start.md")
+
+    if register_agent:
+        agent_path = bundle.root / "agents" / f"{slug(agent_id)}.md"
+        if not agent_path.exists():
+            written.append(make_agent(bundle, agent_id, agent_name or agent_id, user_id, ai_tool, purpose))
+
+    if rebuild_indexes:
+        rebuild_index(bundle)
+        rebuild_retrieval_index(bundle)
+        written.append(bundle.db_path)
+
+    return written
 
 
 def scan_for_secret_values(path: Path) -> list[str]:
