@@ -134,9 +134,17 @@ def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: Feish
     if "encrypt" in payload:
         raise KnowledgeError("encrypted Feishu events are not supported yet; disable event encryption or add FEISHU_ENCRYPT_KEY support")
     if is_url_verification(payload):
-        verify_event_token(payload, settings)
+        try:
+            verify_event_token(payload, settings)
+        except KnowledgeError as exc:
+            create_feishu_reject_audit(bundle, payload, settings, str(exc))
+            raise
         return {"challenge": extract_challenge(payload)}
-    verify_event_token(payload, settings)
+    try:
+        verify_event_token(payload, settings)
+    except KnowledgeError as exc:
+        create_feishu_reject_audit(bundle, payload, settings, str(exc))
+        raise
     event_type = extract_event_type(payload)
     if is_approval_event(payload, event_type):
         return handle_approval_event(bundle, payload, settings)
@@ -198,6 +206,36 @@ def verify_event_token(payload: dict[str, Any], settings: FeishuSettings) -> Non
     supplied = str(header.get("token") or payload.get("token") or event.get("token") or "")
     if not hmac.compare_digest(supplied, expected):
         raise KnowledgeError("invalid Feishu verification token")
+
+
+def create_feishu_reject_audit(bundle: Bundle, payload: dict[str, Any], settings: FeishuSettings, reason: str) -> None:
+    event_type = extract_event_type(payload)
+    supplied = supplied_event_token(payload)
+    target = str(deep_find(payload, "message_id") or deep_find(payload, "instance_code") or event_type or "unknown")
+    details = "\n".join(
+        [
+            f"reason: {reason}",
+            f"eventType: {event_type or 'unknown'}",
+            f"suppliedToken: {token_fingerprint(supplied)}",
+            f"expectedToken: {token_fingerprint(settings.verification_token)}",
+            f"hasEncrypt: {'encrypt' in payload}",
+            f"payloadKeys: {','.join(sorted(str(key) for key in payload.keys()))}",
+        ]
+    )
+    create_audit_log(bundle, "feishu-callback", "feishu.event.rejected", target, after="rejected", policy_result="bot_gateway", details=details)
+
+
+def supplied_event_token(payload: dict[str, Any]) -> str:
+    header = payload.get("header") or {}
+    event = payload.get("event") or {}
+    return str(header.get("token") or payload.get("token") or event.get("token") or "")
+
+
+def token_fingerprint(value: str) -> str:
+    if not value:
+        return "missing"
+    digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
+    return f"len={len(value)} sha256={digest}"
 
 
 def parse_message_event(payload: dict[str, Any]) -> dict[str, str]:
