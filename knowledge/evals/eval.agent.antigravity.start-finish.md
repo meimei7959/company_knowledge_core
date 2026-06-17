@@ -8,6 +8,10 @@ owner: meimei
 status: verified
 targetRef: agents/agent.antigravity.local.md
 expected: AgentRun
+requires:
+  - contextRefs
+  - knowledgeUsed
+  - sourceRef
 ---
 
 ## Input

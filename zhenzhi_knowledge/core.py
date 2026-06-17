@@ -77,6 +77,9 @@ class Bundle:
     def context_path(self) -> Path:
         return self.zz_dir / "context" / "current.md"
 
+    def context_archive_path(self, context_id: str) -> Path:
+        return self.zz_dir / "context" / f"{slug(context_id)}.md"
+
     @property
     def db_path(self) -> Path:
         return self.zz_dir / "index.sqlite3"
@@ -657,10 +660,13 @@ def start_task(bundle: Bundle, project_id: str, agent_id: str, task: str, retrie
     visible_tools = [tool for tool in project_tools(bundle, project_id) if not allowed_risks or tool.get("riskLevel", "") in allowed_risks]
     retrieved = search_retrieval(bundle, task, project_id=slug(project_id), scopes=permissions.get("allowedKnowledgeScopes", []) or [], limit=retrieval_limit)
     project_dir = project_path.parent
+    context_id = unique_time_id("context")
+    generated_at = utc_now()
     context = [
         "# Current Context Pack",
         "",
-        f"- generatedAt: {utc_now()}",
+        f"- contextId: {context_id}",
+        f"- generatedAt: {generated_at}",
         f"- projectId: {slug(project_id)}",
         f"- agentId: {slug(agent_id)}",
         f"- task: {task}",
@@ -726,8 +732,10 @@ def start_task(bundle: Bundle, project_id: str, agent_id: str, task: str, retrie
         "```",
         "",
     ]
-    write_text(bundle.context_path, "\n".join(context))
-    append_log(bundle, f"started AgentRun draft for project={slug(project_id)} agent={slug(agent_id)}")
+    context_text = "\n".join(context)
+    write_text(bundle.context_archive_path(context_id), context_text)
+    write_text(bundle.context_path, context_text)
+    append_log(bundle, f"started context {context_id} for project={slug(project_id)} agent={slug(agent_id)}")
     return bundle.context_path
 
 
@@ -749,11 +757,21 @@ def finish_task(
         raise KnowledgeError(f"agent {agent_id} lacks write permission: knowledge:draft")
     if tool_update and "toolAsset:draft" not in write_permissions:
         raise KnowledgeError(f"agent {agent_id} lacks write permission: toolAsset:draft")
+    if not bundle.context_path.exists():
+        raise KnowledgeError("missing current context pack; run zhenzhi-knowledge start before finish")
+    context_text = read_text(bundle.context_path)
+    context_meta = extract_context_meta(context_text)
+    if context_meta.get("projectId") != slug(project_id) or context_meta.get("agentId") != slug(agent_id):
+        raise KnowledgeError("current context pack does not match project/agent; run start again")
+    context_id = context_meta.get("contextId", "")
+    if not context_id:
+        raise KnowledgeError("current context pack is missing contextId; run start again")
+    context_ref = rel(bundle.context_archive_path(context_id), bundle.root)
     run_id = unique_time_id("run")
     run_dir = bundle.root / "runs" / slug(project_id)
     ensure_dir(run_dir)
     run_path = run_dir / f"{run_id}.md"
-    knowledge_used = extract_source_refs(read_text(bundle.context_path)) if bundle.context_path.exists() else []
+    knowledge_used = extract_source_refs(context_text)
     frontmatter = {
         "type": "AgentRun",
         "title": f"{run_id} {slug(project_id)}",
@@ -764,7 +782,7 @@ def finish_task(
         "agentId": slug(agent_id),
         "status": "draft",
         "result": result,
-        "contextRefs": [".zhenzhi/context/current.md"],
+        "contextRefs": [context_ref],
         "toolsUsed": [],
         "knowledgeUsed": knowledge_used,
         "outputRefs": [],
@@ -772,8 +790,8 @@ def finish_task(
         "humanReview": "required",
     }
     body = f"## Summary\n\n{summary}\n\n## Lessons\n\n"
-    body += "no reusable lesson\n" if no_reusable_lesson else "- TBD\n"
-    body += "\n## Knowledge Gaps\n\n- TBD\n"
+    body += "no reusable lesson\n" if no_reusable_lesson else f"- {summary}\n"
+    body += "\n## Knowledge Gaps\n\n- none captured\n"
     write_text(run_path, render_doc(frontmatter, body))
     draft_dir = bundle.root / "projects" / slug(project_id)
     append_text(draft_dir / "lessons.draft.md", f"\n## {run_id}\n\n{summary}\n\n")
@@ -799,6 +817,47 @@ def failed_evals_for_target(bundle: Bundle, target_ref: str) -> list[Path]:
     return failed
 
 
+def as_list(value: Any) -> list[str]:
+    if value is None or value == "":
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value if str(item)]
+    return [str(value)]
+
+
+def validate_publish_ready(bundle: Bundle, path: Path, fm: dict[str, Any], body: str, target_status: str | None = None) -> list[str]:
+    problems: list[str] = []
+    rel_path = rel(path, bundle.root)
+    object_type = fm.get("type", "")
+    status = target_status or str(fm.get("status", ""))
+    if object_type == "ToolAsset":
+        for field in ["owner", "entrypoint", "riskLevel"]:
+            if not fm.get(field):
+                problems.append(f"{rel_path}: ToolAsset missing required field {field}")
+        if fm.get("riskLevel") not in {"L1", "L2", "L3", "L4", "L5"}:
+            problems.append(f"{rel_path}: unknown ToolAsset riskLevel {fm.get('riskLevel')}")
+        if status == "approved" and not fm.get("lastVerifiedAt"):
+            problems.append(f"{rel_path}: approved ToolAsset missing lastVerifiedAt")
+    elif object_type == "AgentRun":
+        if status in {"verified", "approved"}:
+            context_refs = as_list(fm.get("contextRefs"))
+            if not context_refs:
+                problems.append(f"{rel_path}: verified AgentRun missing contextRefs")
+            for context_ref in context_refs:
+                if not (bundle.root / context_ref).exists():
+                    problems.append(f"{rel_path}: AgentRun contextRef not found: {context_ref}")
+            if "TBD" in body:
+                problems.append(f"{rel_path}: verified AgentRun still contains TBD")
+    elif object_type == "EvalCase":
+        if not fm.get("targetRef"):
+            problems.append(f"{rel_path}: EvalCase missing targetRef")
+        elif not (bundle.root / str(fm["targetRef"])).exists():
+            problems.append(f"{rel_path}: EvalCase targetRef not found: {fm['targetRef']}")
+        if not fm.get("expected") and not as_list(fm.get("requires")):
+            problems.append(f"{rel_path}: EvalCase must define expected or requires")
+    return problems
+
+
 def review_path(bundle: Bundle, target: Path, status: str, reviewer: str) -> Path:
     if status not in STATUS_VALUES:
         raise KnowledgeError(f"unknown status: {status}")
@@ -811,6 +870,11 @@ def review_path(bundle: Bundle, target: Path, status: str, reviewer: str) -> Pat
         raise KnowledgeError("target has no frontmatter")
     if status == "approved" and failed_evals_for_target(bundle, rel(path, bundle.root)):
         raise KnowledgeError(f"target has failing EvalRun and cannot be approved: {rel(path, bundle.root)}")
+    if fm.get("type") == "ToolAsset" and status == "approved" and not fm.get("lastVerifiedAt"):
+        fm["lastVerifiedAt"] = utc_now()
+    publish_problems = validate_publish_ready(bundle, path, fm, body, status)
+    if publish_problems:
+        raise KnowledgeError("; ".join(publish_problems))
     before = fm.get("status", "")
     fm["status"] = status
     fm["reviewer"] = reviewer
@@ -911,7 +975,7 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.extend(scan_for_secret_values(path))
             continue
         text = read_text(path)
-        fm, _ = parse_frontmatter(text)
+        fm, body = parse_frontmatter(text)
         if not fm:
             problems.append(f"{rel_path}: missing frontmatter")
             continue
@@ -934,6 +998,7 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                 for field in sorted(KNOWLEDGE_ITEM_REQUIRED_FIELDS):
                     if not fm.get(field):
                         problems.append(f"{rel_path}: KnowledgeItem missing required field {field}")
+        problems.extend(validate_publish_ready(bundle, path, fm, body))
         problems.extend(scan_for_secret_values(path))
     return problems
 
@@ -1069,6 +1134,15 @@ def extract_source_refs(text: str) -> list[str]:
         if ref_value and ref_value not in refs:
             refs.append(ref_value)
     return refs
+
+
+def extract_context_meta(text: str) -> dict[str, str]:
+    meta: dict[str, str] = {}
+    for line in text.splitlines():
+        match = re.match(r"-\s+([A-Za-z][A-Za-z0-9_]*):\s*(.*)", line)
+        if match:
+            meta[match.group(1)] = match.group(2).strip()
+    return meta
 
 
 def rebuild_retrieval_index(bundle: Bundle) -> int:
@@ -1251,7 +1325,8 @@ def create_metrics_report(bundle: Bundle, owner: str = "system") -> Path:
                 approved_tool_invocations += 1
     start_count = 0
     if (bundle.root / "log.md").exists():
-        start_count = read_text(bundle.root / "log.md").count("started AgentRun")
+        log_text = read_text(bundle.root / "log.md")
+        start_count = log_text.count("started AgentRun") + log_text.count("started context ")
     run_success = 0
     run_failure = 0
     for run_path in (bundle.root / "runs").rglob("*.md"):
@@ -1382,19 +1457,34 @@ def create_eval_case(
     return path
 
 
+def evaluate_actual(case: dict[str, Any], actual: str) -> tuple[bool, list[str]]:
+    missing: list[str] = []
+    expected = str(case.get("expected", ""))
+    requirements = as_list(case.get("requires"))
+    if expected and expected not in actual:
+        missing.append(expected)
+    for requirement in requirements:
+        if requirement not in actual:
+            missing.append(requirement)
+    if not expected and not requirements and not actual:
+        missing.append("non-empty actual")
+    return not missing, missing
+
+
 def run_eval_case(bundle: Bundle, eval_id: str, actual: str, runner: str) -> Path:
     eval_path = bundle.root / "knowledge" / "evals" / f"{slug(eval_id)}.md"
     if not eval_path.exists():
         raise KnowledgeError(f"EvalCase not found: {eval_id}")
     case = load_object(eval_path)
     expected = str(case.get("expected", ""))
+    requirements = as_list(case.get("requires"))
     target_ref = str(case.get("targetRef", ""))
     target_version = ""
     target_path = bundle.root / target_ref if target_ref else None
     if target_path and target_path.exists():
         target_fm = load_object(target_path)
         target_version = str(target_fm.get("version", target_fm.get("promptVersion", "")))
-    passed = expected in actual if expected else bool(actual)
+    passed, missing = evaluate_actual(case, actual)
     run_id = unique_time_id("evalrun")
     path = bundle.root / "knowledge" / "eval-runs" / f"{run_id}.md"
     frontmatter = {
@@ -1410,8 +1500,10 @@ def run_eval_case(bundle: Bundle, eval_id: str, actual: str, runner: str) -> Pat
         "status": "verified" if passed else "draft",
         "result": "pass" if passed else "fail",
         "score": 1 if passed else 0,
+        "missing": missing,
     }
-    body = f"## Expected\n\n{expected}\n\n## Actual\n\n{actual}\n"
+    body = f"## Expected\n\n{expected}\n\n## Requirements\n\n" + "\n".join(f"- {item}" for item in requirements)
+    body += f"\n\n## Actual\n\n{actual}\n"
     write_text(path, render_doc(frontmatter, body))
     update_index(bundle.root / "knowledge" / "index.md", run_id, f"eval-runs/{run_id}.md")
     append_log(bundle, f"created EvalRun {run_id} result={'pass' if passed else 'fail'}")
@@ -1429,7 +1521,8 @@ def run_eval_case(bundle: Bundle, eval_id: str, actual: str, runner: str) -> Pat
             "confidence": "high",
             "knowledgeType": "issue",
         }
-        write_text(gap_path, render_doc(gap_fm, f"## Failure\n\nExpected `{expected}` but actual was:\n\n{actual}\n"))
+        missing_text = ", ".join(missing) if missing else expected
+        write_text(gap_path, render_doc(gap_fm, f"## Failure\n\nMissing `{missing_text}`. Actual was:\n\n{actual}\n"))
     return path
 
 

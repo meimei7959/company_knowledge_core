@@ -8,6 +8,10 @@ owner: meimei
 status: verified
 targetRef: agents/agent.codex.local.md
 expected: AgentRun
+requires:
+  - contextRefs
+  - knowledgeUsed
+  - sourceRef
 ---
 
 ## Input
