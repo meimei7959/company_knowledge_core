@@ -855,8 +855,10 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=True,
-                approval_doc_wiki_node="",
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
                 user_open_id_map={},
             )
             sent: list[tuple[str, str]] = []
@@ -923,8 +925,10 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=False,
-                approval_doc_wiki_node="",
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
                 user_open_id_map={},
             )
             created: dict[str, object] = {}
@@ -983,8 +987,10 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=False,
-                approval_doc_wiki_node="",
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
                 user_open_id_map={},
             )
             reply = feishu_module.build_reply(
@@ -1024,8 +1030,10 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=False,
-                approval_doc_wiki_node="",
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
                 user_open_id_map={"hanson": "ou_hanson"},
             )
             original_create = feishu_module.create_feishu_approval_instance
@@ -1068,8 +1076,10 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=False,
-                approval_doc_wiki_node="",
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
                 user_open_id_map={},
             )
             original_send = feishu_module.send_feishu_reply
@@ -1121,8 +1131,10 @@ Use parser.
                 security_reviewer_open_ids=[],
                 project_reviewer_open_ids={},
                 token_send_on_approval=False,
-                approval_doc_wiki_node="GZ59w7hsNijjXYk9BNocCQjFnpc",
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
                 user_open_id_map={},
             )
             created: dict[str, object] = {}

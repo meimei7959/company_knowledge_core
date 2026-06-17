@@ -65,8 +65,10 @@ class FeishuSettings:
     security_reviewer_open_ids: list[str]
     project_reviewer_open_ids: dict[str, list[str]]
     token_send_on_approval: bool
-    approval_doc_wiki_node: str
+    approval_doc_folder_token: str
+    approval_doc_folder_tokens: dict[str, str]
     approval_doc_domain: str
+    approval_doc_share_names: list[str]
     user_open_id_map: dict[str, str]
 
 
@@ -86,21 +88,16 @@ def load_feishu_settings() -> FeishuSettings:
         security_reviewer_open_ids=split_open_ids(os.environ.get("FEISHU_SECURITY_REVIEWER_OPEN_IDS", "")),
         project_reviewer_open_ids=parse_project_reviewer_map(os.environ.get("FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON", "{}")),
         token_send_on_approval=os.environ.get("FEISHU_TOKEN_SEND_ON_APPROVAL", "false").lower() == "true",
-        approval_doc_wiki_node=extract_wiki_token(os.environ.get("FEISHU_APPROVAL_DOC_WIKI_NODE", "").strip()),
+        approval_doc_folder_token=os.environ.get("FEISHU_APPROVAL_DOC_FOLDER_TOKEN", "").strip(),
+        approval_doc_folder_tokens=parse_string_map(os.environ.get("FEISHU_APPROVAL_DOC_FOLDER_TOKENS_JSON", "{}")),
         approval_doc_domain=os.environ.get("FEISHU_APPROVAL_DOC_DOMAIN", "https://xcn68awb7dsi.feishu.cn").strip().rstrip("/"),
+        approval_doc_share_names=split_open_ids(os.environ.get("FEISHU_APPROVAL_DOC_SHARE_NAMES", "梅晓华")),
         user_open_id_map=parse_user_open_id_map(os.environ.get("FEISHU_USER_OPEN_ID_MAP_JSON", "{}")),
     )
 
 
 def split_open_ids(value: str) -> list[str]:
     return [part.strip() for part in value.split(",") if part.strip()]
-
-
-def extract_wiki_token(value: str) -> str:
-    if not value:
-        return ""
-    match = re.search(r"/wiki/([^/?#]+)", value)
-    return match.group(1) if match else value
 
 
 def parse_project_reviewer_map(raw: str) -> dict[str, list[str]]:
@@ -127,6 +124,16 @@ def parse_user_open_id_map(raw: str) -> dict[str, str]:
     if not isinstance(parsed, dict):
         return {}
     return {normalize_person_name(str(key)): str(value).strip() for key, value in parsed.items() if str(value).strip()}
+
+
+def parse_string_map(raw: str) -> dict[str, str]:
+    try:
+        parsed = json.loads(raw or "{}")
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    return {str(key).strip(): str(value).strip() for key, value in parsed.items() if str(key).strip() and str(value).strip()}
 
 
 def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: FeishuSettings | None = None) -> dict[str, Any]:
@@ -883,23 +890,57 @@ def create_feishu_approval_instance(
 
 
 def create_approval_change_doc(bundle: Bundle, settings: FeishuSettings, values: dict[str, str]) -> dict[str, str]:
-    if not settings.approval_doc_wiki_node:
-        return {}
     title = approval_doc_title(values)
     markdown = build_approval_change_markdown(bundle, values, title)
     token = get_tenant_access_token(settings)
-    parent = get_wiki_node(token, settings.approval_doc_wiki_node)
-    space_id = parent.get("space_id", "")
-    if not space_id:
-        raise KnowledgeError("Feishu approval doc create failed: parent wiki node missing space_id")
-    node = create_wiki_docx_node(token, space_id, settings.approval_doc_wiki_node, title)
-    obj_token = node.get("obj_token", "")
-    node_token = node.get("node_token", "")
-    if not obj_token or not node_token:
-        raise KnowledgeError("Feishu approval doc create failed: missing docx token")
+    doc = create_drive_docx(token, title, approval_doc_folder_token(settings, values.get("approval_type", "")))
+    obj_token = doc.get("document_id", "")
+    if not obj_token:
+        raise KnowledgeError("Feishu approval doc create failed: missing drive docx token")
     append_docx_markdown(token, obj_token, markdown)
-    url = f"{settings.approval_doc_domain}/wiki/{node_token}"
-    return {"url": url, "nodeToken": node_token, "objToken": obj_token, "title": title}
+    shared = share_docx_with_names(token, obj_token, settings.approval_doc_share_names)
+    url = f"{settings.approval_doc_domain}/docx/{obj_token}"
+    return {"url": url, "objToken": obj_token, "title": title, "location": "drive", "sharedWith": ",".join(shared)}
+
+
+def approval_doc_folder_token(settings: FeishuSettings, approval_type: str) -> str:
+    return settings.approval_doc_folder_tokens.get(approval_type, "") or settings.approval_doc_folder_token
+
+
+def create_drive_docx(token: str, title: str, folder_token: str = "") -> dict[str, str]:
+    body = {"title": title[:800]}
+    if folder_token:
+        body["folder_token"] = folder_token
+    result = feishu_json_request("POST", f"{FEISHU_API_BASE}/docx/v1/documents", token, body)
+    data = result.get("data") or {}
+    doc = data.get("document") if isinstance(data.get("document"), dict) else data
+    if not isinstance(doc, dict):
+        return {}
+    document_id = str(doc.get("document_id") or doc.get("documentId") or doc.get("token") or "")
+    return {"document_id": document_id}
+
+
+def share_docx_with_names(token: str, document_id: str, names: list[str]) -> list[str]:
+    if not document_id or not names:
+        return []
+    users = list_feishu_users(token, limit=500)
+    shared: list[str] = []
+    for name in names:
+        normalized = normalize_person_name(name)
+        matches = [user for user in users if user_matches_name(user, normalized)]
+        if len(matches) != 1:
+            continue
+        open_id = str(matches[0].get("open_id") or "")
+        if not open_id:
+            continue
+        feishu_json_request(
+            "POST",
+            f"{FEISHU_API_BASE}/drive/v1/permissions/{urllib.parse.quote(document_id)}/members?type=docx",
+            token,
+            {"member_type": "openid", "member_id": open_id, "perm": "edit", "type": "user"},
+        )
+        shared.append(display_user_name(matches[0]))
+    return shared
 
 
 def approval_doc_title(values: dict[str, str]) -> str:
@@ -964,7 +1005,7 @@ def build_approval_change_markdown(bundle: Bundle, values: dict[str, str], title
             "",
             "- 本文档由知识工程机器人在发起飞书审批前自动生成。",
             "- 审批结果回调后，知识工程会更新对象状态并写入 AuditLog。",
-            "- 本文档作为审批依据归档在审批知识库下，不作为正式业务知识直接检索复用。",
+            "- 本文档作为审批依据归档在机器人云空间审批目录下，不作为正式业务知识直接检索复用。",
         ]
     )
     return "\n".join(sections)
@@ -1007,27 +1048,6 @@ def related_conflict_refs(bundle: Bundle, target_ref: str, project_id: str) -> l
         if len(matches) >= 5:
             break
     return matches
-
-
-def get_wiki_node(token: str, node_token: str) -> dict[str, Any]:
-    params = urllib.parse.urlencode({"token": node_token})
-    result = feishu_json_request("GET", f"{FEISHU_API_BASE}/wiki/v2/spaces/get_node?{params}", token)
-    return result.get("data", {}).get("node", {})
-
-
-def create_wiki_docx_node(token: str, space_id: str, parent_node_token: str, title: str) -> dict[str, Any]:
-    result = feishu_json_request(
-        "POST",
-        f"{FEISHU_API_BASE}/wiki/v2/spaces/{urllib.parse.quote(space_id)}/nodes",
-        token,
-        {
-            "node_type": "origin",
-            "obj_type": "docx",
-            "parent_node_token": parent_node_token,
-            "title": title[:800],
-        },
-    )
-    return result.get("data", {}).get("node", {})
 
 
 def append_docx_markdown(token: str, document_id: str, markdown: str) -> None:
