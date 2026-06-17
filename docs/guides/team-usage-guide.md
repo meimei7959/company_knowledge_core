@@ -17,6 +17,64 @@ http://124.221.138.151/knowledge-api
 单独通过安全渠道发送，不写进 Git、文档、聊天记录或截图。
 ```
 
+### 1.1 API Token 从哪里来
+
+API Token 由项目负责人维护，不由同事自己生成。当前 token 存在两个地方：
+
+```txt
+本地负责人机器:
+deploy/lighthouse/.env
+
+线上服务器:
+/opt/projects/company_knowledge_core/repo/deploy/lighthouse/.env
+```
+
+负责人在本地查看 token：
+
+```bash
+grep '^ZHENZHI_KNOWLEDGE_API_TOKEN=' deploy/lighthouse/.env
+```
+
+给同事配置时，只发送 token 值，不发送 `.env` 文件。同事在自己的终端里设置：
+
+```bash
+export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<团队 token>
+```
+
+然后再运行初始化脚本：
+
+```bash
+bash scripts/setup-teammate.sh --user-id <同事名> --ai-tool codex
+```
+
+安全规则：
+
+```txt
+不要提交 token。
+不要写进 README、知识文件、项目文档、截图、聊天记录。
+不要把 deploy/lighthouse/.env 发给同事。
+不要把 token 填进 Agent 任务描述。
+只通过安全渠道发给需要接入知识工程的成员。
+```
+
+如果怀疑 token 泄露，负责人应立即轮换：
+
+```bash
+python3 -c "import secrets; print('ZHENZHI_KNOWLEDGE_API_TOKEN=' + secrets.token_urlsafe(32))"
+```
+
+把生成的新值写入本地 `deploy/lighthouse/.env`，然后重新部署：
+
+```bash
+bash deploy/lighthouse/deploy.sh
+```
+
+轮换后，通知同事重新设置：
+
+```bash
+export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<新的团队 token>
+```
+
 同事本地需要：
 
 ```txt

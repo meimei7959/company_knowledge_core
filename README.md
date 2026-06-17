@@ -71,7 +71,7 @@ Online API used by the bootstrap script:
 http://124.221.138.151/knowledge-api
 ```
 
-The API token is not stored in Git. Share `ZHENZHI_KNOWLEDGE_API_TOKEN_PROD` through a separate secure channel.
+The API token is not stored in Git. Share `ZHENZHI_KNOWLEDGE_API_TOKEN_PROD` through a separate secure channel. Project owners should follow [API Token 从哪里来](docs/guides/team-usage-guide.md#11-api-token-从哪里来) for token lookup, distribution, and rotation.
 
 ## Knowledge Intake Rules
 
