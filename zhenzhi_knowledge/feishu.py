@@ -717,7 +717,7 @@ def list_feishu_users(token: str, limit: int = 300) -> list[dict[str, Any]]:
     users: list[dict[str, Any]] = []
     page_token = ""
     while len(users) < limit:
-        params = {"user_id_type": "open_id", "page_size": "100"}
+        params = {"user_id_type": "open_id", "department_id": "0", "page_size": "100"}
         if page_token:
             params["page_token"] = page_token
         query = urllib.parse.urlencode(params)
@@ -1003,6 +1003,12 @@ def feishu_json_request(method: str, url: str, token: str, body: dict[str, Any] 
     try:
         with urllib.request.urlopen(req, timeout=10) as response:
             result = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        try:
+            result = json.loads(body)
+        except json.JSONDecodeError:
+            raise KnowledgeError(f"Feishu API request failed: HTTP {exc.code} {compact_snippet(body, 160)}") from exc
     except urllib.error.URLError as exc:
         raise KnowledgeError(f"Feishu API request failed: {exc}") from exc
     if result.get("code") != 0:
