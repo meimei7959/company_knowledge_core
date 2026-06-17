@@ -9,7 +9,7 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
-from .core import Bundle, KnowledgeError, create_audit_log, search_retrieval
+from .core import Bundle, KnowledgeError, create_audit_log, ensure_dir, render_doc, search_retrieval, unique_time_id, utc_now, write_text
 
 
 FEISHU_API_BASE = "https://open.feishu.cn/open-apis"
@@ -130,6 +130,10 @@ def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettin
         return help_text()
     if "token" in lowered or "令牌" in text or "申请知识工程" in text:
         return token_request_reply(incoming, settings)
+    intake = parse_intake(text)
+    if intake:
+        path = create_intake_draft(bundle, incoming, intake)
+        return f"已生成待审核知识草稿：{path}\n状态: draft\n审核通过前不会进入正式知识。"
     chunks = [row for row in search_retrieval(bundle, text, limit=8) if row.get("status") in FORMAL_STATUSES]
     if not chunks:
         return "我没有在已审核知识里找到可靠答案。你可以换个关键词，或发送“沉淀：...”提交一条待审核知识。"
@@ -172,6 +176,56 @@ def token_request_reply(incoming: dict[str, str], settings: FeishuSettings) -> s
             "bash scripts/setup-teammate.sh --user-id <你的名字> --ai-tool codex",
         ]
     )
+
+
+def parse_intake(text: str) -> str:
+    for prefix in ["沉淀：", "沉淀:", "整理：", "整理:", "记录：", "记录:"]:
+        if text.startswith(prefix):
+            return text.removeprefix(prefix).strip()
+    return ""
+
+
+def create_intake_draft(bundle: Bundle, incoming: dict[str, str], content: str) -> str:
+    if not content:
+        raise KnowledgeError("empty intake content")
+    if looks_like_secret(content):
+        raise KnowledgeError("intake content looks like a secret; refusing to store it")
+    draft_id = unique_time_id("feishu-intake")
+    path = bundle.root / "knowledge" / "engineering" / f"{draft_id}.md"
+    ensure_dir(path.parent)
+    owner = incoming.get("openId") or incoming.get("userId") or "feishu-user"
+    frontmatter = {
+        "type": "KnowledgeItem",
+        "title": draft_id,
+        "timestamp": utc_now(),
+        "owner": owner,
+        "status": "draft",
+        "scope": "engineering",
+        "sourceRef": f"feishu://message/{incoming.get('messageId')}",
+        "confidence": "medium",
+        "submittedBy": owner,
+        "reviewStatus": "pending",
+    }
+    body = "\n".join(
+        [
+            "## Draft",
+            "",
+            content,
+            "",
+            "## Review Notes",
+            "",
+            "- Created from Feishu bot intake.",
+            "- Human review required before verified status.",
+        ]
+    )
+    write_text(path, render_doc(frontmatter, body))
+    return str(path.relative_to(bundle.root))
+
+
+def looks_like_secret(text: str) -> bool:
+    lowered = text.lower()
+    secret_markers = ["token", "secret", "password", "api_key", "apikey", "密钥", "密码", "令牌"]
+    return any(marker in lowered for marker in secret_markers)
 
 
 def compact_snippet(text: str, limit: int = 120) -> str:

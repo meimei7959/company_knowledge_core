@@ -496,6 +496,29 @@ Use parser.
                 self.assertTrue(feishu_result["ok"])
                 self.assertFalse(feishu_result["sent"])
                 self.assertIn("私聊", feishu_result["reply"])
+                feishu_intake = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "im.message.receive_v1"},
+                            "event": {
+                                "sender": {"sender_id": {"open_id": "ou_alice", "user_id": "alice"}},
+                                "message": {
+                                    "message_id": "om_intake",
+                                    "chat_id": "oc_test",
+                                    "chat_type": "group",
+                                    "message_type": "text",
+                                    "content": json.dumps({"text": "沉淀：机器人应先生成 draft，再等待人工审核。"}),
+                                },
+                            },
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                intake_result = json.load(urllib.request.urlopen(feishu_intake))
+                self.assertIn("KnowledgeItem", (root / "knowledge" / "engineering" / Path(intake_result["reply"].split("：", 1)[1].splitlines()[0]).name).read_text(encoding="utf-8"))
                 with self.assertRaises(urllib.error.HTTPError) as unauthorized:
                     urllib.request.urlopen(base + "/v0/snapshot")
                 self.assertEqual(unauthorized.exception.code, 401)
