@@ -945,7 +945,6 @@ def rebuild_retrieval_index(bundle: Bundle) -> int:
             count += 1
     conn.commit()
     conn.close()
-    append_log(bundle, f"rebuilt retrieval index chunks={count}")
     return count
 
 
