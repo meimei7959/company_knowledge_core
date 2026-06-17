@@ -1,0 +1,51 @@
+# Company Knowledge Core
+
+Company Knowledge Core is the working foundation for Zhenzhi's AI-native team.
+
+Current source of truth:
+
+- [桢知科技 AI 原生知识工程建设方案](docs/strategy/zhenzhi-ai-native-knowledge-system.md)
+
+Current architecture:
+
+```txt
+OKF-compatible Git Bundle
+-> zhenzhi-knowledge local connector
+-> Agent start/finish workflow
+-> review, sync, audit
+```
+
+## Current Phase
+
+Do not build a large platform first. Build and verify the team workflow:
+
+- Project context.
+- Agent management.
+- Tool sharing.
+- Experience sharing.
+- Knowledge updates.
+- Git-linked development records.
+
+Implementation must stay aligned with the source-of-truth strategy document, the core object model, and the harness checks.
+
+## Core Owns
+
+- Project.
+- Agent.
+- ToolAsset.
+- SourceMaterial.
+- KnowledgeItem.
+- AgentRun.
+- Decision.
+- Policy.
+- ConflictRecord.
+- EvalCase / EvalRun.
+- MetricsReport.
+- AuditLog.
+
+## Core Does Not Own
+
+- Full source code. Code lives in Git.
+- Full project management system. Current project cards are temporary until the product is ready.
+- Secret values, keys, or credentials.
+- Business-domain-specific schemas.
