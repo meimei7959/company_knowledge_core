@@ -155,10 +155,12 @@ def default_config(bundle: Bundle, user_id: str, ai_tool: str, agent_id: str, re
             "staging": {
                 "backend": "api",
                 "apiBaseUrl": "${ZHENZHI_KNOWLEDGE_API_STAGING}",
+                "apiTokenEnv": "ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING",
             },
             "production": {
                 "backend": "api",
                 "apiBaseUrl": "${ZHENZHI_KNOWLEDGE_API_PROD}",
+                "apiTokenEnv": "ZHENZHI_KNOWLEDGE_API_TOKEN_PROD",
             },
         },
     }

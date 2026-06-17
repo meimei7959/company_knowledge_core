@@ -2,6 +2,7 @@ import tempfile
 import threading
 import unittest
 import urllib.request
+import urllib.error
 import json
 import os
 from pathlib import Path
@@ -450,30 +451,37 @@ Use parser.
             self.assertEqual(main(["--root", str(root), "review", "update", "--target", "knowledge/policies/policy.alice.md", "--status", "active", "--reviewer", "alice"]), 0)
 
             try:
-                server = KnowledgeHTTPServer(("127.0.0.1", 0), Bundle(root))
+                server = KnowledgeHTTPServer(("127.0.0.1", 0), Bundle(root), api_token="test-token")
             except PermissionError as exc:
                 self.skipTest(f"socket bind not allowed in sandbox: {exc}")
             thread = threading.Thread(target=server.serve_forever, daemon=True)
             thread.start()
             base = f"http://127.0.0.1:{server.server_port}"
             previous_api = os.environ.get("ZHENZHI_KNOWLEDGE_API_STAGING")
+            previous_token = os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING")
             os.environ["ZHENZHI_KNOWLEDGE_API_STAGING"] = base
             try:
                 health = json.load(urllib.request.urlopen(base + "/health"))
                 self.assertTrue(health["ok"])
-                snapshot = json.load(urllib.request.urlopen(base + "/v0/snapshot"))
+                with self.assertRaises(urllib.error.HTTPError) as unauthorized:
+                    urllib.request.urlopen(base + "/v0/snapshot")
+                self.assertEqual(unauthorized.exception.code, 401)
+                authorized_req = urllib.request.Request(base + "/v0/snapshot", headers={"Authorization": "Bearer test-token"})
+                snapshot = json.load(urllib.request.urlopen(authorized_req))
                 self.assertEqual(snapshot["kind"], "KnowledgeSnapshot")
-                objects = json.load(urllib.request.urlopen(base + "/v0/objects?type=Project"))
+                objects_req = urllib.request.Request(base + "/v0/objects?type=Project", headers={"Authorization": "Bearer test-token"})
+                objects = json.load(urllib.request.urlopen(objects_req))
                 self.assertEqual(objects["kind"], "ObjectList")
                 req = urllib.request.Request(
                     base + "/v0/gateway/context",
                     data=json.dumps({"projectId": "core", "agentId": "agent.alice.builder", "task": "http test"}).encode("utf-8"),
-                    headers={"Content-Type": "application/json"},
+                    headers={"Content-Type": "application/json", "Authorization": "Bearer test-token"},
                     method="POST",
                 )
                 context = json.load(urllib.request.urlopen(req))
                 self.assertEqual(context["kind"], "GatewayContext")
                 self.assertEqual(context["policyResult"]["policyCount"], 1)
+                os.environ["ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING"] = "test-token"
                 self.assertEqual(main(["--root", str(root), "profile", "use", "staging"]), 0)
                 self.assertEqual(main(["--root", str(root), "api", "export"]), 0)
                 self.assertEqual(main(["--root", str(root), "index", "search", "--type", "Project"]), 0)
@@ -483,6 +491,10 @@ Use parser.
                     os.environ.pop("ZHENZHI_KNOWLEDGE_API_STAGING", None)
                 else:
                     os.environ["ZHENZHI_KNOWLEDGE_API_STAGING"] = previous_api
+                if previous_token is None:
+                    os.environ.pop("ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING", None)
+                else:
+                    os.environ["ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING"] = previous_token
                 server.shutdown()
                 thread.join(timeout=5)
                 server.server_close()

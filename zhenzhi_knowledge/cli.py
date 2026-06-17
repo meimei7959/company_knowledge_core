@@ -290,12 +290,18 @@ def resolve_api_base_url(profile: dict) -> str:
 
 
 def api_request(bundle: Bundle, method: str, path: str, payload: dict | None = None) -> dict:
-    base = resolve_api_base_url(active_profile(bundle))
+    profile = active_profile(bundle)
+    base = resolve_api_base_url(profile)
     body = None if payload is None else json.dumps(payload).encode("utf-8")
+    headers = {"Content-Type": "application/json"} if body else {}
+    token_env = str(profile.get("apiTokenEnv", "")).strip()
+    token = os.environ.get(token_env, "") if token_env else str(profile.get("apiToken", "")).strip()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
     request = Request(
         base + path,
         data=body,
-        headers={"Content-Type": "application/json"} if body else {},
+        headers=headers,
         method=method,
     )
     with urlopen(request, timeout=30) as response:

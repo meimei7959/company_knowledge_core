@@ -73,6 +73,23 @@ Reusable knowledge must be structured for AI consumption:
 - Raw source material should be summarized into categorized Markdown/YAML objects before retrieval indexing.
 - `validate` rejects loose knowledge files and incomplete KnowledgeItem frontmatter.
 
+## Online API Deployment
+
+The GitHub repository does not auto-deploy by itself yet. The first deploy path is a controlled Lighthouse deployment, reusing the same server pattern as Agent Work.
+
+Deployment files live in `deploy/lighthouse/`.
+
+The online API must not be exposed without a token:
+
+```bash
+export ZHENZHI_KNOWLEDGE_API_PROD=http://124.221.138.151/knowledge-api
+export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<team-token>
+zhenzhi-knowledge profile use production
+zhenzhi-knowledge api export
+```
+
+Default deployment binds to `127.0.0.1:8765` on the server and exposes it through the Agent Work Nginx route `/knowledge-api/`.
+
 ## Core Owns
 
 - Project.

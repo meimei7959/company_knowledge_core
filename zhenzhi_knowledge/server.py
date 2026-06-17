@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hmac
 import json
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -20,8 +22,9 @@ from .core import (
 
 
 class KnowledgeHTTPServer(ThreadingHTTPServer):
-    def __init__(self, server_address: tuple[str, int], bundle: Bundle):
+    def __init__(self, server_address: tuple[str, int], bundle: Bundle, api_token: str = ""):
         self.bundle = bundle
+        self.api_token = api_token
         super().__init__(server_address, KnowledgeHandler)
 
 
@@ -46,12 +49,27 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
         raw = self.rfile.read(length).decode("utf-8")
         return json.loads(raw)
 
+    def _authorized(self) -> bool:
+        token = self.server.api_token
+        if not token:
+            return True
+        header = self.headers.get("Authorization", "")
+        if not header.startswith("Bearer "):
+            return False
+        supplied = header.removeprefix("Bearer ").strip()
+        return hmac.compare_digest(supplied, token)
+
+    def _reject_unauthorized(self) -> None:
+        self._json(401, {"error": "unauthorized"})
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         try:
             if parsed.path == "/health":
                 problems = validate_bundle(self.server.bundle)
                 self._json(200 if not problems else 500, {"ok": not problems, "problems": problems})
+            elif not self._authorized():
+                self._reject_unauthorized()
             elif parsed.path == "/v0/snapshot":
                 self._json(200, export_api_snapshot(self.server.bundle))
             elif parsed.path == "/v0/objects":
@@ -93,6 +111,9 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         try:
+            if not self._authorized():
+                self._reject_unauthorized()
+                return
             payload = self._read_json()
             if self.path == "/v0/gateway/context":
                 result = gateway_context(
@@ -139,6 +160,6 @@ def require(payload: dict, key: str) -> str:
 
 
 def serve(bundle: Bundle, host: str, port: int) -> None:
-    httpd = KnowledgeHTTPServer((host, port), bundle)
+    httpd = KnowledgeHTTPServer((host, port), bundle, os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN", ""))
     print(f"zhenzhi-knowledge API listening on http://{host}:{httpd.server_port}")
     httpd.serve_forever()

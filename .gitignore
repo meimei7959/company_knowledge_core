@@ -5,3 +5,4 @@ coverage/
 .zhenzhi/
 .codegraph/
 backups/
+deploy/lighthouse/.env

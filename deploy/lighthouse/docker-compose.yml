@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  api:
+    container_name: zhenzhi-knowledge-api
+    build:
+      context: ../..
+      dockerfile: deploy/lighthouse/Dockerfile
+    restart: unless-stopped
+    environment:
+      ZHENZHI_KNOWLEDGE_API_TOKEN: ${ZHENZHI_KNOWLEDGE_API_TOKEN}
+    ports:
+      - "${ZHENZHI_KNOWLEDGE_API_BIND}:8765:8765"
+    volumes:
+      - /opt/projects/company_knowledge_core/repo:/knowledge
+    command:
+      - /bin/sh
+      - -c
+      - |
+        zhenzhi-knowledge --root /knowledge validate
+        zhenzhi-knowledge --root /knowledge index rebuild
+        zhenzhi-knowledge --root /knowledge rag rebuild
+        zhenzhi-knowledge --root /knowledge api serve --host 0.0.0.0 --port 8765
