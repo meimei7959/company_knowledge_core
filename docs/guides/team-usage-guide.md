@@ -75,6 +75,42 @@ bash deploy/lighthouse/deploy.sh
 export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<新的团队 token>
 ```
 
+### 1.2 通过飞书机器人申请 Token
+
+团队可以把飞书机器人作为 token 申请入口。机器人负责识别申请人、记录审批链路、把配置说明发给本人。
+
+推荐流程：
+
+```txt
+1. 同事在飞书里私聊机器人：申请知识工程 token。
+2. 机器人读取飞书 user_id/open_id，并要求填写姓名、使用工具、默认项目、GitHub 账号。
+3. 机器人创建 TokenRequest 记录，状态为 pending。
+4. 项目负责人在飞书卡片里审批。
+5. 审批通过后，机器人只把 token 和初始化命令私发给申请人。
+6. 机器人写 AuditLog，记录谁申请、谁审批、发给谁、何时发放，不记录 token 明文。
+```
+
+第一阶段可以继续使用团队共享 token，但必须通过机器人审批后私发。长期应改为每人一个 token：
+
+```txt
+共享 token:
+上线快，但泄露后需要全员轮换。
+
+个人 token:
+可识别具体调用人，可单独吊销，可审计，适合作为长期方案。
+```
+
+机器人发给同事的内容应类似：
+
+```bash
+git clone https://github.com/meimei7959/company_knowledge_core.git
+cd company_knowledge_core
+export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<你的 token>
+bash scripts/setup-teammate.sh --user-id <同事名> --ai-tool codex
+```
+
+机器人不能在群里发送 token。只能私聊发送，且不把 token 写入知识库、AuditLog、运行日志、飞书群消息或截图。
+
 同事本地需要：
 
 ```txt
@@ -596,6 +632,52 @@ zhenzhi-knowledge validate
 ```
 
 这些内容要先整理成结构化 Markdown/YAML 对象，再进入对应目录。
+
+### 6.1 飞书提交内容的归属和回推
+
+通过飞书机器人提交的内容，必须绑定提交人身份。机器人收到消息后，至少记录：
+
+```txt
+feishuUserId:
+feishuOpenId:
+displayName:
+projectId:
+submittedAt:
+sourceMessageId:
+targetObject:
+reviewStatus:
+reviewer:
+```
+
+机器人可以接收这些提交：
+
+```txt
+经验沉淀 -> KnowledgeItem draft
+工具登记 -> ToolAsset testing
+项目决策 -> Decision draft
+问题反馈 -> ConflictRecord open
+评测补充 -> EvalCase draft
+```
+
+提交后默认不是正式知识。机器人只生成 draft/testing/open 对象，并把审核结果回推给原提交人。
+
+审核回推规则：
+
+```txt
+审核通过:
+私聊提交人，说明已进入知识工程，附对象路径和状态。
+
+需要修改:
+私聊提交人，列出问题、修改建议、对象路径。
+
+审核拒绝:
+私聊提交人，说明拒绝原因，不进入 verified/approved。
+
+超过 24 小时未审核:
+提醒 reviewer，不刷屏提醒提交人。
+```
+
+机器人回复必须带来源和状态，不让提交人误以为 draft 已经是正式知识。
 
 ## 7. 给我或 Agent 填什么信息
 
