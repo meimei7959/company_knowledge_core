@@ -857,6 +857,7 @@ Use parser.
                 token_send_on_approval=True,
                 approval_doc_wiki_node="",
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                user_open_id_map={},
             )
             sent: list[tuple[str, str]] = []
             original_send = feishu_module.send_feishu_message
@@ -924,6 +925,7 @@ Use parser.
                 token_send_on_approval=False,
                 approval_doc_wiki_node="",
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                user_open_id_map={},
             )
             created: dict[str, object] = {}
             original_create = feishu_module.create_feishu_approval_instance
@@ -962,6 +964,92 @@ Use parser.
             finally:
                 feishu_module.create_feishu_approval_instance = original_create
 
+    def test_feishu_project_init_understands_natural_language_and_asks_for_mention(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=["ou_common"],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_wiki_node="",
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                user_open_id_map={},
+            )
+            reply = feishu_module.build_reply(
+                Bundle(root),
+                {
+                    "messageId": "om_project_natural",
+                    "chatId": "oc_test",
+                    "chatType": "group",
+                    "text": "创建一个项目，名字叫做工业软件点胶机。项目负责人是hanson",
+                    "openId": "ou_submitter",
+                    "userId": "submitter",
+                    "mentionedOpenIds": "",
+                },
+                settings,
+            )
+            self.assertIn("我识别到这是项目立项", reply)
+            self.assertIn("工业软件点胶机", reply)
+            self.assertIn("hanson", reply)
+            self.assertIn("@hanson", reply)
+            self.assertFalse((root / "projects" / "gong-ye-ruan-jian-dian-jiao-ji").exists())
+
+    def test_feishu_project_init_resolves_owner_name_from_map(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=["ou_common"],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_wiki_node="",
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                user_open_id_map={"hanson": "ou_hanson"},
+            )
+            original_create = feishu_module.create_feishu_approval_instance
+            feishu_module.create_feishu_approval_instance = lambda *_args, **_kwargs: "approval_project_natural"
+            try:
+                reply = feishu_module.build_reply(
+                    Bundle(root),
+                    {
+                        "messageId": "om_project_natural",
+                        "chatId": "oc_test",
+                        "chatType": "group",
+                        "text": "创建一个项目，名字叫做工业软件点胶机。项目负责人是hanson",
+                        "openId": "ou_submitter",
+                        "userId": "submitter",
+                        "mentionedOpenIds": "",
+                    },
+                    settings,
+                )
+                self.assertIn("已生成项目立项草稿", reply)
+                self.assertIn("ou_hanson", reply)
+            finally:
+                feishu_module.create_feishu_approval_instance = original_create
+
     def test_feishu_approval_creates_change_doc_before_instance(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -986,6 +1074,7 @@ Use parser.
                 token_send_on_approval=False,
                 approval_doc_wiki_node="GZ59w7hsNijjXYk9BNocCQjFnpc",
                 approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                user_open_id_map={},
             )
             created: dict[str, object] = {}
             original_doc = feishu_module.create_approval_change_doc

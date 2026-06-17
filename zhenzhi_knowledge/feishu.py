@@ -67,6 +67,7 @@ class FeishuSettings:
     token_send_on_approval: bool
     approval_doc_wiki_node: str
     approval_doc_domain: str
+    user_open_id_map: dict[str, str]
 
 
 def load_feishu_settings() -> FeishuSettings:
@@ -87,6 +88,7 @@ def load_feishu_settings() -> FeishuSettings:
         token_send_on_approval=os.environ.get("FEISHU_TOKEN_SEND_ON_APPROVAL", "false").lower() == "true",
         approval_doc_wiki_node=extract_wiki_token(os.environ.get("FEISHU_APPROVAL_DOC_WIKI_NODE", "").strip()),
         approval_doc_domain=os.environ.get("FEISHU_APPROVAL_DOC_DOMAIN", "https://xcn68awb7dsi.feishu.cn").strip().rstrip("/"),
+        user_open_id_map=parse_user_open_id_map(os.environ.get("FEISHU_USER_OPEN_ID_MAP_JSON", "{}")),
     )
 
 
@@ -115,6 +117,16 @@ def parse_project_reviewer_map(raw: str) -> dict[str, list[str]]:
         elif isinstance(value, str):
             result[str(key)] = split_open_ids(value)
     return result
+
+
+def parse_user_open_id_map(raw: str) -> dict[str, str]:
+    try:
+        parsed = json.loads(raw or "{}")
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    return {normalize_person_name(str(key)): str(value).strip() for key, value in parsed.items() if str(value).strip()}
 
 
 def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: FeishuSettings | None = None) -> dict[str, Any]:
@@ -366,32 +378,61 @@ def token_request_reply(bundle: Bundle, incoming: dict[str, str], settings: Feis
 
 def parse_project_init(text: str) -> dict[str, str]:
     normalized = text.strip()
-    if not re.match(r"^(立项|项目立项|立项申请|创建项目)", normalized):
+    if not re.search(r"(立项|项目立项|立项申请|创建项目|创建一个项目|建项目|新建项目|新增项目|立个项目)", normalized):
         return {}
     name = extract_named_value(normalized, ["项目名称", "项目名", "项目"])
     if not name:
-        match = re.match(r"^(?:立项|项目立项|立项申请|创建项目)[:：\s]+(?P<name>[^\n，,。；;]+)", normalized)
-        if match:
-            name = match.group("name").strip()
-    owner_name = extract_named_value(normalized, ["项目负责人", "负责人", "owner"])
+        name_patterns = [
+            r"(?:名字|名称|项目名|项目名称)\s*(?:叫做|叫|是|为|:|：)\s*(?P<name>[^\n，,。；;]+)",
+            r"(?:创建一个项目|创建项目|建项目|新建项目|新增项目|立个项目|立项申请|立项)[:：\s]+(?P<name>[^\n，,。；;]+)",
+        ]
+        for pattern in name_patterns:
+            match = re.search(pattern, normalized)
+            if match:
+                name = cleanup_project_name(match.group("name"))
+                break
+    owner_name = extract_named_value(normalized, ["项目负责人", "负责人", "owner", "所属人"])
+    if not owner_name:
+        owner_match = re.search(r"(?:项目负责人|负责人|所属人)\s*(?:叫做|叫|是|为)\s*(?P<owner>[A-Za-z0-9._\-\u4e00-\u9fff]+)", normalized)
+        if owner_match:
+            owner_name = owner_match.group("owner").strip()
     return {"projectName": name, "ownerName": owner_name}
 
 
 def extract_named_value(text: str, labels: list[str]) -> str:
     for label in labels:
-        pattern = rf"{re.escape(label)}\s*[:：]\s*(?P<value>[^\n，,。；;]+)"
+        pattern = rf"{re.escape(label)}\s*(?:[:：]|是|为|叫做|叫)\s*(?P<value>[^\n，,。；;]+)"
         match = re.search(pattern, text)
         if match:
             return match.group("value").strip()
     return ""
 
 
+def cleanup_project_name(value: str) -> str:
+    value = value.strip()
+    value = re.sub(r"^(叫做|叫|是|为)\s*", "", value)
+    value = re.sub(r"\s*(项目负责人|负责人|所属人).*$", "", value).strip()
+    return value.strip("。；;，, ")
+
+
 def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, project_intake: dict[str, str]) -> str:
     project_name = project_intake.get("projectName", "").strip()
-    owner_open_id = first_mentioned_open_id(incoming) or incoming.get("openId", "")
+    owner_name = project_intake.get("ownerName", "").strip()
+    owner_open_id = first_mentioned_open_id(incoming) or resolve_person_open_id(settings, owner_name)
     if not project_name:
         return "立项申请还缺项目名称。请发送：立项申请：项目名称 <名称>，项目负责人 @负责人。"
     if not owner_open_id:
+        if owner_name:
+            return "\n".join(
+                [
+                    "我识别到这是项目立项，但还不能发起审批。",
+                    f"项目名称: {project_name}",
+                    f"负责人姓名: {owner_name}",
+                    "原因: 飞书审批的“项目负责人”字段需要负责人 open_id，普通文本姓名无法稳定匹配。",
+                    f"请重新发送：立项申请：项目名称 {project_name}，项目负责人 @{owner_name}",
+                    "或者让管理员配置 FEISHU_USER_OPEN_ID_MAP_JSON，把 hanson 这类姓名映射到飞书 open_id。",
+                ]
+            )
         return "立项申请还缺项目负责人。请在消息里 @项目负责人，或让负责人本人发起立项。"
     project_id = normalize_project_id(project_name)
     project_path = make_project(bundle, project_id, project_name, owner_open_id)
@@ -620,6 +661,16 @@ def frontmatter_value(path: Path, key: str) -> str:
 def first_mentioned_open_id(incoming: dict[str, str]) -> str:
     mentioned = incoming.get("mentionedOpenIds", "")
     return split_open_ids(mentioned)[0] if mentioned else ""
+
+
+def resolve_person_open_id(settings: FeishuSettings, name: str) -> str:
+    if not name:
+        return ""
+    return settings.user_open_id_map.get(normalize_person_name(name), "")
+
+
+def normalize_person_name(name: str) -> str:
+    return re.sub(r"\s+", "", name).strip("@").lower()
 
 
 def create_feishu_approval_instance(
