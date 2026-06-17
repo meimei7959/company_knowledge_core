@@ -19,6 +19,7 @@ from .core import (
     search_index,
     validate_bundle,
 )
+from .feishu import handle_feishu_event
 
 
 class KnowledgeHTTPServer(ThreadingHTTPServer):
@@ -111,6 +112,10 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         try:
+            if self.path == "/integrations/feishu/events":
+                payload = self._read_json()
+                self._json(200, handle_feishu_event(self.server.bundle, payload))
+                return
             if not self._authorized():
                 self._reject_unauthorized()
                 return

@@ -464,6 +464,38 @@ Use parser.
             try:
                 health = json.load(urllib.request.urlopen(base + "/health"))
                 self.assertTrue(health["ok"])
+                feishu_verify = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps({"type": "url_verification", "challenge": "ok"}).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                self.assertEqual(json.load(urllib.request.urlopen(feishu_verify))["challenge"], "ok")
+                feishu_message = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "im.message.receive_v1"},
+                            "event": {
+                                "sender": {"sender_id": {"open_id": "ou_alice", "user_id": "alice"}},
+                                "message": {
+                                    "message_id": "om_test",
+                                    "chat_id": "oc_test",
+                                    "chat_type": "group",
+                                    "message_type": "text",
+                                    "content": json.dumps({"text": "申请知识工程 token"}),
+                                },
+                            },
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                feishu_result = json.load(urllib.request.urlopen(feishu_message))
+                self.assertTrue(feishu_result["ok"])
+                self.assertFalse(feishu_result["sent"])
+                self.assertIn("私聊", feishu_result["reply"])
                 with self.assertRaises(urllib.error.HTTPError) as unauthorized:
                     urllib.request.urlopen(base + "/v0/snapshot")
                 self.assertEqual(unauthorized.exception.code, 401)
