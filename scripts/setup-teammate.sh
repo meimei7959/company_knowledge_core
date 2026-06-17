@@ -22,7 +22,7 @@ Usage:
 
 Options:
   --user-id <id>             teammate id, default current $USER
-  --ai-tool <tool>           codex | antigravity | other, default codex
+  --ai-tool <tool>           codex | antigravity | claude | other, default codex
   --agent-id <id>            default agent.<user-id>.<ai-tool>
   --agent-name <name>        default "<user-id> <ai-tool>"
   --project <project-id>     default company-knowledge-core

@@ -74,6 +74,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("zhenzhi-knowledge finish --project core --agent agent.alice.codex", entrypoint)
             self.assertTrue((root / ".zhenzhi" / "codex-start.md").exists())
             self.assertTrue((root / ".zhenzhi" / "antigravity-start.md").exists())
+            self.assertTrue((root / ".zhenzhi" / "claude-start.md").exists())
             self.assertTrue((root / "agents" / "agent.alice.codex.md").exists())
 
     def test_validate_blocks_unstructured_knowledge_dump(self) -> None:

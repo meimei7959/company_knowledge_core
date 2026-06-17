@@ -167,7 +167,12 @@ def default_config(bundle: Bundle, user_id: str, ai_tool: str, agent_id: str, re
 
 
 def render_local_start_prompt(ai_tool: str, project_id: str, agent_id: str) -> str:
-    tool_name = "Codex" if ai_tool == "codex" else "Antigravity" if ai_tool == "antigravity" else ai_tool
+    tool_names = {
+        "codex": "Codex",
+        "antigravity": "Antigravity",
+        "claude": "Claude",
+    }
+    tool_name = tool_names.get(ai_tool, ai_tool)
     return f"""# {tool_name} Knowledge Start
 
 Use this file before formal work in this repository.
@@ -289,6 +294,8 @@ def install_connector(
     written.append(bundle.zz_dir / "codex-start.md")
     write_text(bundle.zz_dir / "antigravity-start.md", render_local_start_prompt("antigravity", config["defaultProjectId"], agent_id))
     written.append(bundle.zz_dir / "antigravity-start.md")
+    write_text(bundle.zz_dir / "claude-start.md", render_local_start_prompt("claude", config["defaultProjectId"], agent_id))
+    written.append(bundle.zz_dir / "claude-start.md")
 
     if register_agent:
         agent_path = bundle.root / "agents" / f"{slug(agent_id)}.md"
