@@ -475,21 +475,9 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
         return "立项申请还缺项目名称。请发送：立项申请：项目名称 <名称>，项目负责人 <姓名/手机号/邮箱>。"
     if not owner_open_id:
         if owner_name:
-            lines = [
-                "我识别到这是项目立项，但还不能发起审批。",
-                f"项目名称: {project_name}",
-                f"负责人姓名: {owner_name}",
-            ]
-            if owner_lookup_message:
-                lines.append(f"识别结果: {owner_lookup_message}")
-            lines.extend(
-                [
-                    "请 @ 一下负责人，或补充负责人手机号/邮箱等可唯一识别的信息。",
-                    "管理员也可以开通机器人通讯录读取权限，后续我就能按姓名列候选人。",
-                ]
-            )
-            return "\n".join(lines)
-        return "立项申请还缺项目负责人。请 @ 一下负责人，或补充负责人姓名、手机号、邮箱。"
+            message = owner_lookup_message or f"未找到负责人 {owner_name}。"
+            return f"{message}\n请 @ 负责人，或输入姓名/手机号。"
+        return "缺项目负责人。请 @ 负责人，或输入姓名/手机号。"
     project_id = normalize_project_id(project_name)
     project_path = make_project(bundle, project_id, project_name, owner_open_id)
     approval_line = trigger_approval_for_target(
@@ -733,46 +721,83 @@ def lookup_feishu_user_by_name(settings: FeishuSettings, name: str) -> dict[str,
     if not name:
         return {}
     if not settings.app_id or not settings.app_secret:
-        return {"message": "机器人未配置飞书应用凭证，无法查询通讯录。"}
+        return {"message": f"未找到负责人 {name}。"}
     try:
         token = get_tenant_access_token(settings)
         users = list_feishu_users(token, limit=300)
     except KnowledgeError as exc:
         message = str(exc)
         if "contact:" in message or "Access denied" in message or "99991672" in message:
-            return {"message": "机器人还没有通讯录读取权限，无法按姓名列出候选负责人。可以先 @ 负责人；也可以开通 contact:contact.base:readonly 或 contact:contact:readonly_as_app。"}
-        return {"message": f"查询通讯录失败：{compact_snippet(message, 120)}"}
+            return {"message": f"通讯录权限不足，未找到 {name}。"}
+        return {"message": f"通讯录查询失败：{compact_snippet(message, 80)}"}
     normalized = normalize_person_name(name)
     matches = [user for user in users if user_matches_name(user, normalized)]
     if len(matches) == 1:
         return {"openId": str(matches[0].get("open_id") or matches[0].get("openId") or ""), "message": f"已从通讯录匹配负责人：{display_user_name(matches[0])}"}
     if len(matches) > 1:
         names = "、".join(display_user_name(user) for user in matches[:5])
-        return {"message": f"通讯录里找到多个可能负责人：{names}。请补充手机号/邮箱或直接 @负责人。"}
+        return {"message": f"找到多个负责人：{names}。"}
     candidates = similar_feishu_users(users, normalized)
     if candidates:
         names = "、".join(display_user_name(user) for user in candidates[:5])
-        return {"message": f"通讯录里没有唯一匹配的负责人，相近候选有：{names}。请补充手机号/邮箱，或直接 @负责人。"}
-    return {"message": "通讯录里没有找到相近负责人。请补充手机号/邮箱，或直接 @负责人。"}
+        return {"message": f"未找到 {name}。候选：{names}。"}
+    names = "、".join(display_user_name(user) for user in users[:5])
+    suffix = f"候选：{names}。" if names else ""
+    return {"message": f"未找到负责人 {name}。{suffix}"}
 
 
 def list_feishu_users(token: str, limit: int = 300) -> list[dict[str, Any]]:
+    department_ids = list_feishu_department_ids(token, limit=200)
     users: list[dict[str, Any]] = []
-    page_token = ""
-    while len(users) < limit:
-        params = {"user_id_type": "open_id", "department_id": "0", "page_size": "100"}
-        if page_token:
-            params["page_token"] = page_token
-        query = urllib.parse.urlencode(params)
-        result = feishu_json_request("GET", f"{FEISHU_API_BASE}/contact/v3/users?{query}", token)
-        data = result.get("data", {})
-        items = data.get("items") or data.get("users") or []
-        if isinstance(items, list):
-            users.extend([item for item in items if isinstance(item, dict)])
-        if not data.get("has_more") or not data.get("page_token"):
-            break
-        page_token = str(data.get("page_token"))
+    seen: set[str] = set()
+    for department_id in department_ids:
+        page_token = ""
+        while len(users) < limit:
+            params = {"user_id_type": "open_id", "department_id_type": "open_department_id", "department_id": department_id, "page_size": "100"}
+            if page_token:
+                params["page_token"] = page_token
+            query = urllib.parse.urlencode(params)
+            result = feishu_json_request("GET", f"{FEISHU_API_BASE}/contact/v3/users?{query}", token)
+            data = result.get("data", {})
+            items = data.get("items") or data.get("users") or []
+            if isinstance(items, list):
+                for item in items:
+                    if not isinstance(item, dict):
+                        continue
+                    identity = str(item.get("open_id") or item.get("union_id") or item)
+                    if identity not in seen:
+                        seen.add(identity)
+                        users.append(item)
+            if not data.get("has_more") or not data.get("page_token"):
+                break
+            page_token = str(data.get("page_token"))
     return users[:limit]
+
+
+def list_feishu_department_ids(token: str, limit: int = 200) -> list[str]:
+    department_ids = ["0"]
+    index = 0
+    while index < len(department_ids) and len(department_ids) < limit:
+        department_id = department_ids[index]
+        index += 1
+        page_token = ""
+        while len(department_ids) < limit:
+            params = {"department_id_type": "open_department_id", "page_size": "50"}
+            if page_token:
+                params["page_token"] = page_token
+            query = urllib.parse.urlencode(params)
+            result = feishu_json_request("GET", f"{FEISHU_API_BASE}/contact/v3/departments/{urllib.parse.quote(department_id)}/children?{query}", token)
+            data = result.get("data", {})
+            for item in data.get("items") or []:
+                if not isinstance(item, dict):
+                    continue
+                child = str(item.get("open_department_id") or item.get("department_id") or "")
+                if child and child not in department_ids:
+                    department_ids.append(child)
+            if not data.get("has_more") or not data.get("page_token"):
+                break
+            page_token = str(data.get("page_token"))
+    return department_ids
 
 
 def user_matches_name(user: dict[str, Any], normalized: str) -> bool:
