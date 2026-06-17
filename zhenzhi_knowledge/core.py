@@ -51,6 +51,10 @@ TYPE_VALUES = {
 SECRET_KEYS = ("token", "secret", "password", "passwd", "credential", "api_key", "apikey", "key")
 COLLECTION_NAMES = {"index.md", "log.md", "decisions.md", "lessons.md", "agents.md", "tools.md"}
 RETRIEVAL_VECTOR_DIMS = 64
+KNOWLEDGE_SYSTEM_CATEGORIES = {"policies", "audit", "evals", "eval-runs", "conflicts", "metrics"}
+KNOWLEDGE_CONTENT_CATEGORIES = {"company", "engineering", "product", "business", "operations", "research", "customer"}
+KNOWLEDGE_ALLOWED_CATEGORIES = KNOWLEDGE_SYSTEM_CATEGORIES | KNOWLEDGE_CONTENT_CATEGORIES
+KNOWLEDGE_ITEM_REQUIRED_FIELDS = {"type", "title", "timestamp", "owner", "status", "scope", "sourceRef", "confidence"}
 
 
 class KnowledgeError(RuntimeError):
@@ -235,6 +239,9 @@ During work:
 - Search knowledge with `zhenzhi-knowledge rag search --query "<query>"`.
 - Use only registered tools from the context pack or `zhenzhi-knowledge index search --type ToolAsset`.
 - Register reusable tools with `zhenzhi-knowledge tool register`.
+- Write only structured draft knowledge. Do not use this repository as a raw file dump.
+- Put KnowledgeItem files under `knowledge/<category>/` with sourceRef, confidence, status, owner, and scope.
+- Keep raw documents, screenshots, transcripts, exports, and temporary notes outside the knowledge bundle until they are summarized and reviewed.
 - Do not store secrets in knowledge files, prompts, logs, or audit details.
 - Do not promote facts or tools directly to verified/approved without review.
 
@@ -691,6 +698,8 @@ def start_task(bundle: Bundle, project_id: str, agent_id: str, task: str, retrie
         "- Read this context pack before work.",
         "- Code changes must go through Git.",
         "- Write AgentRun and draft updates with finish.",
+        "- Do not dump raw files or arbitrary notes into knowledge directories.",
+        "- New KnowledgeItem content must be structured, categorized, sourced, and reviewable.",
         "- Do not store secrets in knowledge files.",
         "- Do not call unregistered tools.",
         "- Do not call ToolAsset risk levels outside Policy Result.",
@@ -903,6 +912,19 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.append(f"{rel_path}: unknown type {fm['type']}")
         if "status" in fm and fm["status"] not in STATUS_VALUES:
             problems.append(f"{rel_path}: unknown status {fm['status']}")
+        if rel_path.startswith("knowledge/"):
+            parts = rel_path.split("/")
+            category = parts[1] if len(parts) > 1 else ""
+            if len(parts) < 3:
+                problems.append(f"{rel_path}: knowledge files must live under knowledge/<category>/")
+            elif category not in KNOWLEDGE_ALLOWED_CATEGORIES:
+                problems.append(f"{rel_path}: unknown knowledge category {category}")
+            if fm.get("type") == "KnowledgeItem":
+                if category in KNOWLEDGE_SYSTEM_CATEGORIES:
+                    problems.append(f"{rel_path}: KnowledgeItem must live under a content category, not {category}")
+                for field in sorted(KNOWLEDGE_ITEM_REQUIRED_FIELDS):
+                    if not fm.get(field):
+                        problems.append(f"{rel_path}: KnowledgeItem missing required field {field}")
         problems.extend(scan_for_secret_values(path))
     return problems
 

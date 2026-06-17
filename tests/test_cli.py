@@ -75,6 +75,40 @@ class CliTests(unittest.TestCase):
             self.assertTrue((root / ".zhenzhi" / "antigravity-start.md").exists())
             self.assertTrue((root / "agents" / "agent.alice.codex.md").exists())
 
+    def test_validate_blocks_unstructured_knowledge_dump(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            (root / "knowledge" / "random.md").write_text("raw notes without structure\n", encoding="utf-8")
+            self.assertEqual(main(["--root", str(root), "validate"]), 1)
+
+    def test_validate_accepts_categorized_knowledge_item(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            item_dir = root / "knowledge" / "engineering"
+            item_dir.mkdir(parents=True, exist_ok=True)
+            (item_dir / "lesson.md").write_text(
+                """---
+type: KnowledgeItem
+title: Engineering Lesson
+description: Structured lesson.
+timestamp: 2026-06-17T00:00:00Z
+owner: alice
+status: draft
+scope: engineering
+sourceRef: projects/core/project.md
+confidence: medium
+---
+
+## Knowledge
+
+Structured knowledge only.
+""",
+                encoding="utf-8",
+            )
+            self.assertEqual(main(["--root", str(root), "validate"]), 0)
+
     def test_register_start_finish_review_validate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

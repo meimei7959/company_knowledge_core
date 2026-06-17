@@ -60,6 +60,19 @@ zhenzhi-knowledge finish --project company-knowledge-core --agent agent.<name>.c
 zhenzhi-knowledge sync push
 ```
 
+## Knowledge Intake Rules
+
+This repository is not a raw file dump. Agents must not place arbitrary documents, chat logs, screenshots, transcripts, exports, or temporary notes directly into the knowledge bundle.
+
+Reusable knowledge must be structured for AI consumption:
+
+- `KnowledgeItem` files live under `knowledge/<category>/`.
+- Allowed content categories are `company`, `engineering`, `product`, `business`, `operations`, `research`, and `customer`.
+- Every `KnowledgeItem` must include `sourceRef`, `confidence`, `status`, `owner`, and `scope`.
+- Facts, lessons, and inferred knowledge start as `draft` unless a human review promotes them.
+- Raw source material should be summarized into categorized Markdown/YAML objects before retrieval indexing.
+- `validate` rejects loose knowledge files and incomplete KnowledgeItem frontmatter.
+
 ## Core Owns
 
 - Project.

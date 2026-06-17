@@ -61,3 +61,7 @@ Agent must read the generated context pack before work and must generate AgentRu
 - approved tools require Tool Owner approval.
 - Agent must not call unregistered tools.
 - secret values must not be stored in knowledge files.
+- Do not use this repository as a raw file dump.
+- Knowledge must be structured, categorized, sourced, confidence-marked, and reviewable before it becomes reusable.
+- Raw documents, screenshots, transcripts, exports, and temporary notes stay outside the knowledge bundle until summarized into approved object types.
+- KnowledgeItem files must live under `knowledge/<category>/`, not directly under `knowledge/`.
