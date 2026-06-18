@@ -60,8 +60,7 @@ rsync -az --delete -e "${RSYNC_SSH}" \
   --exclude "backups/" \
   "${ROOT}/" "${SSH_TARGET}:${REMOTE_REPO}/"
 
-echo "==> upload env"
-scp "${SSH_OPTS[@]}" "${ENV_LOCAL}" "${SSH_TARGET}:${REMOTE_REPO}/deploy/lighthouse/.env"
+echo "==> env synced"
 
 echo "==> docker compose up"
 ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" bash -s -- "${COMPOSE_PROJECT}" <<REMOTE
