@@ -547,6 +547,9 @@ Use parser.
             previous_api = os.environ.get("ZHENZHI_KNOWLEDGE_API_STAGING")
             previous_token = os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN_STAGING")
             previous_unsigned = os.environ.get("FEISHU_ALLOW_UNSIGNED_EVENTS")
+            sent_messages: list[tuple[str, str]] = []
+            original_send_message = feishu_module.send_feishu_message
+            feishu_module.send_feishu_message = lambda _settings, open_id, text: sent_messages.append((open_id, text)) is None or True
             os.environ["ZHENZHI_KNOWLEDGE_API_STAGING"] = base
             os.environ["FEISHU_ALLOW_UNSIGNED_EVENTS"] = "true"
             try:
@@ -711,6 +714,8 @@ Use parser.
                 callback_result = json.load(urllib.request.urlopen(approval_callback))
                 self.assertEqual(callback_result["status"], "verified")
                 self.assertIn("status: verified", callback_target.read_text(encoding="utf-8"))
+                self.assertEqual(sent_messages[-1][0], "ou_alice")
+                self.assertIn("已通过", sent_messages[-1][1])
                 repeat_callback = json.load(urllib.request.urlopen(approval_callback))
                 self.assertTrue(repeat_callback["idempotent"])
                 save_approval_request(
@@ -775,6 +780,7 @@ Use parser.
                     os.environ.pop("FEISHU_ALLOW_UNSIGNED_EVENTS", None)
                 else:
                     os.environ["FEISHU_ALLOW_UNSIGNED_EVENTS"] = previous_unsigned
+                feishu_module.send_feishu_message = original_send_message
                 server.shutdown()
                 thread.join(timeout=5)
                 server.server_close()
@@ -905,6 +911,36 @@ Use parser.
         self.assertEqual(by_id["widget17816816166430001"]["value"], ["ou_owner"])
         self.assertEqual(by_id["widget17816813081730001"]["value"], ["ou_submitter"])
         self.assertEqual(by_id["widget17816813651240001"]["type"], "document")
+
+    def test_feishu_approval_doc_uses_human_readable_names(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            project = root / "projects" / "industrial-dispenser" / "project.md"
+            project.parent.mkdir(parents=True, exist_ok=True)
+            project.write_text("---\ntype: Project\nstatus: draft\n---\n\nproject draft\n", encoding="utf-8")
+            markdown = feishu_module.build_approval_change_markdown(
+                Bundle(root),
+                {
+                    "approval_type": "project_init",
+                    "approval_type_label": "项目立项",
+                    "object_path": str(project.relative_to(root)),
+                    "project_id": "industrial-dispenser",
+                    "project_name": "工业软件点胶机",
+                    "submitter": "e5dg86b5",
+                    "submitter_name": "梅晓华",
+                    "owner_open_id": "f4e3ge64",
+                    "owner_name": "沈英俊",
+                    "requested_status": "verified",
+                    "requested_status_label": "审核通过，进入可复用状态",
+                    "summary": "项目立项申请：工业软件点胶机",
+                },
+                "项目立项审批说明-工业软件点胶机-doc.test",
+            )
+            self.assertIn("提交人：梅晓华", markdown)
+            self.assertIn("项目负责人：沈英俊", markdown)
+            self.assertIn("审批事项：项目立项", markdown)
+            self.assertNotIn("提交人：e5dg86b5", markdown)
 
     def test_feishu_project_init_creates_project_and_approval_request(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
