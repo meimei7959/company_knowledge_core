@@ -75,7 +75,7 @@ The API token is not stored in Git. Share `ZHENZHI_KNOWLEDGE_API_TOKEN_PROD` thr
 
 ## Knowledge Intake Rules
 
-This repository is not a raw file dump. Agents must not place arbitrary documents, chat logs, screenshots, transcripts, exports, or temporary notes directly into the knowledge bundle.
+This repository is not a raw file dump. Agents must not place arbitrary documents, chat logs, screenshots, transcripts, exports, public articles, videos, packages, binaries, datasets, or temporary notes directly into the knowledge bundle.
 
 Reusable knowledge must be structured for AI consumption:
 
@@ -83,7 +83,8 @@ Reusable knowledge must be structured for AI consumption:
 - Allowed content categories are `company`, `engineering`, `product`, `business`, `operations`, `research`, and `customer`.
 - Every `KnowledgeItem` must include `sourceRef`, `confidence`, `status`, `owner`, and `scope`.
 - Facts, lessons, and inferred knowledge start as `draft` unless a human review promotes them.
-- Raw source material should be summarized into categorized Markdown/YAML objects before retrieval indexing.
+- Raw source material should be registered as `SourceMaterial`, extracted by the right parser, and summarized into categorized Markdown/YAML objects before retrieval indexing.
+- Learning materials become `learning_note`, `skill_note`, `pattern`, or `issue` records. Raw full text, video transcripts, and install packages stay behind `sourceRef`/`storageRef`/`contentHash`.
 - `validate` rejects loose knowledge files and incomplete KnowledgeItem frontmatter.
 
 ## Online API Deployment

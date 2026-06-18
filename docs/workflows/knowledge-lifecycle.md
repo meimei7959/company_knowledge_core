@@ -14,6 +14,8 @@ Examples:
 - Chat summary.
 - Customer document.
 - Feishu/Lark group message or file.
+- Website article or public account article.
+- Video, audio, image, screenshot, PDF, Office document, package, binary, model file, or dataset.
 - Tool documentation.
 - AgentRun.
 
@@ -34,8 +36,18 @@ Supported intake paths:
 
 - Feishu/Lark path: message, meeting note, file, or thread -> Interaction / SourceMaterial -> Knowledge Extraction Agent.
 - Agent/CLI path: Codex, Claude, Antigravity, cloud Agent, or another local Agent pushes content through `zhenzhi-knowledge` -> AgentRun / SourceMaterial / ToolUpdate / ProjectUpdate reference -> Knowledge Extraction Agent.
+- Learning material path: URL, public account article, video/audio, document, screenshot, package, model file, or dataset -> SourceMaterial with materialType, sourceRef/storageRef, contentHash, license/sensitivity, and extraction metadata -> material-specific extractor -> Knowledge Extraction Agent.
 
 Both paths must produce structured drafts before the Knowledge Review Agent sees them.
+
+Material extraction rules:
+
+- Web and public articles produce concise summaries, key claims, skill steps, source metadata, and citation links. Do not store copyrighted full text as reusable knowledge.
+- Video and audio produce transcriptRef, chapter summary, key steps, tools, terms, and unresolved questions before knowledge extraction.
+- Image and screenshot material must run OCR or be summarized with clear source location.
+- PDF and Office documents must preserve page or section references.
+- Package, binary, model, and dataset material must not be chunked into RAG by default. Store storageRef, contentHash, version, license, owner, allowed use, risk, and install/validation notes.
+- Repo material extraction is limited to README, API docs, CHANGELOG, commit/PR summary, and lessons. Full source code remains in Git.
 
 ## 3. Knowledge Review Agent Gate
 
@@ -54,7 +66,7 @@ The Knowledge Review Agent checks:
 
 Governance classification:
 
-- `auto_observed`: lessons, pitfalls, issue reviews, integration notes, debugging conclusions, and low-risk engineering patterns. If the gate passes, store directly as `observed/draft` with ReviewRecord and AuditLog.
+- `auto_observed`: lessons, pitfalls, issue reviews, integration notes, debugging conclusions, low-risk engineering patterns, and low-risk learning notes or skill notes. If the gate passes, store directly as `observed/draft` with ReviewRecord and AuditLog.
 - `human_approval_required`: project creation, Agent token requests, approved tools, verified knowledge, policy/workflow/iron-rule changes, permission/security/approval/identity/notification rules, customer commitments, and cross-team standards.
 - `clarification_required`: missing project, owner, source, evidence, applicability, sensitivity, or required fields.
 - `conflict_required`: conflicts with existing verified/active/approved knowledge.

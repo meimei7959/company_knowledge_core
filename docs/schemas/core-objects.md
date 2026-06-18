@@ -108,6 +108,8 @@ Types:
 - fact
 - decision
 - lesson
+- learning_note
+- skill_note
 - pattern
 - constraint
 - issue
@@ -126,18 +128,55 @@ Required governance:
 
 ## SourceMaterial
 
-Reference to original input. The original may live in Git, cloud drive, chat, meeting notes, customer folders, or object storage.
+Reference to original input. The original may live in Git, cloud drive, chat, meeting notes, customer folders, public websites, public account articles, video/audio platforms, package storage, or object storage.
 
 Key fields:
 
 - sourceId
 - sourceType
+- materialType
 - sourceRef
+- storageRef
+- originUrl
+- title
+- author
+- publisher
+- publishedAt
+- contentHash
+- mimeType
+- size
+- license
+- extractionTool
+- extractionStatus
+- transcriptRef
 - owner
 - sensitivity
 - projectId
 - summary
 - extractedKnowledge
+
+Supported materialType values:
+
+- `meeting_note`
+- `chat_message`
+- `customer_document`
+- `project_document`
+- `web_page`
+- `public_account_article`
+- `video`
+- `audio`
+- `pdf`
+- `office_document`
+- `image`
+- `screenshot`
+- `package`
+- `binary`
+- `model_file`
+- `dataset`
+- `repo_document`
+- `agent_run`
+
+SourceMaterial is not reusable knowledge by itself. Searchable KnowledgeItem records must be extracted from it, reviewed, and linked back by `sourceRef`.
 
 ## ChatThread
 

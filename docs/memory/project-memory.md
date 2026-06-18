@@ -8,6 +8,7 @@ It should solve the current team problem first:
 
 - local Codex / Antigravity agents need shared project context;
 - tools and experience must stop living only on personal machines;
+- useful external learning materials must become structured Agent-readable notes instead of scattered links and files;
 - every significant Agent task must read context before work and write updates after work.
 
 ## Source Of Truth
@@ -54,6 +55,7 @@ Reusable tools are ToolAsset records. Reviewed writes and status changes must cr
 - Do not build a large Web platform first.
 - Do not use vector search as the only memory layer.
 - Do not store secrets, tokens, keys, or passwords.
+- Do not treat raw articles, videos, screenshots, transcripts, packages, binaries, model files, or datasets as reusable knowledge. Store references and hashes, then extract structured notes.
 - Do not let Agent publish verified knowledge without review.
 - Do not let any reusable knowledge write bypass the Knowledge Review Agent gate.
 - Knowledge Review Agent checks source, structure, category, sensitivity, duplicates, conflicts, reviewer readability, and review path before indexing, approval, or promotion.

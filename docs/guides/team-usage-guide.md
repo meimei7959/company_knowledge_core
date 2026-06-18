@@ -627,6 +627,8 @@ zhenzhi-knowledge validate
 会议录音或全文转录
 临时笔记
 未整理的导出文件
+公众号全文、网页全文、视频全文转录
+安装包、二进制、模型文件、数据集原文件
 源码副本
 密钥、token、密码
 ```
@@ -653,6 +655,7 @@ reviewer:
 
 ```txt
 经验沉淀 -> KnowledgeItem draft
+学习资料 -> SourceMaterial + learning_note/skill_note draft
 工具登记 -> ToolAsset testing
 项目决策 -> Decision draft
 问题反馈 -> ConflictRecord open
@@ -679,6 +682,51 @@ reviewer:
 
 机器人回复必须带来源和状态，不让提交人误以为 draft 已经是正式知识。
 
+学习资料提交格式：
+
+```txt
+学习资料：<URL 或文章内容>
+用途：<希望团队/Agent 学会什么，可选>
+项目：<项目ID，可选；不填则按通用学习资料处理>
+```
+
+```txt
+公众号文章：<链接、转发正文、截图或 PDF>
+用途：<可选>
+```
+
+```txt
+视频资料：<链接或上传文件>
+用途：<可选>
+```
+
+```txt
+安装包：<项目ID 或通用>
+名称：
+版本：
+来源：
+用途：
+许可/授权：
+安装说明：
+```
+
+机器人处理规则：
+
+```txt
+网页/公众号 -> SourceMaterial -> 文章解析/OCR/PDF 解析 -> learning_note/skill_note
+视频/音频 -> SourceMaterial -> 转录/章节摘要 -> learning_note/skill_note
+图片/截图 -> SourceMaterial -> OCR/视觉摘要 -> learning_note/issue/pattern
+安装包/二进制/模型/数据集 -> SourceMaterial -> 包登记，不进入 RAG 正文
+```
+
+机器人只应该简短回复：
+
+```txt
+已识别为学习资料/视频资料/安装包。
+状态：已生成草稿 / 需要补充来源或授权 / 需要审批。
+对象：<sourceRef 或 draftRef>
+```
+
 ### 6.2 分级审核和飞书入口
 
 审核需要分级，不同对象由不同角色处理：
@@ -686,6 +734,7 @@ reviewer:
 | 对象 | 初始状态 | 通过后状态 | 审核人 |
 | --- | --- | --- | --- |
 | 普通知识、经验、会议整理 | draft | verified | Knowledge Reviewer / Project Owner |
+| 低风险学习笔记、技能笔记 | draft | observed/draft | Knowledge Review Agent |
 | 项目原始资料 SourceMaterial | draft | verified | Project Owner |
 | 工具 ToolAsset | testing | approved | Tool Owner |
 | 冲突 ConflictRecord | open | resolved | Project Owner / Knowledge Reviewer |
@@ -792,12 +841,13 @@ http://124.221.138.151/knowledge-api/integrations/feishu/events
 2. 知识提取 Agent 把会议纪要、聊天、文件或说明转换成结构化草稿。
 3. 知识审核 Agent 审核草稿，判断分类、字段、来源、重复、冲突、敏感信息和可读性。
 4. 低风险经验类内容机审通过后直接以 `observed/draft` 落库，并写 ReviewRecord 和 AuditLog。
-5. 需要人工审批时，知识审核 Agent 创建审批说明云文档。
-6. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
-7. 审核人在飞书审批中心或卡片里打开说明文档并点通过/驳回。
-8. 审批回调进入知识工程。
-9. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
-10. 机器人私聊回推给提交人。
+5. 低风险学习资料、技能笔记机审通过后直接以 `observed/draft` 落库；来源、版权/许可、敏感级别或可用性不清时先补资料或转人工审批。
+6. 需要人工审批时，知识审核 Agent 创建审批说明云文档。
+7. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
+8. 审核人在飞书审批中心或卡片里打开说明文档并点通过/驳回。
+9. 审批回调进入知识工程。
+10. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
+11. 机器人私聊回推给提交人。
 ```
 
 Agent/CLI 推送流程：

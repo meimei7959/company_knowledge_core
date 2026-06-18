@@ -21,11 +21,17 @@ Agent Workflow
 Agent/CLI Intake
   Codex, Claude, Antigravity, cloud Agent, or local Agent pushes content through zhenzhi-knowledge
 
+Material Intake
+  Feishu URL/file/video/article/package or CLI push becomes SourceMaterial with sourceRef/storageRef/contentHash
+
+Material Extractors
+  web/article parsing, public account fallback, transcript, OCR, document parsing, package registrar
+
 Knowledge Extraction Agent
-  turns Feishu materials or Agent/CLI pushes into structured drafts
+  turns extracted Feishu materials or Agent/CLI pushes into structured drafts
 
 Knowledge Review Agent Gate
-  structure check, source check, conflict check, sensitivity check, approval document drafting
+  structure check, source check, license check, conflict check, sensitivity check, approval document drafting
 
 Local Index
   frontmatter scan, SQLite metadata index, full-text search
@@ -75,6 +81,7 @@ First build:
 - Agent registration.
 - Project registration.
 - ToolAsset registration.
+- SourceMaterial ingest/extract workflow.
 - Agent start/finish workflow.
 - Knowledge Review Agent gate.
 - Human review and sync workflow.

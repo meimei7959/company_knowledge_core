@@ -40,6 +40,8 @@ The local connector must support:
 - `project register`
 - `tool register`
 - `tool invoke`
+- `material ingest`
+- `material extract`
 - `policy register`
 - `start`
 - `finish`
@@ -76,6 +78,7 @@ The local connector must support:
 - Knowledge Review Agent must block candidates missing sourceRef, owner, status, scope, confidence, category, or readable summary.
 - Knowledge Review Agent must classify candidates into auto observed, human approval required, clarification required, conflict required, or rejected.
 - Passed low-risk lessons, pitfalls, issue reviews, integration notes, and debugging conclusions may be stored as observed/draft without human approval.
+- Passed low-risk learning notes and skill notes may be stored as observed/draft without human approval when source, license, sensitivity, applicability, and extraction quality are clear.
 - Knowledge Review Agent must create or reference IssueRecord when it finds missing information, duplicate risk, conflict risk, sensitivity risk, or unreadable approval content.
 - Knowledge Review Agent must not promote its own output to verified, approved, active, policy, permission, security, or cross-team standard status.
 - verified KnowledgeItem requires human review.
@@ -88,6 +91,13 @@ The local connector must support:
 - MissingFact status changes must preserve the asking/answering Interaction reference when available.
 - Failed EvalRun or ReviewRecord must create or reference IssueRecord when follow-up is needed.
 - Approved deliverables must have review/evaluation evidence.
+- SourceMaterial must include materialType when created from learning material, uploaded files, packages, videos, audio, screenshots, or documents.
+- Extracted KnowledgeItem records from learning material must include sourceRef, materialType, title/source metadata when available, confidence, applicability, and limitations.
+- Web or public account articles must not be stored as full copyrighted text in reusable KnowledgeItem records.
+- Video/audio-derived KnowledgeItem records must link transcriptRef or an equivalent extracted summary reference.
+- Image/screenshot-derived KnowledgeItem records must record OCR or visual extraction method and confidence.
+- Package, binary, model, and dataset material must not be chunked into RAG by default and must include contentHash, storageRef/sourceRef, version when available, license, risk, owner, and allowed use.
+- Learning material with unclear source, unclear license, sensitive content, high-risk executable use, or cross-team policy implications must route to clarification or human approval, not auto observed.
 
 ## Security Checks
 

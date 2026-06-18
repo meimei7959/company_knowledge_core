@@ -49,6 +49,8 @@ Responsibilities:
 - `zhenzhi-knowledge chat-thread list`
 - `zhenzhi-knowledge interaction create`
 - `zhenzhi-knowledge interaction search`
+- `zhenzhi-knowledge material ingest`
+- `zhenzhi-knowledge material extract`
 
 Responsibilities:
 
@@ -56,6 +58,19 @@ Responsibilities:
 - Record customer messages, file uploads, and confirmations as Interaction records.
 - Link Interaction records to SourceMaterial and KnowledgeItem records.
 - Preserve external message IDs for traceability.
+- Ingest learning materials such as website articles, public account articles, videos, audio, PDFs, images, screenshots, packages, binaries, model files, and datasets as SourceMaterial.
+- Select material-specific extractors before Knowledge Extraction Agent runs.
+- Store raw material by sourceRef/storageRef/contentHash, not as reusable KnowledgeItem text.
+- Preserve title, author, publisher, originUrl, materialType, license, sensitivity, extractionTool, extractionStatus, transcriptRef, and contentHash when available.
+
+Material extractor responsibilities:
+
+- Web/article extractor: title, author, publisher, publish time, URL, readable summary, key claims, skill steps, and citation links.
+- Public account extractor: original link when available; otherwise forwarded text, screenshot OCR, or PDF export with extraction confidence.
+- Video/audio extractor: transcriptRef, chapters, key steps, tools, terms, unresolved questions, and confidence.
+- Document/OCR extractor: page or region references plus structured summary.
+- Package/binary registrar: storageRef, contentHash, version, source, license, owner, risk, install notes, validation notes, and allowed use.
+- Repo document extractor: README/API docs/CHANGELOG/commit summary only; full source stays in Git.
 
 ## missing facts
 
@@ -95,6 +110,7 @@ Responsibilities:
 - Run the Knowledge Review Agent gate before indexing, human approval, or status promotion.
 - Classify each candidate as auto observed, human approval required, clarification required, conflict required, or rejected.
 - Directly store passed low-risk lessons, pitfalls, issue reviews, integration notes, and debugging conclusions as `observed/draft`.
+- Directly store passed low-risk learning notes and skill notes as `observed/draft` when source, license, sensitivity, applicability, and extraction quality are clear.
 - Create ReviewRecord for machine review results.
 - Create IssueRecord for missing fields, unclear source, sensitivity risk, duplicate risk, conflict risk, or unreadable approval material.
 - Generate reviewer-facing approval documents only for candidates classified as requiring human approval.
