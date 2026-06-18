@@ -9,11 +9,15 @@ REMOTE_BASE="/opt/projects/company_knowledge_core"
 REMOTE_REPO="${REMOTE_BASE}/repo"
 COMPOSE_PROJECT="zhenzhi_knowledge"
 ENV_LOCAL="${ROOT}/deploy/lighthouse/.env"
+CONTROL_PATH="/tmp/zhenzhi-knowledge-${HOST}-%r@%h:%p"
 SSH_OPTS=(
   -i "$IDENTITY"
   -o IdentitiesOnly=yes
   -o StrictHostKeyChecking=accept-new
   -o ServerAliveInterval=30
+  -o ControlMaster=auto
+  -o ControlPersist=120
+  -o ControlPath="$CONTROL_PATH"
 )
 
 if [ ! -f "$ENV_LOCAL" ]; then
