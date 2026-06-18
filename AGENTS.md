@@ -54,6 +54,13 @@ zhenzhi-knowledge sync push
 
 Agent must read the generated context pack before work and must generate AgentRun plus draft updates after work.
 
+## Engineering Iron Rules
+
+- For any repeated, workflow-level, integration, approval, permission, identity, notification, or knowledge-governance problem, do not patch only the visible symptom. First identify the root cause, then apply a systemic fix across the full affected flow.
+- A systemic fix must check upstream input, internal data model, generated human-facing output, callback/result handling, audit trail, and user notification where applicable.
+- Human-facing artifacts must be written for the actual human reader. Do not expose raw internal IDs, paths, or status codes as the primary explanation when names, labels, business meaning, or readable summaries can be resolved.
+- After fixing this class of issue, add or update tests that cover the full lifecycle, not only the failing line. If live integration is involved, verify the real external API path before declaring the flow working.
+
 ## Safety
 
 - All write tools must create AuditLog.

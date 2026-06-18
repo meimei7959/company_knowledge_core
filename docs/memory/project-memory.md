@@ -34,6 +34,13 @@ No Agent task is complete without AgentRun and knowledge update draft.
 
 Reusable tools are ToolAsset records. Reviewed writes and status changes must create AuditLog.
 
+## Engineering Iron Rules
+
+- Repeated or workflow-level issues require root-cause analysis and systemic repair, not single-point symptom fixes.
+- For Feishu, approval, permission, identity, callback, notification, and knowledge-governance flows, fixes must cover the whole lifecycle: input parsing, identity mapping, stored object, human-facing document, approval/API call, callback handling, audit, and user notification.
+- Human-facing documents are for reviewers and operators. Prefer names, labels, business actions, and concise summaries; keep IDs and paths only as secondary system information.
+- Any fix in these flows must include lifecycle tests and, when relevant, a real integration verification before marking it done.
+
 ## Memory Layers
 
 - OKF-compatible Markdown/YAML files: first-stage human/Agent-readable memory.
