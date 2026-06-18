@@ -21,6 +21,7 @@ from .core import (
     make_project,
     render_doc,
     review_path,
+    search_audit_logs,
     search_retrieval,
     slug,
     unique_time_id,
@@ -218,6 +219,17 @@ def claim_feishu_message_event(bundle: Bundle, incoming: dict[str, str]) -> dict
     if not message_id:
         return {}
     path = feishu_message_event_path(bundle, message_id)
+    if not path.exists() and legacy_feishu_message_processed(bundle, message_id):
+        legacy = {
+            "messageId": message_id,
+            "status": "completed_legacy",
+            "createdAt": utc_now(),
+            "lastDuplicateAt": utc_now(),
+            "duplicateCount": 1,
+            "source": "audit_log",
+        }
+        write_text(path, json.dumps(legacy, ensure_ascii=False, indent=2) + "\n")
+        return legacy
     record: dict[str, Any] = {
         "messageId": message_id,
         "status": "processing",
@@ -242,6 +254,12 @@ def claim_feishu_message_event(bundle: Bundle, incoming: dict[str, str]) -> dict
         existing["lastDuplicateAt"] = utc_now()
         write_text(path, json.dumps(existing, ensure_ascii=False, indent=2) + "\n")
         return existing
+
+
+def legacy_feishu_message_processed(bundle: Bundle, message_id: str) -> bool:
+    if not message_id:
+        return False
+    return any(row.get("action") == "feishu.message.receive" for row in search_audit_logs(bundle, target=message_id))
 
 
 def complete_feishu_message_event(bundle: Bundle, incoming: dict[str, str], reply: str, sent: bool, reply_error: str) -> None:
