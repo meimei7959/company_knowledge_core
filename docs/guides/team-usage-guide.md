@@ -788,13 +788,28 @@ http://124.221.138.151/knowledge-api/integrations/feishu/events
 完整流程：
 
 ```txt
-1. 机器人收到资料后生成 draft。
-2. 机器人创建审批说明云文档，并归档到审批知识库。
-3. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
-4. 审核人在飞书审批中心或卡片里打开说明文档并点通过/驳回。
-5. 审批回调进入知识工程。
-6. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
-7. 机器人私聊回推给提交人。
+1. 飞书机器人收到资料，记录 Interaction 和 SourceMaterial。
+2. 知识提取 Agent 把会议纪要、聊天、文件或说明转换成结构化草稿。
+3. 知识审核 Agent 审核草稿，判断分类、字段、来源、重复、冲突、敏感信息和可读性。
+4. 低风险经验类内容机审通过后直接以 `observed/draft` 落库，并写 ReviewRecord 和 AuditLog。
+5. 需要人工审批时，知识审核 Agent 创建审批说明云文档。
+6. 机器人按三类业务单据填入模板字段并创建飞书审批实例。
+7. 审核人在飞书审批中心或卡片里打开说明文档并点通过/驳回。
+8. 审批回调进入知识工程。
+9. 知识工程更新 status、reviewer、reviewedAt，并写 AuditLog。
+10. 机器人私聊回推给提交人。
+```
+
+Agent/CLI 推送流程：
+
+```txt
+1. Codex、Claude、Antigravity、云端 Agent 或其他本地 Agent 通过 CLI 推送内容。
+2. CLI 记录 AgentRun、SourceMaterial、ToolUpdate 或 ProjectUpdate 引用。
+3. 知识提取 Agent 根据推送内容整理结构化草稿。
+4. 知识审核 Agent 审核草稿并做治理分类。
+5. 低风险经验类内容直接以 `observed/draft` 落库。
+6. 需要人工审批的内容生成审批说明并发起飞书审批。
+7. 结果回写 AuditLog，并通知提交方或提交人。
 ```
 
 应急兜底命令仍可用，但不作为日常主流程：

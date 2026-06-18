@@ -58,6 +58,12 @@ ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" "${SUDO} mkdir -p ${REMOTE_REPO} && ${SUDO}
 
 echo "==> sync repository"
 rsync -az --delete -e "${RSYNC_SSH}" \
+  --filter "P /agents/***" \
+  --filter "P /knowledge/***" \
+  --filter "P /policies/***" \
+  --filter "P /projects/***" \
+  --filter "P /runs/***" \
+  --filter "P /tools/***" \
   --exclude ".git/" \
   --exclude ".zhenzhi/" \
   --exclude ".codegraph/" \

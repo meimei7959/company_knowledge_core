@@ -55,5 +55,7 @@ Reusable tools are ToolAsset records. Reviewed writes and status changes must cr
 - Do not use vector search as the only memory layer.
 - Do not store secrets, tokens, keys, or passwords.
 - Do not let Agent publish verified knowledge without review.
+- Do not let any reusable knowledge write bypass the Knowledge Review Agent gate.
+- Knowledge Review Agent checks source, structure, category, sensitivity, duplicates, conflicts, reviewer readability, and review path before indexing, approval, or promotion.
 - Do not let Agent call unregistered tools.
 - Do not embed GEO-specific schema into core.

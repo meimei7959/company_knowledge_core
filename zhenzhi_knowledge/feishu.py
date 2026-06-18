@@ -623,7 +623,16 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
             return f"{message}\n请 @ 负责人，或输入姓名/手机号。"
         return "缺项目负责人。请 @ 负责人，或输入姓名/手机号。"
     project_id = normalize_project_id(project_name)
-    project_path = make_project(bundle, project_id, project_name, owner_open_id)
+    target_ref = f"projects/{slug(project_id)}/project.md"
+    existing_status = project_status(bundle, project_id)
+    if existing_status in FORMAL_STATUSES:
+        return f"项目已存在：{project_name}\n项目ID：{project_id}\n状态：{existing_status}"
+    pending_approval = find_pending_approval_for_target(bundle, target_ref)
+    if pending_approval:
+        return f"项目草稿已存在：{project_name}\n已发起飞书审批：{pending_approval}"
+    project_path = bundle.root / target_ref
+    if not project_path.exists():
+        project_path = make_project(bundle, project_id, project_name, owner_open_id)
     approval_line = trigger_approval_for_target(
         bundle,
         settings,
@@ -830,6 +839,25 @@ def trigger_approval_for_target(
     if approval_doc.get("url"):
         return f"已发起飞书审批：{instance_code}\n审批说明: {approval_doc['url']}"
     return f"已发起飞书审批：{instance_code}"
+
+
+def project_status(bundle: Bundle, project_id: str) -> str:
+    project_path = bundle.root / "projects" / slug(project_id) / "project.md"
+    if not project_path.exists():
+        return ""
+    return frontmatter_value(project_path, "status")
+
+
+def find_pending_approval_for_target(bundle: Bundle, target_ref: str) -> str:
+    directory = approval_request_dir(bundle)
+    for path in sorted(directory.glob("*.json"), key=lambda item: item.stat().st_mtime, reverse=True):
+        try:
+            request = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if request.get("targetRef") == target_ref and not request.get("finalStatus"):
+            return request.get("instanceCode", "")
+    return ""
 
 
 def approval_code_for_type(settings: FeishuSettings, approval_type: str) -> str:
@@ -1430,9 +1458,11 @@ def handle_approval_event(bundle: Bundle, payload: dict[str, Any], settings: Fei
     approval_code = str(deep_find(payload, "approval_code") or deep_find(payload, "approvalCode") or "")
     status = str(deep_find(payload, "status") or deep_find(payload, "approval_status") or "").upper()
     if not instance_code:
+        audit_ignored_approval_event(bundle, payload, "approval_event_without_instance_code", status)
         return {"ok": True, "ignored": "approval_event_without_instance_code"}
     request = load_approval_request(bundle, instance_code)
     if not request:
+        audit_ignored_approval_event(bundle, payload, "unknown_approval_instance", status, instance_code)
         return {"ok": True, "ignored": "unknown_approval_instance", "instanceCode": instance_code}
     expected_code = request.get("approvalCode", "")
     if expected_code and approval_code and approval_code != expected_code:
@@ -1445,6 +1475,7 @@ def handle_approval_event(bundle: Bundle, payload: dict[str, Any], settings: Fei
     approved = status in {"2", "APPROVED", "PASS", "AGREE", "APPROVE", "APPROVAL_APPROVED"}
     rejected = status in {"3", "4", "5", "REJECTED", "REJECT", "REFUSED", "DENIED", "CANCELED", "CANCELLED"}
     if not approved and not rejected:
+        audit_ignored_approval_event(bundle, payload, "approval_status_not_final", status, instance_code)
         return {"ok": True, "ignored": "approval_status_not_final", "status": status, "instanceCode": instance_code}
     if target_ref.startswith("token-request:"):
         result = handle_token_approval_result(bundle, settings, request, reviewer, approved, instance_code)
@@ -1452,12 +1483,54 @@ def handle_approval_event(bundle: Bundle, payload: dict[str, Any], settings: Fei
         save_approval_request(bundle, instance_code, request)
         return result
     new_status = request.get("requestedStatus", "verified") if approved else "rejected"
+    if approved:
+        ensure_approval_target_exists(bundle, request, instance_code)
     audit_path = review_path(bundle, Path(target_ref), new_status, reviewer)
     create_audit_log(bundle, reviewer, "feishu.approval.callback", target_ref, after=new_status, policy_result=request.get("approvalType", ""), details=f"instanceCode: {instance_code}\nstatus: {status}")
     request["finalStatus"] = new_status
     save_approval_request(bundle, instance_code, request)
     notify_approval_result(bundle, settings, request, approved, instance_code, new_status)
     return {"ok": True, "instanceCode": instance_code, "targetRef": target_ref, "status": new_status, "auditRef": str(audit_path.relative_to(bundle.root))}
+
+
+def audit_ignored_approval_event(bundle: Bundle, payload: dict[str, Any], reason: str, status: str, instance_code: str = "") -> None:
+    target = instance_code or str(deep_find(payload, "instance_code") or deep_find(payload, "instanceCode") or "unknown")
+    details = "\n".join(
+        [
+            f"reason: {reason}",
+            f"status: {status or '-'}",
+            f"eventType: {extract_event_type(payload) or '-'}",
+            f"approvalCodePresent: {bool(deep_find(payload, 'approval_code') or deep_find(payload, 'approvalCode'))}",
+            f"payloadKeys: {','.join(sorted(str(key) for key in payload.keys()))}",
+        ]
+    )
+    create_audit_log(bundle, "feishu-approval", "feishu.approval.ignored", target, after="ignored", policy_result="approval_callback", details=details)
+
+
+def ensure_approval_target_exists(bundle: Bundle, request: dict[str, str], instance_code: str) -> None:
+    target_ref = request.get("targetRef", "")
+    if not target_ref:
+        return
+    target_path = bundle.root / target_ref
+    if target_path.exists():
+        return
+    if request.get("approvalType") != APPROVAL_TYPE_PROJECT_INIT:
+        return
+    project_id = request.get("projectId", "")
+    project_name = request.get("projectName", "")
+    owner = request.get("ownerOpenId") or request.get("ownerUserId") or request.get("ownerName") or "unknown"
+    if not project_id or not project_name:
+        return
+    recreated = make_project(bundle, project_id, project_name, owner)
+    create_audit_log(
+        bundle,
+        "feishu-approval",
+        "feishu.approval.target_recreated",
+        str(recreated.relative_to(bundle.root)),
+        after="draft",
+        policy_result=request.get("approvalType", ""),
+        details=f"instanceCode: {instance_code}\nmissingTargetRef: {target_ref}",
+    )
 
 
 def notify_approval_result(bundle: Bundle, settings: FeishuSettings, request: dict[str, str], approved: bool, instance_code: str, new_status: str) -> None:

@@ -18,6 +18,15 @@ zhenzhi-knowledge Local Connector
 Agent Workflow
   context pack before task, AgentRun and draft updates after task
 
+Agent/CLI Intake
+  Codex, Claude, Antigravity, cloud Agent, or local Agent pushes content through zhenzhi-knowledge
+
+Knowledge Extraction Agent
+  turns Feishu materials or Agent/CLI pushes into structured drafts
+
+Knowledge Review Agent Gate
+  structure check, source check, conflict check, sensitivity check, approval document drafting
+
 Local Index
   frontmatter scan, SQLite metadata index, full-text search
 
@@ -67,7 +76,8 @@ First build:
 - Project registration.
 - ToolAsset registration.
 - Agent start/finish workflow.
-- Review and sync workflow.
+- Knowledge Review Agent gate.
+- Human review and sync workflow.
 
 Do not build first:
 

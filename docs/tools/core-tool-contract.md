@@ -80,15 +80,24 @@ Responsibilities:
 - `start` validates projectId, agentId, policy, and tool permissions.
 - `start` generates `.zhenzhi/context/current.md`.
 - `finish` generates AgentRun, ProjectUpdate draft, KnowledgeDraft, and ToolUpdate draft.
+- Agent/CLI push content must be recorded as AgentRun, SourceMaterial, ToolUpdate, or ProjectUpdate input before extraction.
+- CLI-pushed content must go through Knowledge Extraction Agent before Knowledge Review Agent classification.
 
 ## review
 
 - `zhenzhi-knowledge review list`
 - `zhenzhi-knowledge review update`
 - `zhenzhi-knowledge review bulk`
+- `zhenzhi-knowledge review agent-check`
 
 Responsibilities:
 
+- Run the Knowledge Review Agent gate before indexing, human approval, or status promotion.
+- Classify each candidate as auto observed, human approval required, clarification required, conflict required, or rejected.
+- Directly store passed low-risk lessons, pitfalls, issue reviews, integration notes, and debugging conclusions as `observed/draft`.
+- Create ReviewRecord for machine review results.
+- Create IssueRecord for missing fields, unclear source, sensitivity risk, duplicate risk, conflict risk, or unreadable approval material.
+- Generate reviewer-facing approval documents only for candidates classified as requiring human approval.
 - Promote draft -> verified.
 - Promote testing -> approved.
 - Promote stale_candidate -> stale or verified.

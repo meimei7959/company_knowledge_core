@@ -26,6 +26,7 @@ Tools must preserve unknown fields.
 Status values:
 
 - `draft`
+- `observed`
 - `testing`
 - `verified`
 - `approved`
@@ -121,6 +122,7 @@ Required governance:
 - scope
 - owner
 - updatedAt
+- reviewAgentResult
 
 ## SourceMaterial
 
@@ -290,6 +292,10 @@ Key fields:
 - comments
 - issueRefs
 - approvedAt
+- reviewAgentId
+- gateResult
+- requiredHumanApproval
+- generatedApprovalDocRef
 
 ## IssueRecord
 

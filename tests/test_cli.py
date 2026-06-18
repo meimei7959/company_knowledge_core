@@ -1031,6 +1031,122 @@ Use parser.
             finally:
                 feishu_module.create_feishu_approval_instance = original_create
 
+    def test_feishu_project_init_reuses_pending_project_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="expected-token",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=["ou_common"],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
+                approval_doc_domain="",
+                approval_doc_share_names=[],
+                user_open_id_map={},
+            )
+            created: list[str] = []
+            original_create = feishu_module.create_feishu_approval_instance
+            feishu_module.create_feishu_approval_instance = lambda *_args, **_kwargs: created.append("approval_once") or "approval_once"
+            incoming = {
+                "messageId": "om_project",
+                "chatId": "oc_test",
+                "chatType": "group",
+                "text": "立项申请：项目名称 A项目，项目负责人 @Alice",
+                "openId": "ou_submitter",
+                "userId": "submitter",
+                "mentionedOpenIds": "ou_owner",
+            }
+            try:
+                first = feishu_module.build_reply(Bundle(root), incoming, settings)
+                second = feishu_module.build_reply(Bundle(root), {**incoming, "messageId": "om_project_retry"}, settings)
+            finally:
+                feishu_module.create_feishu_approval_instance = original_create
+            self.assertIn("已发起飞书审批：approval_once", first)
+            self.assertIn("项目草稿已存在", second)
+            self.assertEqual(created, ["approval_once"])
+
+    def test_approval_callback_recreates_missing_project_target_and_notifies_submitter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            save_approval_request(
+                bundle,
+                "approval_project_missing",
+                {
+                    "instanceCode": "approval_project_missing",
+                    "approvalCode": "approval_common",
+                    "approvalType": "project_init",
+                    "targetRef": "projects/project-missing/project.md",
+                    "requestedStatus": "verified",
+                    "projectId": "project-missing",
+                    "projectName": "缺失项目",
+                    "ownerOpenId": "ou_owner",
+                    "submitterOpenId": "ou_submitter",
+                    "approvalDocUrl": "https://example.com/doc",
+                },
+            )
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="expected-token",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=[],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
+                approval_doc_domain="",
+                approval_doc_share_names=[],
+                user_open_id_map={},
+            )
+            sent_messages: list[tuple[str, str]] = []
+            original_send = feishu_module.send_feishu_message
+            feishu_module.send_feishu_message = lambda _settings, open_id, text: sent_messages.append((open_id, text)) or True
+            try:
+                result = feishu_module.handle_approval_event(
+                    bundle,
+                    {
+                        "schema": "2.0",
+                        "header": {"event_type": "approval.instance.updated_v4"},
+                        "event": {
+                            "instance_code": "approval_project_missing",
+                            "approval_code": "approval_common",
+                            "status": "APPROVED",
+                            "operator_id": {"open_id": "ou_reviewer"},
+                        },
+                    },
+                    settings,
+                )
+            finally:
+                feishu_module.send_feishu_message = original_send
+            project_path = root / "projects" / "project-missing" / "project.md"
+            self.assertEqual(result["status"], "verified")
+            self.assertIn("status: verified", project_path.read_text(encoding="utf-8"))
+            self.assertEqual(sent_messages[-1][0], "ou_submitter")
+            self.assertIn("项目立项已通过：缺失项目", sent_messages[-1][1])
+            audits = "\n".join(path.read_text(encoding="utf-8") for path in (root / "knowledge" / "audit").glob("*.md"))
+            self.assertIn("feishu.approval.target_recreated", audits)
+
     def test_feishu_project_init_understands_natural_language_and_asks_for_mention(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

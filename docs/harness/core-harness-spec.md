@@ -72,6 +72,12 @@ The local connector must support:
 
 ## Governance Checks
 
+- Every reusable knowledge write candidate must have a Knowledge Review Agent result before indexing, human approval, or status promotion.
+- Knowledge Review Agent must block candidates missing sourceRef, owner, status, scope, confidence, category, or readable summary.
+- Knowledge Review Agent must classify candidates into auto observed, human approval required, clarification required, conflict required, or rejected.
+- Passed low-risk lessons, pitfalls, issue reviews, integration notes, and debugging conclusions may be stored as observed/draft without human approval.
+- Knowledge Review Agent must create or reference IssueRecord when it finds missing information, duplicate risk, conflict risk, sensitivity risk, or unreadable approval content.
+- Knowledge Review Agent must not promote its own output to verified, approved, active, policy, permission, security, or cross-team standard status.
 - verified KnowledgeItem requires human review.
 - approved ToolAsset requires Tool Owner approval.
 - approved ToolAsset must be blocked when a failing EvalRun targets it.

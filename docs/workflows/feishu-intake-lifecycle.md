@@ -9,13 +9,14 @@ Core stores communication artifacts and source references. Business domains deci
 ## Lifecycle
 
 ```txt
-Chat message or file
+Feishu message or file
 -> Interaction
 -> SourceMaterial
--> KnowledgeItem candidates
--> MissingFact queue
--> Customer confirmation
--> Confirmed KnowledgeItem
+-> Knowledge Extraction Agent
+-> KnowledgeDraft candidates
+-> Knowledge Review Agent
+-> auto observed / clarification / conflict / human approval / reject
+-> stored KnowledgeItem or approved publication
 ```
 
 ## Core Responsibilities
@@ -23,9 +24,30 @@ Chat message or file
 - Bind chat thread to project/customer.
 - Preserve message/file source references.
 - Store materials and interactions.
-- Store missing fact records.
+- Run Knowledge Extraction Agent to turn SourceMaterial into structured drafts.
+- Run Knowledge Review Agent to classify the draft route.
+- Store auto-approved observed/draft knowledge after machine review passes.
+- Store missing fact records when clarification is required.
 - Track confirmations.
 - Audit durable writes.
+
+## Agent Responsibilities
+
+Knowledge Extraction Agent:
+
+- reads the Feishu message, file, meeting note, or thread;
+- creates SourceMaterial references;
+- extracts structured KnowledgeDraft candidates;
+- preserves project, submitter, sourceRef, confidence, sensitivity, and evidence;
+- does not decide whether the draft can be published.
+
+Knowledge Review Agent:
+
+- reviews the extracted draft, not the raw chat as the primary object;
+- checks classification, required fields, source evidence, duplicate/conflict risk, sensitivity, and readability;
+- decides whether the draft is `auto_observed`, `clarification_required`, `conflict_required`, `human_approval_required`, or `reject`;
+- writes ReviewRecord and AuditLog;
+- creates the approval document only when human approval is required.
 
 ## Domain Responsibilities
 

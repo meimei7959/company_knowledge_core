@@ -48,7 +48,8 @@ zhenzhi-knowledge sync pull
 zhenzhi-knowledge start
 Agent work
 zhenzhi-knowledge finish
-human review
+knowledge review agent gate
+human review when required
 zhenzhi-knowledge sync push
 ```
 
@@ -73,3 +74,9 @@ Agent must read the generated context pack before work and must generate AgentRu
 - Knowledge must be structured, categorized, sourced, confidence-marked, and reviewable before it becomes reusable.
 - Raw documents, screenshots, transcripts, exports, and temporary notes stay outside the knowledge bundle until summarized into approved object types.
 - KnowledgeItem files must live under `knowledge/<category>/`, not directly under `knowledge/`.
+- Agent-summarized lessons, pitfalls, incidents, and integration notes may be written automatically as structured `draft` or `observed` knowledge when they include source evidence, scope, confidence, and applicability limits.
+- Every knowledge write candidate must pass the Knowledge Review Agent gate before it is indexed for reuse, submitted to human approval, or promoted to a stronger status.
+- The Knowledge Review Agent checks structure, category, source evidence, confidence, sensitivity, duplicate risk, conflict risk, reviewer-facing readability, and whether the target status/review path is correct.
+- The Knowledge Review Agent may reject, request clarification, create ReviewRecord/IssueRecord, and draft the approval document. It must not approve its own output as `verified`, `approved`, `active`, or policy.
+- Human approval is required only when knowledge becomes `verified`, changes an existing verified item, creates a policy/workflow/iron rule, or affects permissions, security, customer commitments, or cross-team operating standards.
+- Reviewers approve the reusable conclusion, scope, and operational impact. They are not expected to re-read every raw log or reconstruct every debugging step.

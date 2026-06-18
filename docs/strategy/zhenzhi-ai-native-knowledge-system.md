@@ -27,6 +27,7 @@
 2. 管 Agent：哪个 Agent 做什么、能访问什么、能调用什么工具、结果如何。
 3. 管工具资产：谁开发了什么工具、在哪里、怎么用、什么风险、谁维护。
 4. 管经验知识：做项目、调 Agent、写代码、交付客户过程中形成的可复用经验。
+5. 管知识质量：所有落库内容先过知识审核 Agent，避免知识库变成低质量资料堆。
 
 ## 3. 真源边界
 
@@ -170,13 +171,63 @@ Agent 卡解决：
 - scope
 - owner
 - updatedAt
+- reviewAgentResult
 
 状态：
 
 - draft：未确认。
+- observed：Agent 从真实问题、提交、测试、审批、回调、会议或运行记录中总结出的经验线索，可检索、可引用为参考，但不能作为强制规则。
 - verified：已确认，可复用。
 - stale：可能过期。
 - rejected：不采用。
+
+审核分级：
+
+- 经验线索：`lesson`、`issue`、`pattern` 可以由 Agent 自动生成 `draft/observed`，前提是先通过知识审核 Agent，并写清楚根因、适用范围、证据、风险和不适用场景。这类知识先进入可检索经验库，不触发人工审批。
+- 可复用经验：当经验被多个项目复用，或已有提交、测试、线上验证支撑时，可以申请升级为 `verified`。审核人只判断结论是否可复用、范围是否清楚、风险是否可接受。
+- 强规则：凡是升级为政策、流程、铁律、安全要求、权限策略、审批规则，或修改已有 `verified` 知识，必须走人工审批。
+- 项目专属经验由项目负责人审核；通用工程经验由知识工程负责人或对应领域负责人审核；跨权限、安全、审批、身份、通知的规则由通用负责人审核。
+
+这套分级的目的，是让踩坑经验先被团队和 Agent 搜得到，同时避免每条 AI 总结都变成人工审批负担。
+
+知识审核 Agent：
+
+- 定位：它是知识质检员、治理分类器和审批材料整理员，不是最终审批人。
+- 输入：知识提取 Agent 生成的结构化草稿，以及其引用的 SourceMaterial、AgentRun、聊天消息、会议纪要、Git/PR 摘要、工具说明、人工提交材料。
+- 输出：结构化 KnowledgeItem/Project/ToolAsset/Decision/Policy 候选稿、ReviewRecord、IssueRecord、审批说明文档。
+- 必检项：是否有来源、分类是否正确、字段是否完整、是否重复、是否冲突、是否含敏感信息、是否把原始资料误当知识、是否能被 Agent 准确检索、是否给人看得懂、是否需要人工审批。
+- 治理分类：
+  - `auto_observed`：踩坑经验、问题复盘、集成注意事项、调试结论、低风险工程模式。机审通过后直接落库为 `observed/draft`，不触发人工审批。
+  - `human_approval_required`：项目立项、Token 申请、工具 approved、知识 verified、Policy/Workflow/铁律、权限/安全/审批/身份/通知规则、客户承诺、跨团队标准。
+  - `clarification_required`：缺少项目、负责人、来源、证据、适用范围、敏感级别或关键字段。
+  - `conflict_required`：与已有 verified/active/approved 内容冲突，先建 ConflictRecord，不直接覆盖。
+  - `reject`：原始资料乱丢、无来源、不可复用、含禁止保存信息、明显错误或无法结构化。
+- 结果：`pass_as_observed`、`needs_clarification`、`needs_human_approval`、`reject`、`conflict_detected`。
+- 约束：它不能把自己生成或审核的内容直接改成 `verified`、`approved`、`active`，也不能绕过人工审批发布政策、流程、权限、安全或跨团队规则。
+- 自动落库：分类为 `auto_observed` 且机审通过的内容，由审核 Agent 直接写入对应知识分类目录，并创建 ReviewRecord 和 AuditLog。
+- 审批前置：分类为 `human_approval_required` 的内容，必须先由知识审核 Agent 生成审批说明文档；人工审批人只看整理后的结论、影响范围、风险、冲突和建议。
+
+飞书资料入库链路：
+
+```txt
+飞书机器人收到资料
+-> 记录 Interaction / SourceMaterial
+-> 知识提取 Agent 生成结构化草稿
+-> 知识审核 Agent 审核草稿并治理分类
+-> 直接 observed/draft 落库 或 补资料/冲突/拒绝 或 发起人工审批
+```
+
+Agent/CLI 推送入库链路：
+
+```txt
+本地或云端 Agent 通过 zhenzhi-knowledge CLI 推送内容
+-> 记录 AgentRun / SourceMaterial / ToolUpdate / ProjectUpdate 引用
+-> 知识提取 Agent 根据推送内容生成结构化草稿
+-> 知识审核 Agent 审核草稿并治理分类
+-> 直接 observed/draft 落库 或 补资料/冲突/拒绝 或 发起人工审批
+```
+
+这两条入口共用同一个后半段治理管线。无论内容来自飞书、Codex、Claude、Antigravity、云端 Agent，还是其他本地 Agent，都不能直接写成正式知识。
 
 ### 5.5 SourceMaterial
 
@@ -225,9 +276,12 @@ AgentRun 解决：
 包括：
 
 - 创建项目卡。
+- 知识审核 Agent 通过或驳回落库候选。
 - 更新 Agent 权限。
 - 发布工具。
 - 修改 verified 知识。
+- 将 `draft/observed` 经验升级为 verified。
+- 将经验提升为政策、流程、铁律或跨团队标准。
 - Agent 调用高风险工具。
 - 废弃工具或知识。
 
