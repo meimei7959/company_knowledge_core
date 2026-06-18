@@ -56,10 +56,11 @@ Agent must read the generated context pack before work and must generate AgentRu
 
 ## Engineering Iron Rules
 
-- For any repeated, workflow-level, integration, approval, permission, identity, notification, or knowledge-governance problem, do not patch only the visible symptom. First identify the root cause, then apply a systemic fix across the full affected flow.
+- For every problem, first identify the root cause before fixing. Do not patch only the visible symptom.
+- If the problem is repeated, workflow-level, integration-related, approval-related, permission-related, identity-related, notification-related, or knowledge-governance-related, apply a systemic fix across the full affected flow.
 - A systemic fix must check upstream input, internal data model, generated human-facing output, callback/result handling, audit trail, and user notification where applicable.
 - Human-facing artifacts must be written for the actual human reader. Do not expose raw internal IDs, paths, or status codes as the primary explanation when names, labels, business meaning, or readable summaries can be resolved.
-- After fixing this class of issue, add or update tests that cover the full lifecycle, not only the failing line. If live integration is involved, verify the real external API path before declaring the flow working.
+- After fixing, add or update tests at the right level of risk. For workflow, integration, or governance issues, tests must cover the full lifecycle, not only the failing line. If live integration is involved, verify the real external API path before declaring the flow working.
 
 ## Safety
 

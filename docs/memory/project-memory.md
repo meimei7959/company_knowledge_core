@@ -36,10 +36,10 @@ Reusable tools are ToolAsset records. Reviewed writes and status changes must cr
 
 ## Engineering Iron Rules
 
-- Repeated or workflow-level issues require root-cause analysis and systemic repair, not single-point symptom fixes.
-- For Feishu, approval, permission, identity, callback, notification, and knowledge-governance flows, fixes must cover the whole lifecycle: input parsing, identity mapping, stored object, human-facing document, approval/API call, callback handling, audit, and user notification.
+- Every problem requires root-cause analysis before fixing. Do not make a single-point symptom fix without understanding why the problem happened.
+- Repeated, workflow-level, integration, approval, permission, identity, callback, notification, and knowledge-governance issues require systemic repair across the whole affected lifecycle: input parsing, identity mapping, stored object, human-facing document, approval/API call, callback handling, audit, and user notification where applicable.
 - Human-facing documents are for reviewers and operators. Prefer names, labels, business actions, and concise summaries; keep IDs and paths only as secondary system information.
-- Any fix in these flows must include lifecycle tests and, when relevant, a real integration verification before marking it done.
+- Fixes must include tests at the right level of risk. Workflow, integration, and governance fixes must include lifecycle tests and, when relevant, a real integration verification before marking them done.
 
 ## Memory Layers
 
