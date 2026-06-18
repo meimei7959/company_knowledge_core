@@ -636,6 +636,33 @@ Use parser.
                 self.assertTrue(list((root / "projects" / "a" / "sources").glob("source.*.md")))
                 material_drafts = list((root / "knowledge" / "engineering").glob("feishu-material.*.md"))
                 self.assertTrue(material_drafts)
+                source_count = len(list((root / "projects" / "a" / "sources").glob("source.*.md")))
+                draft_count = len(material_drafts)
+                duplicate_material = urllib.request.Request(
+                    base + "/integrations/feishu/events",
+                    data=json.dumps(
+                        {
+                            "schema": "2.0",
+                            "header": {"event_type": "im.message.receive_v1"},
+                            "event": {
+                                "sender": {"sender_id": {"open_id": "ou_alice", "user_id": "alice"}},
+                                "message": {
+                                    "message_id": "om_material",
+                                    "chat_id": "oc_test",
+                                    "chat_type": "group",
+                                    "message_type": "text",
+                                    "content": json.dumps({"text": "会议纪要：A项目\n今天确认先做机器人资料入口，原始资料保存为 SourceMaterial。"}),
+                                },
+                            },
+                        }
+                    ).encode("utf-8"),
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                duplicate_material_result = json.load(urllib.request.urlopen(duplicate_material))
+                self.assertTrue(duplicate_material_result["duplicate"])
+                self.assertEqual(len(list((root / "projects" / "a" / "sources").glob("source.*.md"))), source_count)
+                self.assertEqual(len(list((root / "knowledge" / "engineering").glob("feishu-material.*.md"))), draft_count)
                 review_list = urllib.request.Request(
                     base + "/integrations/feishu/events",
                     data=json.dumps(
@@ -1090,6 +1117,62 @@ Use parser.
                 )
                 self.assertIn("项目草稿已创建", reply)
                 self.assertIn("已发起飞书审批", reply)
+            finally:
+                feishu_module.create_feishu_approval_instance = original_create
+
+    def test_feishu_message_event_retry_is_idempotent_for_project_approval(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="expected-token",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=["reviewer"],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
+                approval_doc_domain="https://xcn68awb7dsi.feishu.cn",
+                approval_doc_share_names=[],
+                user_open_id_map={"hanson": "owner"},
+            )
+            created: list[dict[str, str]] = []
+            original_create = feishu_module.create_feishu_approval_instance
+            def fake_create_approval(*_args, **kwargs):
+                created.append(dict(kwargs.get("form_values", {})))
+                return "approval_once"
+
+            feishu_module.create_feishu_approval_instance = fake_create_approval
+            payload = {
+                "schema": "2.0",
+                "header": {"event_type": "im.message.receive_v1", "token": "expected-token"},
+                "event": {
+                    "sender": {"sender_id": {"open_id": "ou_submitter", "user_id": "submitter"}},
+                    "message": {
+                        "message_id": "om_project_retry",
+                        "chat_id": "oc_test",
+                        "chat_type": "group",
+                        "message_type": "text",
+                        "content": json.dumps({"text": "创建一个项目，名字叫做工业软件点胶机。项目负责人是hanson"}),
+                    },
+                },
+            }
+            try:
+                first = feishu_module.handle_feishu_event(Bundle(root), payload, settings)
+                second = feishu_module.handle_feishu_event(Bundle(root), payload, settings)
+                self.assertTrue(first["ok"])
+                self.assertTrue(second["duplicate"])
+                self.assertEqual(len(created), 1)
+                self.assertEqual(len(list((root / "projects").glob("*/project.md"))), 1)
             finally:
                 feishu_module.create_feishu_approval_instance = original_create
 

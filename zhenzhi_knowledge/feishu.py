@@ -161,8 +161,21 @@ def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: Feish
     incoming = parse_message_event(payload)
     if not incoming["text"].strip():
         return {"ok": True, "ignored": "empty_message"}
-    reply = build_reply(bundle, incoming, settings)
-    create_feishu_audit(bundle, incoming, reply)
+    duplicate = claim_feishu_message_event(bundle, incoming)
+    if duplicate:
+        return {
+            "ok": True,
+            "duplicate": True,
+            "messageId": incoming.get("messageId", ""),
+            "status": duplicate.get("status", "processing"),
+            "sent": False,
+        }
+    try:
+        reply = build_reply(bundle, incoming, settings)
+        create_feishu_audit(bundle, incoming, reply)
+    except Exception as exc:
+        fail_feishu_message_event(bundle, incoming, exc)
+        raise
     sent = False
     reply_error = ""
     if settings.reply_enabled and settings.app_id and settings.app_secret:
@@ -174,7 +187,90 @@ def handle_feishu_event(bundle: Bundle, payload: dict[str, Any], settings: Feish
     result: dict[str, Any] = {"ok": True, "reply": reply, "sent": sent}
     if reply_error:
         result["replyError"] = reply_error
+    complete_feishu_message_event(bundle, incoming, reply, sent, reply_error)
     return result
+
+
+def feishu_message_event_dir(bundle: Bundle) -> Path:
+    path = bundle.zz_dir / "feishu-message-events"
+    ensure_dir(path)
+    return path
+
+
+def feishu_message_event_path(bundle: Bundle, message_id: str) -> Path:
+    return feishu_message_event_dir(bundle) / f"{slug(message_id)}.json"
+
+
+def load_feishu_message_event(bundle: Bundle, message_id: str) -> dict[str, Any]:
+    if not message_id:
+        return {}
+    path = feishu_message_event_path(bundle, message_id)
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"messageId": message_id, "status": "corrupt"}
+
+
+def claim_feishu_message_event(bundle: Bundle, incoming: dict[str, str]) -> dict[str, Any]:
+    message_id = incoming.get("messageId", "")
+    if not message_id:
+        return {}
+    path = feishu_message_event_path(bundle, message_id)
+    record: dict[str, Any] = {
+        "messageId": message_id,
+        "status": "processing",
+        "createdAt": utc_now(),
+        "chatId": incoming.get("chatId", ""),
+        "chatType": incoming.get("chatType", ""),
+        "openId": incoming.get("openId", ""),
+        "userId": incoming.get("userId", ""),
+        "textHash": hashlib.sha256(incoming.get("text", "").encode("utf-8")).hexdigest(),
+        "duplicateCount": 0,
+    }
+    try:
+        with path.open("x", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
+        return {}
+    except FileExistsError:
+        existing = load_feishu_message_event(bundle, message_id)
+        try:
+            existing["duplicateCount"] = int(existing.get("duplicateCount", 0)) + 1
+        except (TypeError, ValueError):
+            existing["duplicateCount"] = 1
+        existing["lastDuplicateAt"] = utc_now()
+        write_text(path, json.dumps(existing, ensure_ascii=False, indent=2) + "\n")
+        return existing
+
+
+def complete_feishu_message_event(bundle: Bundle, incoming: dict[str, str], reply: str, sent: bool, reply_error: str) -> None:
+    message_id = incoming.get("messageId", "")
+    if not message_id:
+        return
+    path = feishu_message_event_path(bundle, message_id)
+    record = load_feishu_message_event(bundle, message_id) or {"messageId": message_id, "createdAt": utc_now()}
+    record.update(
+        {
+            "status": "completed",
+            "completedAt": utc_now(),
+            "reply": reply,
+            "replyHash": hashlib.sha256(reply.encode("utf-8")).hexdigest(),
+            "sent": bool(sent),
+            "replyError": reply_error,
+        }
+    )
+    write_text(path, json.dumps(record, ensure_ascii=False, indent=2) + "\n")
+
+
+def fail_feishu_message_event(bundle: Bundle, incoming: dict[str, str], exc: Exception) -> None:
+    message_id = incoming.get("messageId", "")
+    if not message_id:
+        return
+    path = feishu_message_event_path(bundle, message_id)
+    record = load_feishu_message_event(bundle, message_id) or {"messageId": message_id, "createdAt": utc_now()}
+    record.update({"status": "failed", "failedAt": utc_now(), "error": compact_snippet(str(exc), 500)})
+    write_text(path, json.dumps(record, ensure_ascii=False, indent=2) + "\n")
 
 
 def is_url_verification(payload: dict[str, Any]) -> bool:
