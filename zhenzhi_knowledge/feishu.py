@@ -263,6 +263,7 @@ def parse_message_event(payload: dict[str, Any]) -> dict[str, str]:
         "userId": str(sender_id.get("user_id") or ""),
         "unionId": str(sender_id.get("union_id") or ""),
         "mentionedOpenIds": ",".join(extract_mentioned_open_ids(message, content)),
+        "mentionedUserIds": ",".join(extract_mentioned_user_ids(message, content)),
     }
 
 
@@ -301,6 +302,26 @@ def extract_mentioned_open_ids(message: dict[str, Any], content: dict[str, Any])
             open_id = str(mention.get("open_id") or "")
         if open_id and open_id not in result:
             result.append(open_id)
+    return result
+
+
+def extract_mentioned_user_ids(message: dict[str, Any], content: dict[str, Any]) -> list[str]:
+    candidates: list[Any] = []
+    for source in (message, content):
+        mentions = source.get("mentions") if isinstance(source, dict) else None
+        if isinstance(mentions, list):
+            candidates.extend(mentions)
+    result: list[str] = []
+    for mention in candidates:
+        if not isinstance(mention, dict):
+            continue
+        user_id = mention.get("id") or mention.get("user_id") or mention.get("userId") or {}
+        if isinstance(user_id, dict):
+            value = str(user_id.get("user_id") or "")
+        else:
+            value = str(mention.get("user_id") or "")
+        if value and value not in result:
+            result.append(value)
     return result
 
 
@@ -473,10 +494,12 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
     project_name = project_intake.get("projectName", "").strip()
     owner_name = project_intake.get("ownerName", "").strip()
     owner_open_id = first_mentioned_open_id(incoming) or resolve_person_open_id(settings, owner_name)
+    owner_user_id = first_mentioned_user_id(incoming)
     owner_lookup_message = ""
     if not owner_open_id and owner_name:
         lookup = lookup_feishu_user_by_name(settings, owner_name)
         owner_open_id = lookup.get("openId", "")
+        owner_user_id = lookup.get("userId", "")
         owner_lookup_message = lookup.get("message", "")
     if not project_name:
         return "立项申请还缺项目名称。请发送：立项申请：项目名称 <名称>，项目负责人 <姓名/手机号/邮箱>。"
@@ -496,7 +519,7 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
         requested_status="verified",
         project_id=project_id,
         project_name=project_name,
-        owner_open_id=owner_open_id,
+        owner_open_id=owner_user_id or owner_open_id,
         summary=f"项目立项申请：{project_name}",
     )
     return "\n".join(
@@ -606,18 +629,20 @@ def trigger_approval_for_target(
     approval_code = approval_code_for_type(settings, approval_type)
     if not approval_code:
         return f"审批模板未配置：缺少 {approval_type} 类 approval_code，已保留为 draft。"
-    requester = incoming.get("openId") or incoming.get("userId")
+    requester = incoming.get("userId") or approval_user_id_for(settings, incoming.get("openId", ""))
     if not requester:
         return "审批未发起：无法识别提交人飞书身份。"
     reviewers = reviewers_for(settings, approval_type, project_id)
     if not reviewers and approval_type == APPROVAL_TYPE_KNOWLEDGE_INGEST and owner_open_id:
         reviewers = [owner_open_id]
+    reviewers = [item for item in (approval_user_id_for(settings, reviewer) for reviewer in reviewers) if item]
+    owner_user_id = approval_user_id_for(settings, owner_open_id) or requester
     form_values = {
         "approval_type": approval_type,
         "object_path": target_ref,
         "project_id": project_id,
         "project_name": project_name,
-        "owner_open_id": owner_open_id or requester,
+        "owner_open_id": owner_user_id,
         "requested_status": requested_status,
         "submitter": requester,
         "summary": compact_snippet(summary, 500),
@@ -640,9 +665,9 @@ def trigger_approval_for_target(
     try:
         instance_code = create_feishu_approval_instance(
             settings,
-            requester_open_id=requester,
+            requester_user_id=requester,
             approval_code=approval_code,
-            approver_open_ids=reviewers,
+            approver_user_ids=reviewers,
             form_values=form_values,
         )
     except (KnowledgeError, urllib.error.URLError) as exc:
@@ -667,8 +692,10 @@ def trigger_approval_for_target(
             "requestedStatus": requested_status,
             "projectId": project_id,
             "projectName": project_name,
-            "ownerOpenId": owner_open_id or requester,
-            "submitterOpenId": requester,
+            "ownerOpenId": owner_open_id,
+            "ownerUserId": owner_user_id,
+            "submitterOpenId": incoming.get("openId", ""),
+            "submitterUserId": requester,
             "chatId": incoming.get("chatId", ""),
             "messageId": incoming.get("messageId", ""),
             "approvalDocUrl": approval_doc.get("url", ""),
@@ -733,10 +760,34 @@ def first_mentioned_open_id(incoming: dict[str, str]) -> str:
     return split_open_ids(mentioned)[0] if mentioned else ""
 
 
+def first_mentioned_user_id(incoming: dict[str, str]) -> str:
+    mentioned = incoming.get("mentionedUserIds", "")
+    return split_open_ids(mentioned)[0] if mentioned else ""
+
+
 def resolve_person_open_id(settings: FeishuSettings, name: str) -> str:
     if not name:
         return ""
     return settings.user_open_id_map.get(normalize_person_name(name), "")
+
+
+def approval_user_id_for(settings: FeishuSettings, identity: str) -> str:
+    identity = (identity or "").strip()
+    if not identity:
+        return ""
+    if not identity.startswith("ou_"):
+        return identity
+    if not settings.app_id or not settings.app_secret:
+        return identity
+    try:
+        token = get_tenant_access_token(settings)
+        users = list_feishu_users(token, limit=500)
+    except KnowledgeError:
+        return identity
+    for user in users:
+        if str(user.get("open_id") or user.get("openId") or "") == identity:
+            return str(user.get("user_id") or user.get("userId") or identity)
+    return identity
 
 
 def normalize_person_name(name: str) -> str:
@@ -759,7 +810,11 @@ def lookup_feishu_user_by_name(settings: FeishuSettings, name: str) -> dict[str,
     normalized = normalize_person_name(name)
     matches = [user for user in users if user_matches_name(user, normalized)]
     if len(matches) == 1:
-        return {"openId": str(matches[0].get("open_id") or matches[0].get("openId") or ""), "message": f"已从通讯录匹配负责人：{display_user_name(matches[0])}"}
+        return {
+            "openId": str(matches[0].get("open_id") or matches[0].get("openId") or ""),
+            "userId": str(matches[0].get("user_id") or matches[0].get("userId") or ""),
+            "message": f"已从通讯录匹配负责人：{display_user_name(matches[0])}",
+        }
     if len(matches) > 1:
         names = "、".join(display_user_name(user) for user in matches[:5])
         return {"message": f"找到多个负责人：{names}。"}
@@ -856,32 +911,22 @@ def display_user_name(user: dict[str, Any]) -> str:
 
 def create_feishu_approval_instance(
     settings: FeishuSettings,
-    requester_open_id: str,
+    requester_user_id: str,
     approval_code: str,
-    approver_open_ids: list[str],
+    approver_user_ids: list[str],
     form_values: dict[str, str],
 ) -> str:
     token = get_tenant_access_token(settings)
-    url = f"{FEISHU_API_BASE}/approval/v4/instances?user_id_type=open_id"
+    url = f"{FEISHU_API_BASE}/approval/v4/instances"
     body: dict[str, Any] = {
         "approval_code": approval_code,
-        "open_id": requester_open_id,
+        "user_id": requester_user_id,
         "form": json.dumps(approval_form(form_values), ensure_ascii=False),
         "uuid": unique_time_id("approval-request"),
     }
-    if settings.approval_node_approver_key and approver_open_ids:
-        body["node_approver_open_id_list"] = [{"key": settings.approval_node_approver_key, "value": approver_open_ids}]
-    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
-    req = urllib.request.Request(
-        url,
-        data=data,
-        method="POST",
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"},
-    )
-    with urllib.request.urlopen(req, timeout=10) as response:
-        result = json.loads(response.read().decode("utf-8"))
-    if result.get("code") != 0:
-        raise KnowledgeError(f"Feishu approval create failed: {result.get('msg') or result.get('code')}")
+    if settings.approval_node_approver_key and approver_user_ids:
+        body["node_approver_user_id_list"] = [{"key": settings.approval_node_approver_key, "value": approver_user_ids}]
+    result = feishu_json_request("POST", url, token, body)
     data_obj = result.get("data") or {}
     instance_code = str(data_obj.get("instance_code") or data_obj.get("instanceCode") or "")
     if not instance_code:

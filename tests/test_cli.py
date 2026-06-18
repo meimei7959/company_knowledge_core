@@ -933,12 +933,12 @@ Use parser.
             )
             created: dict[str, object] = {}
             original_create = feishu_module.create_feishu_approval_instance
-            def fake_create_approval(_settings, requester_open_id, approval_code, approver_open_ids, form_values):
+            def fake_create_approval(_settings, requester_user_id, approval_code, approver_user_ids, form_values):
                 created.update(
                     {
-                        "requester": requester_open_id,
+                        "requester": requester_user_id,
                         "approval_code": approval_code,
-                        "approvers": approver_open_ids,
+                        "approvers": approver_user_ids,
                         "form_values": form_values,
                     }
                 )
@@ -1145,7 +1145,7 @@ Use parser.
                 created["doc_values"] = dict(values)
                 return {"url": "https://xcn68awb7dsi.feishu.cn/wiki/doc_node", "nodeToken": "doc_node", "objToken": "doc_obj"}
 
-            def fake_instance(_settings, requester_open_id, approval_code, approver_open_ids, form_values):
+            def fake_instance(_settings, requester_user_id, approval_code, approver_user_ids, form_values):
                 created["instance_values"] = dict(form_values)
                 return "approval_with_doc"
 
