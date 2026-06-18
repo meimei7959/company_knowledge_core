@@ -1142,10 +1142,83 @@ Use parser.
             project_path = root / "projects" / "project-missing" / "project.md"
             self.assertEqual(result["status"], "verified")
             self.assertIn("status: verified", project_path.read_text(encoding="utf-8"))
-            self.assertEqual(sent_messages[-1][0], "ou_submitter")
-            self.assertIn("项目立项已通过：缺失项目", sent_messages[-1][1])
+            self.assertEqual(sent_messages[0][0], "ou_submitter")
+            self.assertIn("项目立项已通过：缺失项目", sent_messages[0][1])
+            self.assertEqual(sent_messages[1][0], "ou_owner")
+            self.assertIn("你负责的项目已立项：缺失项目", sent_messages[1][1])
+            self.assertIn("会议纪要：project-missing", sent_messages[1][1])
+            self.assertEqual(len(sent_messages), 2)
             audits = "\n".join(path.read_text(encoding="utf-8") for path in (root / "knowledge" / "audit").glob("*.md"))
             self.assertIn("feishu.approval.target_recreated", audits)
+
+    def test_project_owner_notification_failure_notifies_submitter(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            save_approval_request(
+                bundle,
+                "approval_owner_unreachable",
+                {
+                    "instanceCode": "approval_owner_unreachable",
+                    "approvalCode": "approval_common",
+                    "approvalType": "project_init",
+                    "targetRef": "projects/project-owner/project.md",
+                    "requestedStatus": "verified",
+                    "projectId": "project-owner",
+                    "projectName": "负责人不可达项目",
+                    "ownerOpenId": "ou_owner",
+                    "ownerName": "Owner",
+                    "submitterOpenId": "ou_submitter",
+                },
+            )
+            settings = feishu_module.FeishuSettings(
+                app_id="",
+                app_secret="",
+                verification_token="expected-token",
+                reply_enabled=False,
+                token_auto_approve=False,
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                approval_code_security="",
+                approval_node_approver_key="",
+                common_reviewer_open_ids=[],
+                security_reviewer_open_ids=[],
+                project_reviewer_open_ids={},
+                token_send_on_approval=False,
+                approval_doc_folder_token="",
+                approval_doc_folder_tokens={},
+                approval_doc_domain="",
+                approval_doc_share_names=[],
+                user_open_id_map={},
+            )
+            sent_messages: list[tuple[str, str]] = []
+            original_send = feishu_module.send_feishu_message
+            def fake_send(_settings, open_id, text):
+                if open_id == "ou_owner":
+                    raise feishu_module.KnowledgeError("Bot has NO availability to this user.")
+                sent_messages.append((open_id, text))
+                return True
+            feishu_module.send_feishu_message = fake_send
+            try:
+                feishu_module.handle_approval_event(
+                    bundle,
+                    {
+                        "schema": "2.0",
+                        "header": {"event_type": "approval.instance.updated_v4"},
+                        "event": {"instance_code": "approval_owner_unreachable", "approval_code": "approval_common", "status": "APPROVED"},
+                    },
+                    settings,
+                )
+            finally:
+                feishu_module.send_feishu_message = original_send
+            self.assertEqual(sent_messages[0][0], "ou_submitter")
+            self.assertIn("项目立项已通过", sent_messages[0][1])
+            self.assertEqual(sent_messages[1][0], "ou_submitter")
+            self.assertIn("负责人通知未送达", sent_messages[1][1])
+            audits = "\n".join(path.read_text(encoding="utf-8") for path in (root / "knowledge" / "audit").glob("*.md"))
+            self.assertIn("recipientRole: project_owner", audits)
 
     def test_feishu_project_init_understands_natural_language_and_asks_for_mention(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

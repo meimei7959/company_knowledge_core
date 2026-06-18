@@ -1535,11 +1535,20 @@ def ensure_approval_target_exists(bundle: Bundle, request: dict[str, str], insta
 
 def notify_approval_result(bundle: Bundle, settings: FeishuSettings, request: dict[str, str], approved: bool, instance_code: str, new_status: str) -> None:
     submitter = request.get("submitterOpenId", "")
-    if not submitter:
-        return
-    text = approval_result_message(request, approved, instance_code, new_status)
+    if submitter:
+        notify_approval_recipient(bundle, settings, request, submitter, approval_result_message(request, approved, instance_code, new_status), "submitter")
+    if approved and request.get("approvalType") == APPROVAL_TYPE_PROJECT_INIT:
+        owner = feishu_open_id_for(settings, request.get("ownerOpenId") or request.get("ownerUserId", ""))
+        if owner and owner != submitter:
+            owner_sent = notify_approval_recipient(bundle, settings, request, owner, project_owner_onboarding_message(request, instance_code, new_status), "project_owner")
+            if not owner_sent and submitter:
+                notify_approval_recipient(bundle, settings, request, submitter, project_owner_unreachable_message(request), "submitter_owner_notify_failed")
+
+
+def notify_approval_recipient(bundle: Bundle, settings: FeishuSettings, request: dict[str, str], open_id: str, text: str, role: str) -> bool:
     try:
-        send_feishu_message(settings, submitter, text)
+        send_feishu_message(settings, open_id, text)
+        return True
     except (KnowledgeError, urllib.error.URLError) as exc:
         create_audit_log(
             bundle,
@@ -1548,8 +1557,37 @@ def notify_approval_result(bundle: Bundle, settings: FeishuSettings, request: di
             request.get("targetRef", ""),
             after="failed",
             policy_result=request.get("approvalType", ""),
-            details=compact_snippet(str(exc), 500),
+            details=f"recipientRole: {role}\n{compact_snippet(str(exc), 500)}",
         )
+        return False
+
+
+def feishu_open_id_for(settings: FeishuSettings, identity: str) -> str:
+    identity = (identity or "").strip()
+    if not identity:
+        return ""
+    if identity.startswith("ou_"):
+        return identity
+    if not settings.app_id or not settings.app_secret:
+        return ""
+    try:
+        token = get_tenant_access_token(settings)
+        users = list_feishu_users(token, limit=500)
+    except KnowledgeError:
+        return ""
+    for user in users:
+        values = [
+            user.get("user_id"),
+            user.get("userId"),
+            user.get("union_id"),
+            user.get("unionId"),
+            user.get("email"),
+            user.get("mobile"),
+            user.get("employee_no"),
+        ]
+        if any(str(value or "") == identity for value in values):
+            return str(user.get("open_id") or user.get("openId") or "")
+    return ""
 
 
 def approval_result_message(request: dict[str, str], approved: bool, instance_code: str, new_status: str) -> str:
@@ -1574,6 +1612,42 @@ def approval_result_message(request: dict[str, str], approved: bool, instance_co
     if doc_url:
         lines.append(f"审批说明：{doc_url}")
     return "\n".join(lines)
+
+
+def project_owner_onboarding_message(request: dict[str, str], instance_code: str, new_status: str) -> str:
+    project_name = request.get("projectName") or request.get("projectId") or "未命名项目"
+    project_id = request.get("projectId", "")
+    return "\n".join(
+        [
+            f"你负责的项目已立项：{project_name}",
+            f"项目ID：{project_id}",
+            f"状态：{new_status}",
+            "",
+            "后续使用知识库：",
+            f"1. 在群里发：会议纪要：{project_id}\\n<内容>",
+            f"2. 在群里发：资料：{project_id}\\n<内容或文件说明>",
+            "3. 需要沉淀经验时发：沉淀：<经验>",
+            "4. 本地 Agent 开发前执行 sync pull/start，结束执行 finish/sync push。",
+            "5. 需要本地接入 Token，私聊机器人：申请知识工程 token。",
+            "",
+            f"审批实例：{instance_code}",
+        ]
+    )
+
+
+def project_owner_unreachable_message(request: dict[str, str]) -> str:
+    project_name = request.get("projectName") or request.get("projectId") or "未命名项目"
+    project_id = request.get("projectId", "")
+    owner_name = request.get("ownerName") or request.get("ownerOpenId") or "项目负责人"
+    return "\n".join(
+        [
+            f"项目已立项，但负责人通知未送达：{project_name}",
+            f"项目ID：{project_id}",
+            f"负责人：{owner_name}",
+            "原因：机器人当前不可主动私聊该负责人。",
+            "处理：请把负责人加入机器人的可见范围，或把机器人和负责人放到项目群里。",
+        ]
+    )
 
 
 def handle_token_approval_result(bundle: Bundle, settings: FeishuSettings, request: dict[str, str], reviewer: str, approved: bool, instance_code: str) -> dict[str, Any]:
