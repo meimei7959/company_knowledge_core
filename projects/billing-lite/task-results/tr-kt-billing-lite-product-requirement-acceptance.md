@@ -6,33 +6,50 @@ taskType: product_review
 assignee: agent.company.product-manager
 executorAgent: agent.company.product-manager
 runner: runner.billing-lite-local-pm-codex
-leaseProof: ""
 pmLeaseRef: pmlease.billing-lite.20260623T123333794462Z
 pmActionRef: projects/billing-lite/pm-actions/pm-action.20260623T123511285417Z.md
+leaseProof: pmlease.billing-lite.20260623T123333794462Z
 status: submitted
 conclusion: accepted_with_assumptions
-summary: Billing Lite PRD V1.0 is accepted with assumptions for architecture; Development must not pass Gate 0 until first app, SKU, PSP/channel owner, Windows P0, device limit/reset, credential/webhook, and incident owners are closed.
+summary: "PRD V1.0 accepted for architecture with Gate 0 assumptions; development must not pass Gate 0 until first app, first SKU, PSP, Windows P0, device limit, and credential/webhook ownership decisions close."
 outputRefs:
   - projects/billing-lite/task-results/tr-kt-billing-lite-product-requirement-acceptance.md
 evidenceRefs:
   - projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md
   - projects/billing-lite/sources/sm-billing-lite-prd-v1.md
+  - /Users/meimei/Documents/统一付费轻服务/00_原始资料/多端统一付费轻服务_PRD_V1.0.docx
+  - /Users/meimei/Documents/统一付费轻服务/01_产品需求/billing-lite-product-requirement-acceptance.md
   - projects/billing-lite/project.md
   - projects/billing-lite/AGENTS.md
-testsOrChecks:
-  - Checked task runtime, PRD source, original document reference, PM draft isolation, P0/P1/P2 scope, AC-01 through AC-13, technical acceptance dimensions, and Gate 0 open decisions.
 risks:
-  - Product launch scope can shift if Windows is confirmed in or out of P0.
-  - PSP choice may affect adapter details, webhook verification, settlement-facing fields, and operational runbook.
-  - Device limit and reset policy affect License model, support SOP, abuse controls, and customer copy.
-  - Credential ownership must be explicit before production integration.
+  - Windows P0 inclusion may change platform test/release scope.
+  - PSP choice may affect adapter details, webhook verification, and operations runbook.
+  - Device limit/reset policy affects License model, support SOP, abuse controls, and customer copy.
+  - Credential/webhook/incident ownership must be explicit before production integration.
 blockers: []
-nextAction: PM main thread should route architecture only after human/PM acceptance records this Product Manager result; Development beyond Gate 0 remains blocked on open decisions.
+nextAction: "PM main thread should route this TaskResult to human/project acceptance and only then decide whether to release architecture; Gate 0 decisions must close before development crosses Gate 0."
 checks:
-  - product_requirement_review_complete
-  - gate_0_open_decisions_recorded
-  - architecture_handoff_ready_after_pm_routing
-approvalRequest: none
+  - "Checked task runtime: product_review, product_requirement_acceptance, human_review, productEvidenceRequired true, requiresTests false."
+  - "Checked PRD source material and original docx extraction evidence."
+  - "Checked PM draft as non-authoritative input and reissued Product Manager conclusion."
+  - "Checked P0/P1/P2 scope, AC-01 through AC-13, technical acceptance dimensions, and Gate 0 open decisions."
+testsOrChecks:
+  - "No executable tests required for product acceptance."
+  - "Schema validation run after write; initial failure corrected by moving required TaskResult fields into frontmatter."
+approvalRequest:
+  required: true
+  requiredDecisionOwner: "PM main thread / human product owner"
+  reason: "Product result is accepted_with_assumptions and requires Gate 0 decision closure before development implementation."
+qualityEvaluation:
+  decision: handoff_ready
+  productConclusion: accepted_with_assumptions
+  confidence: medium-high
+  rationale: "P0 scope is coherent and testable; unresolved items are bounded as Gate 0 decisions rather than blockers."
+acceptancePolicy:
+  acceptanceStatus: waiting_acceptance
+  path: human_review
+  productResult: accepted_with_assumptions
+  notes: "Architecture may start only after PM routing; development must not pass Gate 0 until open decisions close."
 operatingRuleRefs:
   - docs/agent-team/company-agent-constitution.md
   - docs/agent-team/agent-task-runtime-contract.md
@@ -40,9 +57,18 @@ operatingRuleRefs:
   - docs/agent-team/common-agent-operating-rules.md
   - agents/agent.company.product-manager.md
   - projects/billing-lite/AGENTS.md
-qualityEvaluation: {"decision":"accepted_with_assumptions","confidence":"medium-high","reason":"P0 scope is coherent and testable, acceptance criteria are complete enough for architecture, and unresolved items are bounded as Gate 0 decisions rather than task blockers."}
-acceptancePolicy: {"path":"human_review","productResult":"accepted_with_assumptions","acceptanceStatus":"waiting_acceptance","humanAcceptanceRequired":true,"reason":"Architecture can start only after PM/human acceptance routing records this Product Manager result; Development beyond Gate 0 must wait for open decisions."}
-handoffContract: {"from":"agent.company.product-manager","to":"agent.company.project-manager","requiredArtifacts":["PM acceptance routing","Architecture task handoff"],"artifactRefs":["projects/billing-lite/task-results/tr-kt-billing-lite-product-requirement-acceptance.md","projects/billing-lite/sources/sm-billing-lite-prd-v1.md"],"blockedUntil":"PM/human acceptance routing records this Product Manager result."}
+  - projects/billing-lite/project.md
+  - projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md
+commonRulesEvaluation:
+  traceability: pass
+  draftIsolation: pass
+  roleIsolation: pass
+  evidenceSufficiency: pass_with_assumptions
+  permissionBoundary: pass
+handoffContract:
+  receiver: "PM main thread for acceptance routing; architecture role only after PM routing."
+  architectureReady: true
+  developmentGate: "Do not implement beyond Gate 0 until open decisions close."
 createdAt: "2026-06-23T12:46:00+08:00"
 ---
 

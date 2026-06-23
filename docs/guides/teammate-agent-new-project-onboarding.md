@@ -6,12 +6,13 @@
 
 ## 0. 当前是否可以接入
 
-可以接入，但必须满足四个条件：
+可以接入，但必须满足三个条件：
 
 1. 这台电脑拿到了桢知本地 Agent 工具包。方式可以是 GitHub clone，也可以是项目负责人打包发送。
 2. 这台电脑拿到了项目负责人通过安全渠道发放的 `ZHENZHI_KNOWLEDGE_API_TOKEN_PROD`。
 3. 这台电脑安装了 `git`、`python3 >= 3.11` 和本地 AI 工具，例如 Codex、Claude 或 Antigravity。
-4. 项目负责人已经给你本次新项目的信息包：同事 ID、项目 ID、项目中文名、owner、本地业务项目仓库绝对路径。
+
+当前电脑可以先只注册成可用 Runner。没有新项目时，不需要项目 ID、项目中文名、项目 owner、项目目标、本地业务仓库路径或 PRD 路径。
 
 线上中枢地址：
 
@@ -40,22 +41,31 @@ Skill 包
 
 如果当前电脑不能访问 GitHub，或者现场网络不允许访问 GitHub，可以让项目负责人从已部署版本打一个只读工具包发给当前电脑。这样当前电脑不需要访问 GitHub，也能接入线上中枢。
 
-## 0.2 项目负责人必须先给你的信息包
+## 0.2 项目负责人必须先给你的接入信息
 
-在开始接入前，项目负责人必须通过安全渠道给当前电脑的使用者这些信息：
+只接入电脑时，项目负责人必须通过安全渠道给当前电脑的使用者这些信息：
 
 ```txt
 本地 Agent 工具包获取方式: 默认从公开 GitHub 仓库 clone
 ZHENZHI_KNOWLEDGE_API_TOKEN_PROD: <只私聊发送，不写入文档>
 同事 ID: <英文或拼音，例如 lisi>
 AI 工具: codex / claude / antigravity / other
-新项目 ID: <小写英文数字短横线，例如 customer-service-bot>
-新项目中文名: <给人看的项目名>
-项目 owner: <负责人ID或同事ID>
-本地业务项目仓库绝对路径: <例如 /Users/lisi/Documents/projects/customer-service-bot>
+Runner ID: <建议 runner.<同事ID>-<电脑名>-<ai-tool>，例如 runner.lisi-mac-codex>
+Runner 名称: <给人看的电脑名称，例如 李四 Mac Codex Runner>
 ```
 
 不要猜这些值。缺任何一个，都先停下来向项目负责人要，不要自己编。
+
+以后真的要在这台电脑上启动新项目时，再向项目负责人要新项目信息包：
+
+```txt
+新项目 ID: <小写英文数字短横线，例如 customer-service-bot>
+新项目中文名: <给人看的项目名>
+项目 owner: <负责人ID或同事ID>
+项目目标: <一句话目标>
+本地业务项目仓库绝对路径: <例如 /Users/lisi/Documents/projects/customer-service-bot>
+可选 source-file/PRD 路径: <例如 /Users/lisi/Downloads/prd.md>
+```
 
 ## 0.3 如果无法从 GitHub clone
 
@@ -122,7 +132,7 @@ python3 -m zhenzhi_knowledge.cli project pm-action ...
 
 你不需要去项目负责人电脑上取 token。项目负责人会通过安全渠道把 token 明文发给当前电脑的使用者。
 
-拿到 token 和项目信息包后，在当前这台要接入的新电脑上执行。把 `<项目负责人发给你的token>` 替换成负责人私聊发来的完整 token，把 `<同事英文或拼音ID>` 替换成信息包里的同事 ID。
+拿到 token 和接入信息后，在当前这台要接入的新电脑上执行。把 `<项目负责人发给你的token>` 替换成负责人私聊发来的完整 token，把 `<同事英文或拼音ID>` 替换成信息包里的同事 ID。
 
 ```bash
 git clone https://github.com/meimei7959/company_knowledge_core.git
@@ -202,11 +212,11 @@ python3 -m zhenzhi_knowledge.cli runner register \
   --capability testing \
   --capability task_result_writeback \
   --capability agent_team_growth \
-  --project <新项目ID> \
-  --repo <新项目本地仓库绝对路径> \
   --data-scope local_repo \
   --ring-version single-machine-v1
 ```
+
+只接入电脑时，不要填写 `--project` 和 `--repo`。因为当前还没有新项目，也没有业务代码仓库路径。
 
 注册后发送心跳：
 
@@ -216,14 +226,31 @@ python3 -m zhenzhi_knowledge.cli runner heartbeat \
   --status online \
   --load 0 \
   --capability development \
-  --capability testing \
-  --project <新项目ID>
+  --capability testing
 ```
 
-查看本项目可用 Runner：
+查看已注册 Runner：
 
 ```bash
-python3 -m zhenzhi_knowledge.cli runner list --project <新项目ID>
+python3 -m zhenzhi_knowledge.cli runner list
+```
+
+以后有新项目时，再把这台 Runner 绑定到项目：
+
+```bash
+python3 -m zhenzhi_knowledge.cli runner register \
+  --runner-id runner.lisi-mac-codex \
+  --name "李四 Mac Codex Runner" \
+  --host-type mac \
+  --mode local \
+  --agent agent.lisi.codex \
+  --capability development \
+  --capability testing \
+  --capability task_result_writeback \
+  --project <新项目ID> \
+  --repo <新项目本地仓库绝对路径> \
+  --data-scope local_repo \
+  --ring-version single-machine-v1
 ```
 
 ## 4. 在新项目上使用这套 Agent 团队
