@@ -4546,6 +4546,36 @@ Product package complete.
                     with self.assertRaisesRegex(KnowledgeError, "unknown task routing status"):
                         set_project_task_status(bundle, "STATE-OLD-001", old_status, "meimei")
 
+    def test_frontmatter_list_scalars_preserve_colon_and_uri_values(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "policy.md"
+            path.write_text(
+                core_module.render_doc(
+                    {
+                        "type": "Policy",
+                        "title": "Policy",
+                        "writePermissions": ["knowledge:draft", "toolAsset:draft"],
+                        "requiredSecretRefs": ["secretref://stub/deepseek"],
+                    },
+                    "## Notes\n\nList scalar parsing should preserve colon-bearing values.\n",
+                ),
+                encoding="utf-8",
+            )
+
+            parsed = load_object(path)
+
+            self.assertEqual(parsed["writePermissions"], ["knowledge:draft", "toolAsset:draft"])
+            self.assertEqual(parsed["requiredSecretRefs"], ["secretref://stub/deepseek"])
+            self.assertNotIn('{"secretref"', path.read_text(encoding="utf-8"))
+
+    def test_permission_merge_accepts_legacy_single_key_permission_dicts(self) -> None:
+        permissions = core_module.merged_agent_permissions(
+            {"writePermissions": []},
+            [{"writePermissions": [{"knowledge": "draft"}, {"toolAsset": "draft"}]}],
+        )
+
+        self.assertEqual(permissions["writePermissions"], ["knowledge:draft", "toolAsset:draft"])
+
     def test_task_diagnose_explains_bottleneck_and_next_command(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
