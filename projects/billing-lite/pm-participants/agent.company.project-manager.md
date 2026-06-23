@@ -20,8 +20,8 @@ capabilities:
   - task.update
 currentLeaseId: pmlease.billing-lite.20260623T123333794462Z
 displayName: agent.company.project-manager
-lastActiveAt: "2026-06-23T12:33:33Z"
-updatedAt: "2026-06-23T12:33:33Z"
+lastActiveAt: "2026-06-23T12:41:51Z"
+updatedAt: "2026-06-23T12:41:51Z"
 ---
 
 ## Boundary

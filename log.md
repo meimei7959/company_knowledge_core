@@ -2151,3 +2151,4 @@
 - 2026-06-23T12:35:11Z audit task.updateStatus projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md
 - 2026-06-23T12:35:11Z audit pm.action.record projects/billing-lite/pm-actions/pm-action.20260623T123511285417Z.md pm_action_runtime
 - 2026-06-23T12:35:11Z pm action pm-action.20260623T123511285417Z dispatch exit=dispatched
+- 2026-06-23T12:41:51Z audit pm_control_lease.renewed projects/billing-lite/pm-control-leases/pmlease.billing-lite.20260623t123333794462z.md pm_control_lease

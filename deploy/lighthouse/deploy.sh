@@ -97,9 +97,31 @@ for project_file in sorted((root / "projects").glob("*/project.md")):
         _start, fm, body = text.split("---", 2)
     except ValueError:
         continue
-    if "\ntype: Project\n" not in fm or "\nworkspaceRef:" in fm:
+    if "\ntype: Project\n" not in fm:
         continue
     lines = fm.splitlines()
+    values = {}
+    for line in lines:
+        if ":" in line and not line.startswith((" ", "-")):
+            key, value = line.split(":", 1)
+            values[key.strip()] = value.strip().strip('"')
+    project_id = values.get("projectId") or project_file.parent.name
+    status = values.get("status", "")
+    activated = status in {"active", "done", "verified", "approved", "accepted", "launch_approved"}
+    workspace_ref = f"workspace://legacy/{project_id}" if activated else "pending_confirmation"
+    existing_index = None
+    for index, line in enumerate(lines):
+        if line.startswith("workspaceRef:"):
+            existing_index = index
+            break
+    if existing_index is not None:
+        current = lines[existing_index].split(":", 1)[1].strip().strip('"')
+        if current and (current != "pending_confirmation" or not activated):
+            continue
+        lines[existing_index] = f"workspaceRef: {workspace_ref}"
+        project_file.write_text("---\n" + "\n".join(lines).strip() + "\n---" + body)
+        changed.append(str(project_file))
+        continue
     insert_at = None
     for index, line in enumerate(lines):
         if line.startswith("projectId:"):
@@ -112,7 +134,7 @@ for project_file in sorted((root / "projects").glob("*/project.md")):
                 break
     if insert_at is None:
         insert_at = len(lines)
-    lines.insert(insert_at, "workspaceRef: pending_confirmation")
+    lines.insert(insert_at, f"workspaceRef: {workspace_ref}")
     project_file.write_text("---\n" + "\n".join(lines).strip() + "\n---" + body)
     changed.append(str(project_file))
 
