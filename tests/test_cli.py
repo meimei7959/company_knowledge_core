@@ -4546,6 +4546,19 @@ Product package complete.
                     with self.assertRaisesRegex(KnowledgeError, "unknown task routing status"):
                         set_project_task_status(bundle, "STATE-OLD-001", old_status, "meimei")
 
+    def test_validate_allows_legacy_task_status_without_allowing_new_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            create_project_task(bundle, "Legacy status", "", "meimei", "agent.company.project-manager", task_type="project_management", task_id="STATE-LEGACY-001")
+            task_path = root / "tasks" / "state-legacy-001.md"
+            update_frontmatter_file(task_path, {"status": "manual-runner-required"})
+
+            self.assertFalse(any("unknown task routing status" in problem for problem in validate_bundle(bundle)))
+            with self.assertRaisesRegex(KnowledgeError, "unknown task routing status"):
+                set_project_task_status(bundle, "STATE-LEGACY-001", "manual-runner-required", "meimei")
+
     def test_frontmatter_list_scalars_preserve_colon_and_uri_values(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "policy.md"

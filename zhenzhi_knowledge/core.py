@@ -368,6 +368,9 @@ TASK_ROUTING_STATUS_VALUES = {
     "rejected",
     "cancelled",
 }
+LEGACY_TASK_ROUTING_STATUS_VALUES = {
+    "manual-runner-required",
+}
 WORK_SOURCE_TYPE_VALUES = {"feature", "bugfix", "project_setup", "research", "knowledge_ingest", "maintenance"}
 DEFECT_STATUS_VALUES = {"open", "triaged", "in_progress", "fixed", "regression_required", "closed", "reopened", "rejected"}
 RECEIVER_REVIEW_STATUS_VALUES = {
@@ -16881,7 +16884,7 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.append(f"{rel_path}: unknown status {fm['status']}")
         if fm.get("type") == "Project":
             problems.extend(validate_project_workspace_ref(rel_path, fm))
-        if fm.get("type") in {"ProjectTask", "KnowledgeTask"} and fm.get("status") not in TASK_ROUTING_STATUS_VALUES:
+        if fm.get("type") in {"ProjectTask", "KnowledgeTask"} and fm.get("status") not in (TASK_ROUTING_STATUS_VALUES | LEGACY_TASK_ROUTING_STATUS_VALUES):
             problems.append(f"{rel_path}: unknown task routing status {fm.get('status')}")
         if fm.get("type") in {"ProjectTask", "KnowledgeTask"}:
             problems.extend(validate_task_source_traceability(rel_path, fm, require_explicit=bool(fm.get("workSourceType"))))
