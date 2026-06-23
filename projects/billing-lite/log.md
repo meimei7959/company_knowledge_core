@@ -11,3 +11,4 @@
 - Human acceptance owner recorded as 梅晓华.
 - Corrected PM intake path handling after user feedback: central record path is `projects/billing-lite/`; entity workspace path is `/Users/meimei/Documents/统一付费轻服务`.
 - Recorded prevention rule in project lessons and teammate onboarding guide.
+- Cleaned up misleading empty central subdirectories that looked like entity project work folders. Kept central task, source, PM action, lease, review, and participant records.

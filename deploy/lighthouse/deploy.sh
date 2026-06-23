@@ -79,6 +79,73 @@ rsync -az -e "${RSYNC_SSH}" \
 
 echo "==> env synced"
 
+echo "==> repair legacy project workspace refs"
+ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" bash -s <<'REMOTE'
+set -euo pipefail
+cd /opt/projects/company_knowledge_core/repo
+python3 - <<'PY'
+from datetime import datetime, timezone
+from pathlib import Path
+
+root = Path(".")
+changed = []
+for project_file in sorted((root / "projects").glob("*/project.md")):
+    text = project_file.read_text()
+    if not text.startswith("---\n"):
+        continue
+    try:
+        _start, fm, body = text.split("---", 2)
+    except ValueError:
+        continue
+    if "\ntype: Project\n" not in fm or "\nworkspaceRef:" in fm:
+        continue
+    lines = fm.splitlines()
+    insert_at = None
+    for index, line in enumerate(lines):
+        if line.startswith("projectId:"):
+            insert_at = index + 1
+            break
+    if insert_at is None:
+        for index, line in enumerate(lines):
+            if line.startswith("scope:"):
+                insert_at = index
+                break
+    if insert_at is None:
+        insert_at = len(lines)
+    lines.insert(insert_at, "workspaceRef: pending_confirmation")
+    project_file.write_text("---\n" + "\n".join(lines).strip() + "\n---" + body)
+    changed.append(str(project_file))
+
+if changed:
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    audit_dir = root / "knowledge" / "audit"
+    audit_dir.mkdir(parents=True, exist_ok=True)
+    audit_path = audit_dir / f"audit.{stamp}-deploy-legacy-workspace-ref-repair.md"
+    refs = "\n".join(f"  - {path}" for path in changed)
+    audit_path.write_text(
+        "---\n"
+        "type: AuditLog\n"
+        "title: Deploy repaired legacy Project workspaceRef fields\n"
+        "description: Deploy preflight added workspaceRef pending_confirmation to legacy remote Project records so bundle validation can run.\n"
+        f"timestamp: \"{datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')}\"\n"
+        f"auditId: audit.{stamp}-deploy-legacy-workspace-ref-repair\n"
+        "projectId: company-knowledge-core\n"
+        "actor: deploy.lighthouse\n"
+        "action: legacy_project_workspace_ref_repair\n"
+        "targetRefs:\n"
+        f"{refs}\n"
+        "summary: Added workspaceRef pending_confirmation to remote legacy Project records missing the required field.\n"
+        "sensitivity: internal\n"
+        "---\n\n"
+        "## Audit\n\n"
+        "This deployment repair preserves legacy Project records and makes the required workspaceRef state explicit.\n"
+    )
+    print(f"repaired {len(changed)} project workspaceRef fields")
+else:
+    print("no legacy project workspaceRef repair needed")
+PY
+REMOTE
+
 echo "==> docker compose up"
 ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" bash -s -- "${COMPOSE_PROJECT}" <<REMOTE
 set -euo pipefail

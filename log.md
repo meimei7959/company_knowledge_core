@@ -2148,3 +2148,6 @@
 - 2026-06-23T12:33:33Z audit runner.heartbeat runners/runner.billing-lite-local-pm-codex.md agent_ring
 - 2026-06-23T12:33:33Z audit pm_control_lease.acquired projects/billing-lite/pm-control-leases/pmlease.billing-lite.20260623t123333794462z.md pm_control_lease
 - 2026-06-23T12:34:21Z audit pm_control_lease.denied projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md pm_control_lease_permission_denied
+- 2026-06-23T12:35:11Z audit task.updateStatus projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md
+- 2026-06-23T12:35:11Z audit pm.action.record projects/billing-lite/pm-actions/pm-action.20260623T123511285417Z.md pm_action_runtime
+- 2026-06-23T12:35:11Z pm action pm-action.20260623T123511285417Z dispatch exit=dispatched
