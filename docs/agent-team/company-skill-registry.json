@@ -1,0 +1,394 @@
+{
+  "version": "2026-06-22",
+  "purpose": "Production skill registry for Zhenzhi AI-native Agent Team. Roles define who owns work; skills define reusable executable capabilities.",
+  "skillStandardRef": "docs/agent-team/skill-system-architecture.md",
+  "skillDeliveryStandardRef": "docs/agent-team/skill-delivery-standard.md",
+  "qualitySourcesRef": "docs/agent-team/skill-quality-sources.json",
+  "sharedContractRef": "skills/_shared/skill-output-contract.md",
+  "skills": [
+    {
+      "skillId": "project-task-decomposition",
+      "name": "项目任务拆解",
+      "ownerRole": "project-manager",
+      "skillDir": "skills/project-task-decomposition",
+      "status": "active",
+      "allowedRoles": [
+        "project-manager"
+      ],
+      "aliases": [
+        "project-intake",
+        "task-decomposition",
+        "handoff-routing",
+        "acceptance-routing"
+      ]
+    },
+    {
+      "skillId": "project-health-orchestration",
+      "name": "项目健康度与协同编排",
+      "ownerRole": "project-manager",
+      "skillDir": "skills/project-health-orchestration",
+      "status": "active",
+      "allowedRoles": [
+        "project-manager"
+      ],
+      "aliases": [
+        "project-health-check",
+        "notification-recovery",
+        "retrospective-trigger"
+      ]
+    },
+    {
+      "skillId": "requirement-clarification",
+      "name": "需求澄清",
+      "ownerRole": "product-manager",
+      "skillDir": "skills/requirement-clarification",
+      "status": "active",
+      "allowedRoles": [
+        "product-manager"
+      ],
+      "aliases": [
+        "market-research",
+        "competitor-analysis",
+        "scope-control"
+      ]
+    },
+    {
+      "skillId": "prd-scope-definition",
+      "name": "PRD 与范围定义",
+      "ownerRole": "product-manager",
+      "skillDir": "skills/prd-scope-definition",
+      "status": "active",
+      "allowedRoles": [
+        "product-manager"
+      ],
+      "aliases": [
+        "prd-writing",
+        "acceptance-criteria",
+        "metric-design",
+        "product-information-architecture",
+        "navigation-model",
+        "content-hierarchy"
+      ]
+    },
+    {
+      "skillId": "prd-high-quality-generation",
+      "name": "PRD 高质量生成协议",
+      "ownerRole": "product-manager",
+      "skillDir": "skills/prd-high-quality-generation",
+      "status": "active",
+      "allowedRoles": [
+        "product-manager"
+      ],
+      "aliases": [
+        "prd-quality-gate",
+        "internal-adversarial-review",
+        "development-handoff-pack",
+        "prd-test-cases",
+        "evidence-pack"
+      ]
+    },
+    {
+      "skillId": "ui-ux-review",
+      "name": "UI/UX 专业评审",
+      "ownerRole": "design",
+      "skillDir": "skills/ui-ux-review",
+      "status": "active",
+      "allowedRoles": [
+        "design",
+        "product-manager",
+        "test"
+      ],
+      "aliases": [
+        "visual-review",
+        "accessibility-check",
+        "design-system"
+      ]
+    },
+    {
+      "skillId": "interaction-state-spec",
+      "name": "交互状态说明",
+      "ownerRole": "design",
+      "skillDir": "skills/interaction-state-spec",
+      "status": "active",
+      "allowedRoles": [
+        "design",
+        "development",
+        "test",
+        "architecture"
+      ],
+      "aliases": [
+        "user-flow-design",
+        "interaction-design",
+        "frontend-handoff"
+      ]
+    },
+    {
+      "skillId": "architecture-technical-design",
+      "name": "架构与技术方案设计",
+      "ownerRole": "architecture",
+      "skillDir": "skills/architecture-technical-design",
+      "status": "active",
+      "allowedRoles": [
+        "architecture"
+      ],
+      "aliases": [
+        "architecture-review",
+        "architecture-design",
+        "technical-design",
+        "system-boundary",
+        "interface-contract",
+        "data-model-review",
+        "non-functional-risk",
+        "technical-risk"
+      ]
+    },
+    {
+      "skillId": "code-architecture-review",
+      "name": "代码架构审查",
+      "ownerRole": "architecture",
+      "skillDir": "skills/code-architecture-review",
+      "status": "active",
+      "allowedRoles": [
+        "architecture"
+      ],
+      "aliases": [
+        "code-architecture-review",
+        "code-review",
+        "refactor-boundary",
+        "module-boundary",
+        "maintainability-review"
+      ]
+    },
+    {
+      "skillId": "implementation-root-cause",
+      "name": "工程根因分析",
+      "ownerRole": "development",
+      "skillDir": "skills/implementation-root-cause",
+      "status": "active",
+      "allowedRoles": [
+        "development",
+        "test"
+      ],
+      "aliases": [
+        "debugging",
+        "api-integration"
+      ]
+    },
+    {
+      "skillId": "implementation-plan",
+      "name": "工程实现方案",
+      "ownerRole": "development",
+      "skillDir": "skills/implementation-plan",
+      "status": "active",
+      "allowedRoles": [
+        "development"
+      ],
+      "aliases": [
+        "frontend-development",
+        "backend-development",
+        "database-migration",
+        "automated-test",
+        "deployment"
+      ]
+    },
+    {
+      "skillId": "development-engineering-quality-gate",
+      "name": "研发工程质量门",
+      "ownerRole": "development",
+      "skillDir": "skills/development-engineering-quality-gate",
+      "status": "active",
+      "allowedRoles": [
+        "development",
+        "architecture",
+        "test",
+        "project-manager"
+      ],
+      "aliases": [
+        "development-quality-gate",
+        "large-file-control",
+        "god-module-control",
+        "high-risk-file-review",
+        "test-evidence-gate",
+        "code-quality-gate"
+      ]
+    },
+    {
+      "skillId": "test-plan-and-regression",
+      "name": "测试计划与回归",
+      "ownerRole": "test",
+      "skillDir": "skills/test-plan-and-regression",
+      "status": "active",
+      "allowedRoles": [
+        "test"
+      ],
+      "aliases": [
+        "test-plan",
+        "test-case-design",
+        "regression-test",
+        "release-quality-gate"
+      ]
+    },
+    {
+      "skillId": "e2e-acceptance-verification",
+      "name": "端到端验收验证",
+      "ownerRole": "test",
+      "skillDir": "skills/e2e-acceptance-verification",
+      "status": "active",
+      "allowedRoles": [
+        "test",
+        "development"
+      ],
+      "aliases": [
+        "e2e-test",
+        "api-test",
+        "bug-reproduction"
+      ]
+    },
+    {
+      "skillId": "knowledge-source-ingest",
+      "name": "知识来源接收与解析",
+      "ownerRole": "knowledge-engineering",
+      "skillDir": "skills/knowledge-source-ingest",
+      "status": "active",
+      "allowedRoles": [
+        "knowledge-engineering"
+      ],
+      "aliases": [
+        "source-classification",
+        "source-reader",
+        "evidence-packet"
+      ]
+    },
+    {
+      "skillId": "knowledge-review-gate",
+      "name": "知识审核门禁",
+      "ownerRole": "knowledge-engineering",
+      "skillDir": "skills/knowledge-review-gate",
+      "status": "active",
+      "allowedRoles": [
+        "knowledge-engineering"
+      ],
+      "aliases": [
+        "knowledge-extraction",
+        "citation-builder",
+        "review-routing",
+        "publish-index"
+      ]
+    },
+    {
+      "skillId": "china-software-copyright-submission-pack",
+      "name": "中国软件著作权申报资料包",
+      "ownerRole": "knowledge-engineering",
+      "skillDir": "skills/china-software-copyright-submission-pack",
+      "status": "active",
+      "allowedRoles": [
+        "knowledge-engineering"
+      ],
+      "aliases": [
+        "software-copyright",
+        "softcopyright",
+        "copyright-material-pack",
+        "release-ip-evidence",
+        "source-program-material",
+        "manual-material"
+      ]
+    },
+    {
+      "skillId": "knowledge-answer-with-sources",
+      "name": "带来源知识回答",
+      "ownerRole": "knowledge-query",
+      "skillDir": "skills/knowledge-answer-with-sources",
+      "status": "active",
+      "allowedRoles": [
+        "knowledge-query"
+      ],
+      "aliases": [
+        "retrieval-search",
+        "citation-rendering",
+        "confidence-labeling"
+      ]
+    },
+    {
+      "skillId": "retrieval-gap-routing",
+      "name": "检索缺口路由",
+      "ownerRole": "knowledge-query",
+      "skillDir": "skills/retrieval-gap-routing",
+      "status": "active",
+      "allowedRoles": [
+        "knowledge-query",
+        "knowledge-engineering"
+      ],
+      "aliases": [
+        "intent-routing",
+        "project-resolution",
+        "no-answer-escalation"
+      ]
+    },
+    {
+      "skillId": "operations-content-plan",
+      "name": "运营内容计划",
+      "ownerRole": "operations",
+      "skillDir": "skills/operations-content-plan",
+      "status": "active",
+      "allowedRoles": [
+        "operations"
+      ],
+      "aliases": [
+        "content-planning",
+        "channel-operations",
+        "campaign-planning",
+        "sop-writing"
+      ]
+    },
+    {
+      "skillId": "operations-metrics-feedback",
+      "name": "运营指标反馈",
+      "ownerRole": "operations",
+      "skillDir": "skills/operations-metrics-feedback",
+      "status": "active",
+      "allowedRoles": [
+        "operations",
+        "product-manager"
+      ],
+      "aliases": [
+        "community-feedback",
+        "growth-experiment",
+        "ops-retrospective"
+      ]
+    },
+    {
+      "skillId": "web-design-engineer",
+      "name": "Web 视觉设计工程",
+      "ownerRole": "design",
+      "skillDir": "skills/web-design-engineer",
+      "status": "active",
+      "allowedRoles": [
+        "design"
+      ],
+      "aliases": [
+        "web-design-skill",
+        "visual-web-design",
+        "interactive-prototype",
+        "ui-mockup",
+        "design-system-exploration"
+      ]
+    },
+    {
+      "skillId": "ui-ux-pro-max",
+      "name": "前端体验质量标准",
+      "ownerRole": "design",
+      "skillDir": "skills/ui-ux-pro-max",
+      "status": "active",
+      "allowedRoles": [
+        "design"
+      ],
+      "aliases": [
+        "ui-ux-pro-max",
+        "frontend-ux-quality",
+        "interaction-quality-checklist",
+        "four-state-ui",
+        "design-quality-gate"
+      ]
+    }
+  ]
+}

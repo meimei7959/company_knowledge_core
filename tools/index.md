@@ -15,3 +15,6 @@ Each ToolAsset file must include:
 - `riskLevel`
 
 - [zhenzhi-knowledge](tool.zhenzhi-knowledge.md)
+- [Knowledge Material Reader Toolkit](tool.knowledge-material-readers.md)
+- [Architecture Engineering Toolkit](tool.architecture-engineering-toolkit.md)
+- [Development Engineering Quality Toolkit](tool.development-engineering-quality-toolkit.md)
