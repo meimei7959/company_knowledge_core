@@ -13,7 +13,7 @@
 
 ## 第一部分：接入电脑成功
 
-### 0. 当前是否可以接入
+### 当前是否可以接入
 
 可以接入，但必须满足三个条件：
 
@@ -31,7 +31,7 @@ http://124.221.138.151/knowledge-api
 
 不要把 token 写入文档、Git、聊天记录、截图、任务描述或审计正文。
 
-### 0.1 为什么已经部署了服务器，还需要本地工具包
+### 为什么已经部署了服务器，还需要本地工具包
 
 服务器已经部署，说明线上中枢 API 可以访问。它负责保存项目、任务、Runner、TaskResult、审计和知识索引。
 
@@ -50,7 +50,7 @@ Skill 包
 
 如果当前电脑不能访问 GitHub，或者现场网络不允许访问 GitHub，可以让项目负责人从已部署版本打一个只读工具包发给当前电脑。这样当前电脑不需要访问 GitHub，也能接入线上中枢。
 
-### 0.2 项目负责人必须先给你的接入信息
+### 接入电脑需要的信息
 
 第一阶段只接入电脑时，项目负责人必须通过安全渠道给当前电脑的使用者这些信息：
 
@@ -87,7 +87,7 @@ source-file / PRD 路径
 可选 source-file/PRD 路径: <例如 /Users/lisi/Downloads/prd.md>
 ```
 
-### 0.3 如果无法从 GitHub clone
+### 如果无法从 GitHub clone
 
 当前仓库已经是公开仓库，正常情况下不需要 GitHub 账号权限，直接 clone 即可：
 
@@ -123,7 +123,7 @@ bash scripts/setup-teammate.sh --user-id <同事英文或拼音ID> --ai-tool cod
 
 zip 方式适合先让当前电脑接入线上中枢并开始使用 Agent 团队规则。如果后续要把这台电脑生成的 Agent 注册记录、Runner 记录、任务结果文件提交回 Git，项目负责人需要代提交，或者让当前电脑使用自己的 GitHub 账号提交 PR。
 
-## 1. 你的角色边界
+### 你的角色边界
 
 你不是主线程，也不是人类项目负责人。
 
@@ -148,7 +148,7 @@ zip 方式适合先让当前电脑接入线上中枢并开始使用 Agent 团队
 python3 -m zhenzhi_knowledge.cli project pm-action ...
 ```
 
-## 2. 第一次接入当前电脑
+### 第一次接入当前电脑
 
 你不需要去项目负责人电脑上取 token。项目负责人会通过安全渠道把 token 明文发给当前电脑的使用者。
 
@@ -201,7 +201,7 @@ python3 -m zhenzhi_knowledge.cli api export >/dev/null
 
 这两个命令通过后，说明你能读到线上中枢。
 
-## 3. 注册这台电脑为 Runner
+### 注册这台电脑为 Runner
 
 为这台电脑取一个稳定的 runner id。格式建议：
 
@@ -275,7 +275,7 @@ python3 -m zhenzhi_knowledge.cli runner register \
 
 ## 第二部分：新项目成功
 
-## 4. 在新项目上使用这套 Agent 团队
+### 在新项目上使用这套 Agent 团队
 
 新业务项目应该有自己的项目目录或代码仓库，不要把业务代码直接放进 `company_knowledge_core`。
 
@@ -288,7 +288,7 @@ python3 -m zhenzhi_knowledge.cli runner register \
 
 `company_knowledge_core` 是中枢和 Agent 团队规则仓库；新项目代码仓库是业务交付仓库。
 
-### 4.0 新项目初始化脚本
+#### 新项目初始化脚本
 
 创建新项目时，必须先分清两个目录，不能只创建中枢记录：
 
@@ -354,7 +354,7 @@ sales-dashboard
 internal-ops-tool
 ```
 
-### 4.1 项目初始化必须由项目经理 Agent 接管
+#### 项目初始化必须由项目经理 Agent 接管
 
 初始化脚本只是创建项目实体、记录和初始化任务，不等于项目已经完成初始化。
 
@@ -392,7 +392,7 @@ python3 -m zhenzhi_knowledge.cli project pm-action \
   --next-action "Product Manager Agent clarifies product scope; Architecture Agent waits for accepted product package."
 ```
 
-## 5. 新项目动态流转
+### 新项目动态流转
 
 不要把项目流程写死。项目经理 Agent 必须根据项目类型、需求清晰度、界面复杂度、技术风险、测试风险和上线要求动态编排 Agent 队列。
 
@@ -450,7 +450,7 @@ knowledge_ingest 资料入库
 maintenance   维护任务
 ```
 
-## 6. 日常工作命令
+### 日常工作命令
 
 开始前同步：
 
@@ -509,7 +509,7 @@ python3 -m zhenzhi_knowledge.cli finish \
 python3 -m zhenzhi_knowledge.cli sync push
 ```
 
-## 7. 遇到问题怎么写回
+### 遇到问题怎么写回
 
 如果任务做不了，不要静默停止。写回阻塞：
 
@@ -538,7 +538,9 @@ openRisk / blocker / nextAction / improvementRefs / evalCaseRefs
 
 目的不是抱怨，而是让 Agent 团队沉淀经验，后续能自动改进。
 
-## 8. 第一阶段：什么时候算电脑接入成功
+## 验收标准
+
+### 第一阶段：什么时候算电脑接入成功
 
 同时满足这些条件，才算这台电脑接入成功：
 
@@ -562,7 +564,7 @@ PRD / source-file
 项目任务 start / finish
 ```
 
-## 9. 第二阶段：什么时候算新项目成功
+### 第二阶段：什么时候算新项目成功
 
 有明确新项目后，同时满足这些条件，才算新项目初始化成功：
 
@@ -576,7 +578,7 @@ PRD / source-file
 - `python3 -m zhenzhi_knowledge.cli validate` 通过。
 - 没有 token 或 secret 出现在 Git diff 中。
 
-## 10. 给本机 Agent 的启动提示
+## 给本机 Agent 的启动提示
 
 把下面这段作为当前电脑上的本机 Agent 启动提示：
 

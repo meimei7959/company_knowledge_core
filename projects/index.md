@@ -15,6 +15,5 @@ Each project should have:
 - `sources/`
 
 - [Company Knowledge Core](company-knowledge-core/project.md)
-- [统一付费轻服务 / Billing Lite](billing-lite/project.md)
 - [PM Lease API E2E](pm-lease-api-e2e-20260623141411/project.md)
 - [Other Project](pm-lease-api-e2e-20260623141411-other/project.md)

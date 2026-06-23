@@ -360,7 +360,6 @@ TASK_ROUTING_STATUS_VALUES = {
     "waiting_runner",
     "processing",
     "manual_handoff",
-    "manual-runner-required",
     "waiting_acceptance",
     "changes_requested",
     "blocked",
@@ -1133,7 +1132,7 @@ def parse_simple_yaml(raw: str) -> dict[str, Any]:
             if not isinstance(parent, list):
                 continue
             item = stripped[2:].strip()
-            if ":" in item and not (item.startswith("{") and item.endswith("}")):
+            if ":" in item and "://" not in item and not (item.startswith("{") and item.endswith("}")) and not (item.startswith('"') or item.startswith("'")):
                 item_key, item_value = item.split(":", 1)
                 item_key = item_key.strip()
                 item_value = item_value.strip()
@@ -1177,7 +1176,7 @@ def yaml_value(value: Any) -> str:
     if isinstance(value, list):
         if not value:
             return "[]"
-        rendered_items = [json.dumps(item, ensure_ascii=False, separators=(",", ":")) if isinstance(item, (dict, list)) else str(item) for item in value]
+        rendered_items = [json.dumps(item, ensure_ascii=False, separators=(",", ":")) if isinstance(item, (dict, list)) else yaml_value(item) for item in value]
         return "\n" + "\n".join(f"  - {item}" for item in rendered_items)
     if value is None:
         return ""
@@ -12250,12 +12249,37 @@ def active_policies_for_agent(bundle: Bundle, agent_id: str) -> list[dict[str, A
     return policies
 
 
+def normalize_scalar_frontmatter_value(value: Any) -> str:
+    if isinstance(value, dict):
+        if len(value) == 1:
+            key, raw_value = next(iter(value.items()))
+            key_text = str(key).strip().strip('"').strip("'")
+            raw_text = "" if raw_value is None else str(raw_value).strip()
+            return key_text if raw_text == "" else f"{key_text}:{raw_text}"
+        return str(value).strip()
+    return str(value or "").strip()
+
+
+def normalize_permission_values(values: Any) -> set[str]:
+    permissions: set[str] = set()
+    for item in values or []:
+        if isinstance(item, dict):
+            value = str(item.get("permission") or item.get("name") or item.get("id") or "").strip()
+            if not value:
+                value = normalize_scalar_frontmatter_value(item)
+        else:
+            value = normalize_scalar_frontmatter_value(item)
+        if value:
+            permissions.add(value)
+    return permissions
+
+
 def merged_agent_permissions(agent: dict[str, Any], policies: list[dict[str, Any]]) -> dict[str, Any]:
     allowed_projects = set(agent.get("allowedProjects", []) or [])
     allowed_scopes = set(agent.get("allowedKnowledgeScopes", []) or [])
     allowed_risks = set(agent.get("allowedToolRiskLevels", []) or [])
     requires_approval = set(agent.get("requiresApproval", []) or [])
-    write_permissions = set(agent.get("writePermissions", []) or [])
+    write_permissions = normalize_permission_values(agent.get("writePermissions", []) or [])
     for policy in policies:
         p_projects = set(policy.get("allowedProjects", []) or [])
         p_scopes = set(policy.get("allowedKnowledgeScopes", []) or [])
@@ -12264,7 +12288,7 @@ def merged_agent_permissions(agent: dict[str, Any], policies: list[dict[str, Any
         allowed_scopes = p_scopes if not allowed_scopes else (allowed_scopes & p_scopes if p_scopes else allowed_scopes)
         allowed_risks = p_risks if not allowed_risks else (allowed_risks & p_risks if p_risks else allowed_risks)
         requires_approval |= set(policy.get("requiresApproval", []) or [])
-        write_permissions |= set(policy.get("writePermissions", []) or [])
+        write_permissions |= normalize_permission_values(policy.get("writePermissions", []) or [])
     return {
         "allowedProjects": sorted(allowed_projects),
         "allowedKnowledgeScopes": sorted(allowed_scopes),
@@ -12680,8 +12704,9 @@ def as_list(value: Any) -> list[str]:
     if value is None or value == "":
         return []
     if isinstance(value, list):
-        return [str(item) for item in value if str(item)]
-    return [str(value)]
+        return [normalize_scalar_frontmatter_value(item) for item in value if normalize_scalar_frontmatter_value(item)]
+    normalized = normalize_scalar_frontmatter_value(value)
+    return [normalized] if normalized else []
 
 
 def append_unique(items: list[str], value: str) -> list[str]:

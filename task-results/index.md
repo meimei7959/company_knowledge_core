@@ -3,7 +3,6 @@
 TaskResult records live here when they are not scoped to a single project directory.
 
 Each TaskResult must link to its task, Agent Ring runner, executor Agent, source material, outputs, and evidence.
-- [Result for kt-billing-lite-pm-intake](task-results/tr-kt-billing-lite-pm-intake.md)
 - [Result for KT-FEISHU-DEEPSEEK-ROUTER](task-results/tr-kt-feishu-deepseek-router.md)
 - [Result for KT-ACCESS-CREDENTIAL-SECRET-FLOW](task-results/tr-kt-access-credential-secret-flow.md)
 - [Result for KT-AGENT-RING-PROTOCOL](task-results/tr-kt-agent-ring-protocol.md)
@@ -118,4 +117,3 @@ Each TaskResult must link to its task, Agent Ring runner, executor Agent, source
 - [Result for kt-v2-colleague-runner-architecture-ia-design-impact-review](task-results/tr-kt-v2-colleague-runner-architecture-ia-design-impact-review.md)
 - [Result for kt-v2-colleague-runner-product-architecture-review-after-ia-ui](task-results/tr-kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md)
 - [Result for kt-anos-req-160-v0-task-fact-view-development](task-results/tr-kt-anos-req-160-v0-task-fact-view-development.md)
-- [Result for kt-billing-lite-product-requirement-acceptance](task-results/tr-kt-billing-lite-product-requirement-acceptance.md)
