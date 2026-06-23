@@ -60,6 +60,29 @@ qualityEvaluation:
     )
 
 
+def write_project_task(root: Path, task_id: str, status: str) -> None:
+    project_dir = root / "projects" / "demo" / "tasks"
+    project_dir.mkdir(parents=True, exist_ok=True)
+    (project_dir / f"{task_id}.md").write_text(
+        f"""---
+type: ProjectTask
+title: Legacy routing status fixture
+timestamp: 2026-06-23T00:00:00Z
+taskId: {task_id}
+projectId: demo
+assignee: agent.company.project-manager
+status: {status}
+priority: medium
+workSourceType: project_setup
+sourceReason: Legacy remote project task status.
+---
+
+# Task
+""",
+        encoding="utf-8",
+    )
+
+
 class TaskResultContractValidationTests(unittest.TestCase):
     def test_validate_accepts_current_task_result_lifecycle_values(self) -> None:
         fixtures = [
@@ -79,6 +102,19 @@ class TaskResultContractValidationTests(unittest.TestCase):
 
         self.assertFalse([problem for problem in problems if "unknown acceptancePolicy.acceptanceStatus" in problem])
         self.assertFalse([problem for problem in problems if "unknown qualityEvaluation.decision" in problem])
+
+    def test_validate_accepts_legacy_remote_task_routing_statuses(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            write_project_task(root, "manual-runner", "manual-runner-required")
+            write_project_task(root, "submitted", "submitted")
+
+            problems = validate_bundle(Bundle(root))
+
+        self.assertFalse([problem for problem in problems if "unknown status manual-runner-required" in problem])
+        self.assertFalse([problem for problem in problems if "unknown task routing status manual-runner-required" in problem])
+        self.assertFalse([problem for problem in problems if "unknown task routing status submitted" in problem])
 
     def test_validate_still_rejects_bad_task_result_contract_values(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
