@@ -2121,3 +2121,30 @@
 - 2026-06-23T11:20:15Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T112015493347Z.md pm_action_runtime
 - 2026-06-23T11:20:15Z pm action pm-action.20260623T112015493347Z closeout exit=closed_with_gate_passed
 - 2026-06-23T11:30:18Z audit product_requirement.execution_telemetry_retention.create ANOS-REQ-161 telemetry_retention_requirement
+- 2026-06-23T11:34:17Z started context context.20260623T113417690460Z for project=company-knowledge-core agent=agent.company.project-manager
+- 2026-06-23T11:38:24Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T113824528952Z.md pm_action_runtime
+- 2026-06-23T11:38:24Z pm action pm-action.20260623T113824528952Z dispatch exit=dispatched
+- 2026-06-23T11:39:05Z finished AgentRun run.20260623T113905430546Z
+- 2026-06-23T11:46:50Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T114650909089Z.md pm_action_runtime
+- 2026-06-23T11:46:50Z pm action pm-action.20260623T114650909089Z dispatch exit=dispatched
+- 2026-06-23T11:53:23Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T115323216406Z.md pm_action_runtime
+- 2026-06-23T11:53:23Z pm action pm-action.20260623T115323216406Z acceptance_route exit=waiting_acceptance
+- 2026-06-23T11:59:09Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T115909459639Z.md pm_action_runtime
+- 2026-06-23T11:59:09Z pm action pm-action.20260623T115909459639Z dispatch exit=dispatched
+- 2026-06-23T12:11:55Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T121155758197Z.md pm_action_runtime
+- 2026-06-23T12:11:55Z pm action pm-action.20260623T121155758197Z dispatch exit=dispatched
+- 2026-06-23T12:21:51Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T122151594058Z.md pm_action_runtime
+- 2026-06-23T12:21:51Z pm action pm-action.20260623T122151594058Z acceptance_route exit=waiting_acceptance
+- 2026-06-23T12:27:27Z started context context.20260623T122727655792Z for project=company-knowledge-core agent=agent.company.project-manager
+- 2026-06-23T12:29:06Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T122906934171Z.md pm_action_runtime
+- 2026-06-23T12:29:06Z pm action pm-action.20260623T122906934171Z closeout exit=closed_with_gate_passed
+- 2026-06-23T12:31:25Z finished AgentRun run.20260623T123125601222Z
+- 2026-06-23T12:32:54Z audit project.pm_health_check projects/billing-lite/pm-reviews/pm-review.20260623T123254353410Z.md pm_agent_operating_check
+- 2026-06-23T12:32:54Z audit task.notification.record projects/billing-lite/tasks/kt-billing-lite-acceptance-test.md feishu
+- 2026-06-23T12:32:54Z audit task.notification.record projects/billing-lite/tasks/kt-billing-lite-acceptance-test.md feishu
+- 2026-06-23T12:32:54Z project manager health check billing-lite health=needs_decision risks=1
+- 2026-06-23T12:33:33Z audit runner.register runners/runner.billing-lite-local-pm-codex.md agent_ring
+- 2026-06-23T12:33:33Z registered runner runner.billing-lite-local-pm-codex
+- 2026-06-23T12:33:33Z audit runner.heartbeat runners/runner.billing-lite-local-pm-codex.md agent_ring
+- 2026-06-23T12:33:33Z audit pm_control_lease.acquired projects/billing-lite/pm-control-leases/pmlease.billing-lite.20260623t123333794462z.md pm_control_lease
+- 2026-06-23T12:34:21Z audit pm_control_lease.denied projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md pm_control_lease_permission_denied

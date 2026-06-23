@@ -12,6 +12,8 @@ members:
   - meimei
 relatedRepos:
   - /Users/meimei/Documents/company_knowledge_core
+workspaceRef: /Users/meimei/Documents/company_knowledge_core
+workspaceConfirmation: confirmed
 relatedAgents:
   - agent.codex.local
   - agent.antigravity.local

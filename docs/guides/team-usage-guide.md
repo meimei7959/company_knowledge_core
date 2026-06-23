@@ -111,6 +111,12 @@ export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<新的团队 token>
 docs/guides/agent-hub-user-guide.md
 ```
 
+新电脑上的 Agent 接入新项目时，优先读取：
+
+```txt
+docs/guides/teammate-agent-new-project-onboarding.md
+```
+
 推荐给机器人配置统一快捷菜单。飞书自定义菜单不能按私聊和群聊分别配置，菜单本身应保持全局统一；机器人后端会根据 chat_type、chat_id、project binding 和用户输入判断当前是公司 Agent Hub 还是项目助手。
 
 ```txt

@@ -350,6 +350,7 @@ def make_parser() -> argparse.ArgumentParser:
     p_project_register.add_argument("--project-id", required=True)
     p_project_register.add_argument("--name", required=True)
     p_project_register.add_argument("--owner", required=True)
+    p_project_register.add_argument("--workspace-ref", default="")
     p_project_intake = p_project_sub.add_parser("intake")
     p_project_intake.add_argument("--name", required=True)
     p_project_intake.add_argument("--owner", required=True)
@@ -363,6 +364,8 @@ def make_parser() -> argparse.ArgumentParser:
     p_project_intake.add_argument("--create-group", default="confirm")
     p_project_intake.add_argument("--requester", default="")
     p_project_intake.add_argument("--ring-enabled", action="store_true")
+    p_project_intake.add_argument("--project-id", default="")
+    p_project_intake.add_argument("--workspace-ref", default="")
     p_project_health = p_project_sub.add_parser("health")
     p_project_health.add_argument("--project", required=True)
     p_project_health.add_argument("--actor", default="system.project-manager")
@@ -1339,7 +1342,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(json.dumps(result, indent=2, ensure_ascii=False))
         elif args.command == "project":
             if args.project_command == "register":
-                path = make_project(bundle, args.project_id, args.name, args.owner)
+                path = make_project(bundle, args.project_id, args.name, args.owner, args.workspace_ref)
                 print(path)
             elif args.project_command == "intake":
                 result = create_project_launch(
@@ -1357,6 +1360,8 @@ def main(argv: list[str] | None = None) -> int:
                     True,
                     args.ring_enabled,
                     args.requester or args.owner,
+                    args.project_id,
+                    args.workspace_ref,
                 )
                 print(json.dumps(result, indent=2, ensure_ascii=False))
             elif args.project_command == "health":

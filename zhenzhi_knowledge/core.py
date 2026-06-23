@@ -112,6 +112,7 @@ KNOWLEDGE_REVIEW_AGENT_ID = "agent.core.knowledge-review"
 KNOWLEDGE_OPS_AGENT_ID = "agent.core.knowledge-ops"
 KNOWLEDGE_STEWARD_AGENT_ID = "agent.core.knowledge-steward"
 DEFAULT_MAX_TASK_ATTEMPTS = 3
+PENDING_WORKSPACE_REF = "pending_confirmation"
 
 TYPE_VALUES = {
     "Project",
@@ -2716,7 +2717,7 @@ def workbench_project_execution_read_model(bundle: Bundle, project_id: str, task
     return model
 
 
-def make_project(bundle: Bundle, project_id: str, name: str, owner: str) -> Path:
+def make_project(bundle: Bundle, project_id: str, name: str, owner: str, workspace_ref: str = PENDING_WORKSPACE_REF) -> Path:
     pid = slug(project_id)
     project_dir = bundle.root / "projects" / pid
     ensure_dir(project_dir)
@@ -2734,6 +2735,8 @@ def make_project(bundle: Bundle, project_id: str, name: str, owner: str) -> Path
         "owner": owner,
         "status": "draft",
         "scope": "project",
+        "workspaceRef": workspace_ref.strip() or PENDING_WORKSPACE_REF,
+        "workspaceConfirmation": "confirmed" if workspace_ref.strip() and workspace_ref.strip() != PENDING_WORKSPACE_REF else "pending",
         "members": [],
         "relatedRepos": [],
         "relatedAgents": [],
@@ -2829,6 +2832,8 @@ def create_project_launch(
     requires_runner: bool = True,
     ring_enabled: bool = False,
     requester: str = "",
+    project_id: str = "",
+    workspace_ref: str = PENDING_WORKSPACE_REF,
 ) -> dict[str, str]:
     intake = assess_project_intake(
         project_name,
@@ -2843,8 +2848,8 @@ def create_project_launch(
         create_group,
         requires_runner,
     )
-    pid = str(intake["projectId"])
-    project_path = make_project(bundle, pid, project_name, owner)
+    pid = slug(project_id) if project_id.strip() else str(intake["projectId"])
+    project_path = make_project(bundle, pid, project_name, owner, workspace_ref)
     project_updates = {
         "status": str(intake["decision"]),
         "projectSourceMode": intake["sourceMode"],
@@ -2859,6 +2864,8 @@ def create_project_launch(
         "suggestedAgents": intake["suggestedAgents"],
         "createGroup": intake["createGroup"],
         "requiresRunner": intake["requiresRunner"],
+        "workspaceRef": workspace_ref.strip() or PENDING_WORKSPACE_REF,
+        "workspaceConfirmation": "confirmed" if workspace_ref.strip() and workspace_ref.strip() != PENDING_WORKSPACE_REF else "pending",
         "updatedAt": utc_now(),
     }
     update_frontmatter_file(project_path, project_updates)
@@ -2902,6 +2909,7 @@ def create_project_launch(
             "## Initialization Checklist",
             "",
             "- Confirm scope, milestone, Agent team, Runner, repo, project group, approval state.",
+            "- Confirm entity workspace path; if not confirmed, keep workspaceRef=pending_confirmation.",
             "- Existing repo: inspect README/AGENTS/directory/review rules before changes.",
             "- New repo: create repo request from project name; do not ask user to provide repository name.",
             "- Operations project: create operating cadence and feedback loop instead of forcing a code repo.",
@@ -12856,6 +12864,22 @@ def validate_task_status_transition(current: str, target: str) -> None:
         raise KnowledgeError(f"illegal task status transition: {current} -> {target}")
 
 
+def validate_project_workspace_ref(rel_path: str, project: dict[str, Any]) -> list[str]:
+    workspace_ref = str(project.get("workspaceRef") or "").strip()
+    if not workspace_ref:
+        return [f"{rel_path}: Project missing workspaceRef; use an explicit path/ref or pending_confirmation"]
+    if workspace_ref == PENDING_WORKSPACE_REF:
+        status = str(project.get("status") or "")
+        if status in {"active", "done", "verified", "approved", "accepted", "launch_approved"}:
+            return [f"{rel_path}: Project workspaceRef pending_confirmation cannot be used after project activation"]
+        return []
+    if workspace_ref.startswith(("workspace://", "git@", "http://", "https://", "./", "../")):
+        return []
+    if Path(workspace_ref).is_absolute():
+        return []
+    return [f"{rel_path}: Project workspaceRef must be absolute, workspace://, git/http URL, relative path, or pending_confirmation"]
+
+
 def normalize_handoff_contract(
     task: dict[str, Any],
     status: str,
@@ -13138,6 +13162,7 @@ def project_manager_agent_body(project_id: str, project_name: str) -> str:
             "## Completion Criteria",
             "",
             "- Project draft and launch.md exist and match the current intake.",
+            "- Entity workspace is confirmed, or `workspaceRef: pending_confirmation` is explicitly recorded with owner and next action.",
             "- Human project Owner and approval state are explicit.",
             "- Repo path is inspected or repo creation is represented as an approved/pending action.",
             "- README, AGENTS, review rules, and project directory expectations are ready or listed as blockers.",
@@ -16807,6 +16832,8 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.append(f"{rel_path}: unknown type {fm['type']}")
         if "status" in fm and fm["status"] not in STATUS_VALUES:
             problems.append(f"{rel_path}: unknown status {fm['status']}")
+        if fm.get("type") == "Project":
+            problems.extend(validate_project_workspace_ref(rel_path, fm))
         if fm.get("type") in {"ProjectTask", "KnowledgeTask"} and fm.get("status") not in TASK_ROUTING_STATUS_VALUES:
             problems.append(f"{rel_path}: unknown task routing status {fm.get('status')}")
         if fm.get("type") in {"ProjectTask", "KnowledgeTask"}:

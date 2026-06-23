@@ -2501,6 +2501,116 @@ Current result.
             project = load_object(root / result["projectRef"])
             self.assertEqual(project["projectSourceMode"], "operations_long_running")
             self.assertTrue(str(project["repositoryName"]).startswith("project-"))
+            self.assertEqual(project["workspaceRef"], "pending_confirmation")
+            self.assertEqual(project["workspaceConfirmation"], "pending")
+
+    def test_project_workspace_ref_validation_rules(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            project_dir = root / "projects" / "demo"
+            project_dir.mkdir(parents=True)
+            project_path = project_dir / "project.md"
+            project_path.write_text(
+                """---
+type: Project
+title: Demo
+projectId: demo
+owner: meimei
+status: draft
+---
+
+## Goal
+
+Demo.
+""",
+                encoding="utf-8",
+            )
+            problems = validate_bundle(Bundle(root))
+            self.assertIn(
+                "projects/demo/project.md: Project missing workspaceRef; use an explicit path/ref or pending_confirmation",
+                problems,
+            )
+            update_frontmatter_file(project_path, {"workspaceRef": "pending_confirmation"})
+            problems = validate_bundle(Bundle(root))
+            self.assertFalse([problem for problem in problems if "workspaceRef" in problem])
+            update_frontmatter_file(project_path, {"status": "active"})
+            problems = validate_bundle(Bundle(root))
+            self.assertIn(
+                "projects/demo/project.md: Project workspaceRef pending_confirmation cannot be used after project activation",
+                problems,
+            )
+            update_frontmatter_file(project_path, {"workspaceRef": "/tmp/demo-workspace", "workspaceConfirmation": "confirmed"})
+            problems = validate_bundle(Bundle(root))
+            self.assertFalse([problem for problem in problems if "workspaceRef" in problem])
+
+    def test_project_register_records_workspace_ref(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            workspace = str(root / "workspace-demo")
+            self.assertEqual(
+                main(["--root", str(root), "project", "register", "--project-id", "demo", "--name", "Demo", "--owner", "meimei", "--workspace-ref", workspace]),
+                0,
+            )
+            project = load_object(root / "projects" / "demo" / "project.md")
+            self.assertEqual(project["workspaceRef"], workspace)
+            self.assertEqual(project["workspaceConfirmation"], "confirmed")
+            self.assertFalse(validate_bundle(Bundle(root)))
+
+    def test_init_project_script_requires_confirmed_or_pending_workspace(self) -> None:
+        spec = importlib.util.spec_from_file_location("init_project_script", REPO_ROOT / "scripts" / "init_project.py")
+        self.assertIsNotNone(spec)
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "init_project.py",
+                    "--root",
+                    str(root),
+                    "--project-id",
+                    "demo",
+                    "--name",
+                    "Demo",
+                    "--owner",
+                    "meimei",
+                ]
+                with contextlib.redirect_stderr(io.StringIO()) as err:
+                    self.assertEqual(module.main(), 2)
+                self.assertIn("workspace path is not confirmed", err.getvalue())
+
+                workspace = root / "Demo Workspace"
+                sys.argv = [
+                    "init_project.py",
+                    "--root",
+                    str(root),
+                    "--project-id",
+                    "demo",
+                    "--name",
+                    "Demo",
+                    "--owner",
+                    "meimei",
+                    "--workspace-ref",
+                    str(workspace),
+                    "--goal",
+                    "Initialize Demo",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(module.main(), 0)
+                project = load_object(root / "projects" / "demo" / "project.md")
+                self.assertEqual(project["workspaceRef"], str(workspace))
+                self.assertTrue((workspace / "00_原始资料").is_dir())
+                self.assertTrue((workspace / "AGENTS.md").is_file())
+                self.assertTrue((workspace / "START_HERE.md").is_file())
+                self.assertIn("centralRoot", (workspace / "AGENTS.md").read_text(encoding="utf-8"))
+                self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
 
     def test_role_handoff_creates_next_role_task(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

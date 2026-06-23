@@ -3,6 +3,7 @@
 TaskResult records live here when they are not scoped to a single project directory.
 
 Each TaskResult must link to its task, Agent Ring runner, executor Agent, source material, outputs, and evidence.
+- [Result for kt-billing-lite-pm-intake](task-results/tr-kt-billing-lite-pm-intake.md)
 - [Result for KT-FEISHU-DEEPSEEK-ROUTER](task-results/tr-kt-feishu-deepseek-router.md)
 - [Result for KT-ACCESS-CREDENTIAL-SECRET-FLOW](task-results/tr-kt-access-credential-secret-flow.md)
 - [Result for KT-AGENT-RING-PROTOCOL](task-results/tr-kt-agent-ring-protocol.md)
