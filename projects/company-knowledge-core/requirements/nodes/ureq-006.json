@@ -1,0 +1,45 @@
+{
+  "nodeId": "UREQ-006",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Get observable acceptance criteria mapped to requirements.",
+  "statement": "Get observable acceptance criteria mapped to requirements.",
+  "problem": "Cannot test vague success statements.",
+  "acceptanceSignal": "Product must map each functional requirement to test cases and acceptance gates.",
+  "ownerRole": "Test Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-006",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-002"
+  ],
+  "childRefs": [
+    "PREQ-006"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-TEST-001",
+    "GATE-AC-TEST-002",
+    "GATE-AC-TEST-003",
+    "GATE-AC-TEST-004",
+    "GATE-AC-TEST-005",
+    "GATE-AC-OPS-004"
+  ],
+  "testCaseRefs": [
+    "TC-MET-001",
+    "TC-MET-002",
+    "TC-MET-003",
+    "TC-MET-004",
+    "TC-MET-005",
+    "TC-PRD-004",
+    "TC-E2E-001"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

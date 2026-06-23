@@ -1,0 +1,41 @@
+{
+  "nodeId": "UREQ-014",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Receive clear review package with evidence, risk, recommendation, and action but",
+  "statement": "Receive clear review package with evidence, risk, recommendation, and action buttons.",
+  "problem": "Agent must not self-approve customer/security/policy/verified knowledge decisions.",
+  "acceptanceSignal": "Product must route high-impact decisions to human approval.",
+  "ownerRole": "Human Reviewer",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-014",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-002",
+    "BR-004"
+  ],
+  "childRefs": [
+    "PREQ-014"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002",
+    "GATE-AC-REQ-004"
+  ],
+  "testCaseRefs": [
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004",
+    "TC-PRD-002"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

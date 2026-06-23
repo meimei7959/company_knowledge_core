@@ -1,0 +1,17 @@
+{
+  "mappingId": "map.rt.company-knowledge-core.ai-native-os.v20260621113000.preq-005.satisfies.anos-req-050",
+  "type": "RequirementMapping",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "fromRef": "PREQ-005",
+  "toRef": "ANOS-REQ-050",
+  "mappingKind": "satisfies",
+  "confidence": "source_exact",
+  "rationale": "Functional requirement range maps to ProductRequirement bridge.",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "createdByAgentRef": "agent.company.development",
+  "reviewState": "draft",
+  "auditRefs": []
+}

@@ -1,0 +1,17 @@
+{
+  "mappingId": "map.rt.company-knowledge-core.ai-native-os.v20260621113000.anos-req-033.accepted_by.gate-ac-exe-002",
+  "type": "RequirementMapping",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "fromRef": "ANOS-REQ-033",
+  "toRef": "GATE-AC-EXE-002",
+  "mappingKind": "accepted_by",
+  "confidence": "source_exact",
+  "rationale": "Coverage matrix maps functional requirement to acceptance gate.",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "createdByAgentRef": "agent.company.development",
+  "reviewState": "draft",
+  "auditRefs": []
+}

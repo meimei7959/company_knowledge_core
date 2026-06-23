@@ -1,0 +1,65 @@
+{
+  "nodeId": "ANOS-REQ-092",
+  "type": "RequirementNode",
+  "nodeKind": "functional",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "ANOS-REQ-092",
+  "statement": "Functional requirement reference ANOS-REQ-092 imported from Requirement Tree mapping.",
+  "whyItMatters": "Functional references preserve implementation traceability from product requirements.",
+  "successSignal": "Mapped test cases and acceptance gates remain visible before execution.",
+  "ownerRole": "agent.company.development",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#functional-requirement-mapping:ANOS-REQ-092",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "PREQ-003",
+    "PREQ-010",
+    "PREQ-014"
+  ],
+  "childRefs": [],
+  "acceptanceGateRefs": [
+    "GATE-AC-REQ-003",
+    "GATE-AC-REQ-004",
+    "GATE-AC-REQ-005",
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002",
+    "GATE-AC-GOV-003",
+    "GATE-AC-GOV-004",
+    "GATE-AC-KNO-002"
+  ],
+  "testCaseRefs": [
+    "TC-PRD-001",
+    "TC-PRD-002",
+    "TC-PRD-003",
+    "TC-PRD-004",
+    "TC-PRD-005",
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004",
+    "TC-E2E-005"
+  ],
+  "taskRefs": [
+    "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+    "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+  ],
+  "resultRefs": [
+    "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+    "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+    "task-results/tr-kt-os-policy-quality-gates.md"
+  ],
+  "decisionRefs": [],
+  "auditRefs": [
+    "knowledge/audit/audit.20260621T112327747703Z.md"
+  ],
+  "coverageStatus": "partial",
+  "backfillConfidence": "backfill_inferred",
+  "executionUnlocking": false,
+  "backfillRefs": [
+    "projects/company-knowledge-core/requirements/backfills/requirement-tree-existing-work-backfill.20260621112327.json"
+  ]
+}

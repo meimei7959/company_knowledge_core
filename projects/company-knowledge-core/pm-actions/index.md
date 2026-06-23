@@ -1,0 +1,17 @@
+# Pm-Actions Index
+
+- [PM action dispatch: Implemented PM Action Runtime envelope, validation, CLI, template, and tests; aw](pm-action.20260623T090453080654Z.md)
+- [PM action route_rework_to_product_manager: Product Manager Agent architecture review artifacts are missing frontmatter; PM ](pm-action.20260623T092209116942Z.md)
+- [PM action dispatch: Product Manager Agent accepted the architecture solution for ANOS-REQ-160-FUSION](pm-action.20260623T092836803554Z.md)
+- [PM action dispatch: Test Agent completed V1 test plan and marked execution blocked until Development](pm-action.20260623T093548315882Z.md)
+- [PM action dispatch: Development Agent completed ANOS-REQ-160-FUSION-V1 implementation with TaskResul](pm-action.20260623T094053229986Z.md)
+- [PM action acceptance_route: Test Agent passed ANOS-REQ-160-FUSION-V1 implementation; PM routes Product Manag](pm-action.20260623T095216901275Z.md)
+- [PM action blocker_record: Development quality gate failed after reloading Development Agent rules, role-op](pm-action.20260623T100104809888Z.md)
+- [PM action task_decomposition: PM decomposed DEF-AGTGTF-QUALITY-GATE-001 into architecture quality boundary rev](pm-action.20260623T100505769157Z.md)
+- [PM action dispatch: Architecture Agent defined quality remediation boundary for DEF-AGTGTF-QUALITY-G](pm-action.20260623T101300372624Z.md)
+- [PM action dispatch: Projector module remediation extracted V1-owned projector logic and passed scope](pm-action.20260623T102654915644Z.md)
+- [PM action dispatch: Development Agent moved V1 task fact tests into a dedicated module and left only](pm-action.20260623T103615997614Z.md)
+- [PM action dispatch: Development completed projector module extraction, test boundary split, and CLI/](pm-action.20260623T104439157207Z.md)
+- [PM action acceptance_route: Test Agent passed quality remediation regression and closed DEF-AGTGTF-QUALITY-G](pm-action.20260623T105325515324Z.md)
+- [PM action closeout: ANOS-REQ-160-FUSION-V1 completed through product planning, architecture, product](pm-action.20260623T105901436039Z.md)
+- [PM action closeout: PM continued beyond task splitting: terminated stalled development sub-agent, re](pm-action.20260623T112015493347Z.md)

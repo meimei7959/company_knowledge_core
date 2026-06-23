@@ -1,0 +1,15 @@
+# Agent Improvements
+
+- [Improve agent.company.development after project-approval-notification-closed-loop](agent-improvement.20260620T155004658934Z.md)
+- [Improve agent.company.development after kt-ai-native-os-tech-solution-desktop-workbench-console](agent-improvement.20260621T062930446459Z.md)
+- [Improve agent.company.development-engineer after kt-ai-native-os-impl-requirement-prd-domain](agent-improvement.20260621T071325765938Z.md)
+- [Improve agent.company.development-engineer after kt-ai-native-os-impl-scheduler-runner-result](agent-improvement.20260621T071325847403Z.md)
+- [Improve agent.company.development-engineer after kt-ai-native-os-impl-governance-quality-ops-api](agent-improvement.20260621T071325929000Z.md)
+- [Improve agent.company.development-engineer after kt-ai-native-os-impl-desktop-workbench-slice0](agent-improvement.20260621T071326007311Z.md)
+- [Improve agent.company.development after kt-ai-native-os-dev-automation-hub-hard-capabilities](agent-improvement.20260621T083715592852Z.md)
+- [Improve agent after kt-ai-native-os-rt-product-review-technical-solution](agent-improvement.20260621T095141274431Z.md)
+- [Improve agent.company.test after kt-ai-native-os-rt-test-object-model-slice](agent-improvement.20260621T101011408268Z.md)
+- [Improve agent.company.product-manager after kt-ai-native-agent-v1-product-review-technical-solutions](agent-improvement.20260622T030214989767Z.md)
+- [Improve agent.company.product-manager after kt-v1-workbench-codex-style-product-final-acceptance](agent-improvement.20260622T060450263500Z.md)
+- [Improve agent.company.project-manager after kt-v1-workbench-codex-style-pm-final-acceptance](agent-improvement.20260622T063428647236Z.md)
+- [Improve agent.company.test after kt-v1-workbench-user-copy-polish-test](agent-improvement.20260622T092510822175Z.md)

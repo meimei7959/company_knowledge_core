@@ -1,0 +1,18 @@
+{
+  "notice": "HUMAN_ONLY：功能名称、功能说明、操作步骤及真实性状态必须由熟悉当前版本的人逐项填写和确认。Agent 只能检查路径、截图和字段是否存在，不得代写实质内容。",
+  "features": [
+    {
+      "name": "用户登录",
+      "summary": "",
+      "status": "needs_review",
+      "code_paths": [
+        "app/src/main/kotlin/com/example/auth/LoginViewModel.kt"
+      ],
+      "screenshots": [
+        ".softcopyright/screenshots/01-login.png"
+      ],
+      "operation_steps": [],
+      "notes": "替换为当前版本的真实路径、真实运行截图和人工原创说明。"
+    }
+  ]
+}

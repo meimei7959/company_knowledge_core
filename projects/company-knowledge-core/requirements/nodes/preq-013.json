@@ -1,0 +1,57 @@
+{
+  "nodeId": "PREQ-013",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-013",
+  "statement": "Product must provide Admin and Governance Console with audit-backed write controls.",
+  "whyItMatters": "Unauthorized tools, skills, runners, or secrets can create risk.",
+  "successSignal": "Product must provide Admin and Governance Console with audit-backed write controls.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-013:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-013"
+  ],
+  "childRefs": [
+    "ANOS-REQ-100",
+    "ANOS-REQ-101",
+    "ANOS-REQ-102",
+    "ANOS-REQ-130",
+    "ANOS-REQ-131",
+    "ANOS-REQ-132",
+    "ANOS-REQ-133",
+    "ANOS-REQ-150",
+    "ANOS-REQ-151",
+    "ANOS-REQ-152"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-AGENT-004",
+    "GATE-AC-AGENT-005",
+    "GATE-AC-GOV-003",
+    "GATE-AC-GOV-004",
+    "GATE-AC-UI-007"
+  ],
+  "testCaseRefs": [
+    "TC-REG-001",
+    "TC-REG-002",
+    "TC-REG-003",
+    "TC-ADM-001",
+    "TC-ADM-002",
+    "TC-ADM-003",
+    "TC-ADM-004",
+    "TC-API-001",
+    "TC-API-002",
+    "TC-API-003",
+    "TC-API-004"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

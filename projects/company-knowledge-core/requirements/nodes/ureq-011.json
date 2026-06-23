@@ -1,0 +1,39 @@
+{
+  "nodeId": "UREQ-011",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Return cited answer, confidence, and gap when no verified answer exists.",
+  "statement": "Return cited answer, confidence, and gap when no verified answer exists.",
+  "problem": "Answers without citations are unsafe.",
+  "acceptanceSignal": "Product must search reviewed knowledge and expose citation/gap state.",
+  "ownerRole": "Knowledge Query Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-011",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-004"
+  ],
+  "childRefs": [
+    "PREQ-011"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-KNO-003",
+    "GATE-AC-KNO-004"
+  ],
+  "testCaseRefs": [
+    "TC-KNO-001",
+    "TC-KNO-002",
+    "TC-KNO-003",
+    "TC-KNO-004",
+    "TC-KNO-005"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

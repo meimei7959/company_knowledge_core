@@ -1,0 +1,32 @@
+{
+  "nodeId": "BR-002",
+  "type": "RequirementNode",
+  "nodeKind": "business",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "BR-002",
+  "statement": "The company needs high-quality Agent output that can be accepted, reviewed, reused, and improved.",
+  "whyItMatters": "Agent speed without evidence and quality gates creates rework and knowledge pollution.",
+  "successSignal": "Outputs include evidence, acceptance criteria, review path, and quality metrics.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#business-requirements:BR-002",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [],
+  "childRefs": [
+    "UREQ-002",
+    "UREQ-003",
+    "UREQ-006",
+    "UREQ-010",
+    "UREQ-014"
+  ],
+  "acceptanceGateRefs": [],
+  "testCaseRefs": [],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

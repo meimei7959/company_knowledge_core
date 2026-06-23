@@ -1,0 +1,44 @@
+{
+  "nodeId": "PREQ-014",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-014",
+  "statement": "Product must route high-impact decisions to human approval.",
+  "whyItMatters": "Agent must not self-approve customer/security/policy/verified knowledge decisions.",
+  "successSignal": "Product must route high-impact decisions to human approval.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-014:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-014"
+  ],
+  "childRefs": [
+    "ANOS-REQ-021",
+    "ANOS-REQ-090",
+    "ANOS-REQ-091",
+    "ANOS-REQ-092",
+    "ANOS-REQ-093"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002",
+    "GATE-AC-REQ-004"
+  ],
+  "testCaseRefs": [
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004",
+    "TC-PRD-002"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

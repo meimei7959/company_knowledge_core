@@ -1,0 +1,115 @@
+{
+  "proofId": "desktop-native-proof-tauri-v2-20260621",
+  "taskId": "kt-ai-native-os-impl-desktop-native-proof",
+  "runtimeDecision": {
+    "preferredRuntime": "tauri-v2",
+    "decision": "real-native-tauri-v2-proof-blocked",
+    "electronFallbackRequested": true,
+    "fallbackTrigger": "Request Product Manager decision if approved Rust/Cargo/Tauri v2 toolchain plus Mac/Windows CI runners, signing material, updater signer keys, and real product frontend build cannot be supplied."
+  },
+  "localEnvironmentProbe": {
+    "checkedAt": "2026-06-21T14:04:25Z",
+    "hostOs": "macOS 26.5 arm64",
+    "node": "v22.22.2",
+    "npm": "10.9.7",
+    "xcodeSelect": "/Applications/Xcode.app/Contents/Developer",
+    "codesignTool": "/usr/bin/codesign",
+    "codesigningIdentities": "0 valid identities found",
+    "rustc": "missing: spawnSync rustc ENOENT",
+    "cargo": "missing: spawnSync cargo ENOENT",
+    "cargoTauri": "missing: spawnSync cargo ENOENT",
+    "npmTauriOffline": "missing: npm ENOTCACHED for tauri package",
+    "signingEnv": "APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID, APPLE_API_ISSUER, APPLE_API_KEY, APPLE_SIGNING_IDENTITY, TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD, and WINDOWS_PFX_PASSWORD absent",
+    "windowsRunner": "not available on this Mac session",
+    "realProductFrontend": "not wired; local HTML is not accepted as product completion proof",
+    "blocker": "This Mac cannot complete real native proof: Rust/Cargo and Tauri CLI are missing; no valid code signing identity exists; signing/notarization/updater secrets are absent; Windows runner/signing environment is absent; real product frontend build is not wired."
+  },
+  "evidence": [
+    {
+      "id": "mac-packaging",
+      "surface": "Mac packaging feasibility",
+      "status": "scaffolded_not_built",
+      "artifactRefs": ["src-tauri/tauri.conf.json", "src-tauri/Cargo.toml"],
+      "proof": "Only scaffold exists. Real Mac proof was not completed because Rust/Cargo/Tauri CLI and signing identity are missing.",
+      "boundary": "Requires this Mac or CI to have Rust >= 1.77.2, Tauri CLI, real product frontend build, Apple Developer ID signing identity, notarization credentials, and installed-app smoke evidence."
+    },
+    {
+      "id": "windows-packaging",
+      "surface": "Windows packaging feasibility",
+      "status": "scaffolded_not_built",
+      "artifactRefs": ["src-tauri/tauri.conf.json", "src-tauri/Cargo.toml"],
+      "proof": "Only scaffold exists. Real Windows proof cannot run from this Mac session because no Windows runner, MSVC Rust toolchain, WebView2 baseline check, Windows SDK/signtool, or Windows signing certificate is available.",
+      "boundary": "Requires Windows runner with MSVC Rust toolchain, Tauri CLI, real product frontend build, WebView2 baseline, signtool-capable Windows SDK, code signing certificate, and installed NSIS/MSI smoke evidence."
+    },
+    {
+      "id": "signing-notarization",
+      "surface": "Signing and notarization boundary",
+      "status": "boundary_defined",
+      "artifactRefs": ["src-tauri/tauri.conf.json"],
+      "proof": "Boundary only. macOS has codesign tool but 0 valid identities. No Apple notarization env vars, no Tauri updater private key, and no Windows PFX/password/thumbprint are present.",
+      "boundary": "Requires Apple Developer ID/Application credentials, notarization env vars, Windows code signing certificate thumbprint, timestamp authority, Tauri updater signer keys, and secret handling outside repository."
+    },
+    {
+      "id": "updater-channel",
+      "surface": "Updater and channel behavior",
+      "status": "scaffolded_not_signed",
+      "artifactRefs": ["src-tauri/tauri.conf.json", "src-tauri/src/lib.rs"],
+      "proof": "Only updater scaffold exists. Real updater proof is blocked because Tauri signer key generation cannot run without Tauri CLI, and signed release artifacts/endpoints do not exist.",
+      "boundary": "Requires Tauri signer key generation, private key in build environment, signed Mac/Windows update artifacts, release JSON endpoint, channel naming policy, and update install smoke test."
+    },
+    {
+      "id": "secure-storage",
+      "surface": "Secure storage plugin viability",
+      "status": "scaffolded",
+      "artifactRefs": ["src-tauri/Cargo.toml", "src-tauri/src/lib.rs", "src-tauri/capabilities/default.json"],
+      "proof": "Only Stronghold scaffold exists. Real secure storage proof is blocked until native app can run and Product decides whether Stronghold is acceptable versus native Keychain/Credential Manager integration.",
+      "boundary": "Requires installed-app secret write/read/delete smoke, vault migration policy, and Product decision on Stronghold versus native OS credential storage."
+    },
+    {
+      "id": "deep-link",
+      "surface": "Deep link behavior",
+      "status": "scaffolded",
+      "artifactRefs": ["src-tauri/tauri.conf.json", "src-tauri/src/lib.rs", "src-tauri/capabilities/default.json"],
+      "proof": "Only deep-link scaffold exists. Real behavior proof requires installed app dispatch of zhenzhi-ai-native://pair?... on macOS and Windows.",
+      "boundary": "Installed app smoke test must verify zhenzhi-ai-native://pair?... dispatch on macOS and Windows."
+    },
+    {
+      "id": "notifications",
+      "surface": "OS notification permission behavior",
+      "status": "scaffolded",
+      "artifactRefs": ["src-tauri/Cargo.toml", "src-tauri/src/lib.rs", "src-tauri/capabilities/default.json"],
+      "proof": "Only notification scaffold exists. Real OS permission behavior proof requires installed app prompt and send smoke on macOS and Windows.",
+      "boundary": "Windows notification behavior requires installed app; macOS permission prompt requires interactive smoke test."
+    },
+    {
+      "id": "enterprise-proxy-network",
+      "surface": "Enterprise proxy and network notes",
+      "status": "boundary_defined",
+      "artifactRefs": ["src-tauri/tauri.conf.json"],
+      "proof": "Only network boundary notes exist. No enterprise proxy/PAC/TLS interception test was run.",
+      "boundary": "Requires approved central API/update domains, proxy/PAC behavior test, TLS interception policy, offline retry UX, and no infinite retry loops in real app."
+    },
+    {
+      "id": "runner-pairing-token-flow",
+      "surface": "Local runner pairing token flow",
+      "status": "contract_scaffolded",
+      "artifactRefs": ["src-tauri/resources/runner-pairing.schema.json", "src-tauri/src/lib.rs"],
+      "proof": "Only token contract schema exists. No live central API pairing, one-time redemption, Stronghold write, or Agent Ring runner binding was executed.",
+      "boundary": "Requires live central API endpoint, one-time token redemption, nonce replay protection, secure storage write/read, audit writeback, and Agent Ring runner record binding."
+    }
+  ],
+  "sourceDocs": [
+    "https://v2.tauri.app/start/prerequisites/",
+    "https://v2.tauri.app/plugin/updater/",
+    "https://v2.tauri.app/plugin/deep-linking/",
+    "https://v2.tauri.app/plugin/notification/",
+    "https://v2.tauri.app/plugin/stronghold/",
+    "https://v2.tauri.app/distribute/sign/macos/",
+    "https://v2.tauri.app/distribute/sign/windows/",
+    "https://v2.tauri.app/distribute/windows-installer/"
+  ],
+  "testUnlock": {
+    "canUnlockKtAiNativeOsTestDesktopNativeProof": false,
+    "unlockScope": "Do not unlock real native proof testing. Test Agent cannot verify Mac/Windows package/install/sign/update/deep-link/notification/secure-storage behavior until toolchains, signing material, updater keys, real frontend build, and Mac/Windows runners exist."
+  }
+}

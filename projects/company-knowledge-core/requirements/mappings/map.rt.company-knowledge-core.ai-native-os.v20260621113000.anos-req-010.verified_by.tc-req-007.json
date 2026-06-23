@@ -1,0 +1,17 @@
+{
+  "mappingId": "map.rt.company-knowledge-core.ai-native-os.v20260621113000.anos-req-010.verified_by.tc-req-007",
+  "type": "RequirementMapping",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "fromRef": "ANOS-REQ-010",
+  "toRef": "TC-REQ-007",
+  "mappingKind": "verified_by",
+  "confidence": "source_exact",
+  "rationale": "Coverage matrix maps functional requirement to designed test case.",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "createdByAgentRef": "agent.company.development",
+  "reviewState": "draft",
+  "auditRefs": []
+}

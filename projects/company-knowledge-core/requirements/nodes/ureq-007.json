@@ -1,0 +1,48 @@
+{
+  "nodeId": "UREQ-007",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Receive target roles, workflows, non-goals, states, and usability criteria.",
+  "statement": "Receive target roles, workflows, non-goals, states, and usability criteria.",
+  "problem": "Needs user scenario and constraints before UI decisions.",
+  "acceptanceSignal": "Product must expose product requirements and scenario context to design tasks.",
+  "ownerRole": "Design Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-007",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-005"
+  ],
+  "childRefs": [
+    "PREQ-007"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-AGENT-001",
+    "GATE-AC-AGENT-002",
+    "GATE-AC-AGENT-003",
+    "GATE-AC-UI-003"
+  ],
+  "testCaseRefs": [
+    "TC-PRD-001",
+    "TC-PRD-002",
+    "TC-PRD-003",
+    "TC-PRD-004",
+    "TC-PRD-005",
+    "TC-AGENT-001",
+    "TC-AGENT-002",
+    "TC-AGENT-003",
+    "TC-AGENT-004",
+    "TC-AGENT-005",
+    "TC-AGENT-006",
+    "TC-AGENT-007"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

@@ -1,0 +1,43 @@
+{
+  "nodeId": "UREQ-010",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Review structure, evidence, confidence, sensitivity, duplicate, conflict, and ap",
+  "statement": "Review structure, evidence, confidence, sensitivity, duplicate, conflict, and approval path.",
+  "problem": "Low-quality or sensitive knowledge can pollute reuse.",
+  "acceptanceSignal": "Product must route KnowledgeItem through Review Center before promotion.",
+  "ownerRole": "Knowledge Review Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-010",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-002",
+    "BR-004"
+  ],
+  "childRefs": [
+    "PREQ-010"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002",
+    "GATE-AC-GOV-003",
+    "GATE-AC-GOV-004",
+    "GATE-AC-KNO-002"
+  ],
+  "testCaseRefs": [
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004",
+    "TC-E2E-005"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

@@ -1,0 +1,60 @@
+{
+  "nodeId": "ANOS-REQ-031",
+  "type": "RequirementNode",
+  "nodeKind": "functional",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "ANOS-REQ-031",
+  "statement": "Functional requirement reference ANOS-REQ-031 imported from Requirement Tree mapping.",
+  "whyItMatters": "Functional references preserve implementation traceability from product requirements.",
+  "successSignal": "Mapped test cases and acceptance gates remain visible before execution.",
+  "ownerRole": "agent.company.development",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#functional-requirement-mapping:ANOS-REQ-031",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "PREQ-004"
+  ],
+  "childRefs": [],
+  "acceptanceGateRefs": [
+    "GATE-AC-EXE-001",
+    "GATE-AC-EXE-002",
+    "GATE-AC-PROD-003",
+    "GATE-AC-UI-002"
+  ],
+  "testCaseRefs": [
+    "TC-PROJ-001",
+    "TC-PROJ-002",
+    "TC-PROJ-003",
+    "TC-PROJ-004",
+    "TC-PROJ-005",
+    "TC-SCH-001",
+    "TC-SCH-002",
+    "TC-SCH-003",
+    "TC-SCH-004",
+    "TC-SCH-005",
+    "TC-SCH-006",
+    "TC-SCH-007"
+  ],
+  "taskRefs": [
+    "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+    "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+  ],
+  "resultRefs": [
+    "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+    "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+  ],
+  "decisionRefs": [],
+  "auditRefs": [
+    "knowledge/audit/audit.20260621T112327747703Z.md"
+  ],
+  "coverageStatus": "partial",
+  "backfillConfidence": "backfill_inferred",
+  "executionUnlocking": false,
+  "backfillRefs": [
+    "projects/company-knowledge-core/requirements/backfills/requirement-tree-existing-work-backfill.20260621112327.json"
+  ]
+}

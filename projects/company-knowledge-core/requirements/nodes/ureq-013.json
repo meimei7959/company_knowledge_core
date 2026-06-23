@@ -1,0 +1,49 @@
+{
+  "nodeId": "UREQ-013",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Configure permissions, tool/skill approval, runner access, audit, backup, and di",
+  "statement": "Configure permissions, tool/skill approval, runner access, audit, backup, and disable paths.",
+  "problem": "Unauthorized tools, skills, runners, or secrets can create risk.",
+  "acceptanceSignal": "Product must provide Admin and Governance Console with audit-backed write controls.",
+  "ownerRole": "System Admin",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-013",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-003",
+    "BR-005"
+  ],
+  "childRefs": [
+    "PREQ-013"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-AGENT-004",
+    "GATE-AC-AGENT-005",
+    "GATE-AC-GOV-003",
+    "GATE-AC-GOV-004",
+    "GATE-AC-UI-007"
+  ],
+  "testCaseRefs": [
+    "TC-REG-001",
+    "TC-REG-002",
+    "TC-REG-003",
+    "TC-ADM-001",
+    "TC-ADM-002",
+    "TC-ADM-003",
+    "TC-ADM-004",
+    "TC-API-001",
+    "TC-API-002",
+    "TC-API-003",
+    "TC-API-004"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

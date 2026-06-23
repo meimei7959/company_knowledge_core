@@ -1,0 +1,24 @@
+{
+  "mappingId": "map.rt.company-knowledge-core.ai-native-os.v20260621113000.anos-req-101.existing-work.50c854d839e5a7f8",
+  "type": "RequirementMapping",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "fromRef": "ANOS-REQ-101",
+  "toRef": "task-results/tr-kt-os-digital-worker-capability-registry.md",
+  "mappingKind": "implemented_by",
+  "confidence": "backfill_inferred",
+  "rationale": "Existing-work backfill from PM coverage matrix; package-level evidence is traceable but does not mark completion.",
+  "sourceRefs": [
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md",
+    "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+    "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+    "task-results/tr-kt-os-digital-worker-capability-registry.md"
+  ],
+  "createdByAgentRef": "agent.company.development",
+  "reviewState": "needs_review",
+  "backfillRef": "projects/company-knowledge-core/requirements/backfills/requirement-tree-existing-work-backfill.20260621112327.json",
+  "backfillStatus": "partial",
+  "executionUnlocking": false,
+  "auditRefs": [
+    "knowledge/audit/audit.20260621T112327747703Z.md"
+  ]
+}

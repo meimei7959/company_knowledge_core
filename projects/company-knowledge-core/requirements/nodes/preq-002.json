@@ -1,0 +1,62 @@
+{
+  "nodeId": "PREQ-002",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-002",
+  "statement": "Product must store business, user, product, functional, non-functional, test, and acceptance mapping.",
+  "whyItMatters": "Feature lists can be mistaken for requirements.",
+  "successSignal": "Product must store business, user, product, functional, non-functional, test, and acceptance mapping.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-002:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-002"
+  ],
+  "childRefs": [
+    "ANOS-REQ-010",
+    "ANOS-REQ-011",
+    "ANOS-REQ-012",
+    "ANOS-REQ-013",
+    "ANOS-REQ-014",
+    "ANOS-REQ-015",
+    "ANOS-REQ-016",
+    "ANOS-REQ-020",
+    "ANOS-REQ-021",
+    "ANOS-REQ-022",
+    "ANOS-REQ-023",
+    "ANOS-REQ-024"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-REQ-001",
+    "GATE-AC-REQ-002",
+    "GATE-AC-REQ-003",
+    "GATE-AC-REQ-004",
+    "GATE-AC-REQ-005",
+    "GATE-AC-TEST-001"
+  ],
+  "testCaseRefs": [
+    "TC-REQ-001",
+    "TC-REQ-002",
+    "TC-REQ-003",
+    "TC-REQ-004",
+    "TC-REQ-005",
+    "TC-REQ-006",
+    "TC-REQ-007",
+    "TC-PRD-001",
+    "TC-PRD-002",
+    "TC-PRD-003",
+    "TC-PRD-004",
+    "TC-PRD-005",
+    "TC-E2E-003"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

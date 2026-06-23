@@ -1,0 +1,32 @@
+{
+  "nodeId": "BR-004",
+  "type": "RequirementNode",
+  "nodeKind": "business",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "BR-004",
+  "statement": "The company needs reusable organizational knowledge from real work.",
+  "whyItMatters": "Knowledge must come from evidence-backed work results, not raw dumps or unsupported summaries.",
+  "successSignal": "SourceMaterial and TaskResult can produce reviewed KnowledgeItem with citations and confidence.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#business-requirements:BR-004",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [],
+  "childRefs": [
+    "UREQ-009",
+    "UREQ-010",
+    "UREQ-011",
+    "UREQ-014",
+    "UREQ-015"
+  ],
+  "acceptanceGateRefs": [],
+  "testCaseRefs": [],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

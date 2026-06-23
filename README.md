@@ -1,36 +1,73 @@
 # Company Knowledge Core
 
-Company Knowledge Core is the working foundation for Zhenzhi's AI-native team.
+Company Knowledge Core is the central processor for Zhenzhi's AI-native team: scheduler plus knowledge engineering.
 
 Current source of truth:
 
 - [桢知科技 AI 原生知识工程建设方案](docs/strategy/zhenzhi-ai-native-knowledge-system.md)
+- [Mature AI Native Operating System Roadmap](docs/strategy/mature-ai-native-operating-system-roadmap.md)
+- [Product System Architecture](docs/architecture/product-system-architecture.md)
+- [Engineering Extension Model](docs/architecture/engineering-extension-model.md)
+- [Knowledge Graph Management](docs/architecture/knowledge-graph-management.md)
 
 Current architecture:
 
 ```txt
-OKF-compatible Git Bundle
--> zhenzhi-knowledge local connector
--> Agent start/finish workflow
--> review, sync, audit
+Agent Hub intake
+-> central scheduler
+-> Project / Task coordination
+-> SourceMaterial registration
+-> Agent Ring dispatch to distributed computers
+-> Codex / Claude / local model / tool execution on the selected runner
+-> TaskResult writeback
+-> Knowledge graph edge extraction
+-> Knowledge review, sync, audit, notification
 ```
 
 Team usage guide:
 
 - [桢知知识工程团队使用指南](docs/guides/team-usage-guide.md)
+- [Central Processor Ops Runbook](docs/ops/central-processor-ops-runbook.md)
 
 ## Current Phase
 
 Do not build a large platform first. Build and verify the team workflow:
 
-- Project context.
+- Project initiation and status.
+- Task dispatch to distributed Agent Ring runners.
+- Runner registry and capability matching.
 - Agent management.
 - Tool sharing.
-- Experience sharing.
-- Knowledge updates.
+- Source material intake.
+- Knowledge extraction through assigned local work.
+- Reviewable knowledge updates.
 - Git-linked development records.
 
 Implementation must stay aligned with the source-of-truth strategy document, the core object model, and the harness checks.
+
+Engineering direction:
+
+- Upgrade in layers; do not replace or discard existing records.
+- Keep the OKF-compatible bundle exportable while adding scheduler/API capabilities.
+- Add new capabilities through documented object, protocol, workflow, validation, and test contracts.
+- Treat graph capability as a management layer over existing objects: references and edges are indexed/exported, but source records remain the truth.
+- Keep Agent Ring runtime external; represent integration through protocol and central records.
+
+## Runtime Database
+
+Local development and production both use PostgreSQL through `DATABASE_URL`.
+
+SQLite is not a supported local database, cache, or fallback path. The Markdown/YAML bundle remains the portable exchange and audit artifact; `index rebuild` and `rag rebuild` import that bundle into PostgreSQL.
+
+Local PostgreSQL can be started from the deployment Compose file:
+
+```bash
+cp deploy/lighthouse/.env.example deploy/lighthouse/.env
+POSTGRES_PORT=55432 docker compose -f deploy/lighthouse/docker-compose.yml up -d postgres
+export DATABASE_URL=postgresql://zhenzhi:CHANGE_ME@127.0.0.1:55432/zhenzhi_knowledge
+python3 -m zhenzhi_knowledge --root . index rebuild
+python3 -m zhenzhi_knowledge --root . rag rebuild
+```
 
 ## Team Local Agent Setup
 
@@ -65,6 +102,25 @@ zhenzhi-knowledge finish --project company-knowledge-core --agent agent.<name>.c
 zhenzhi-knowledge sync push
 ```
 
+Task-based flow:
+
+```bash
+zhenzhi-knowledge sync pull
+zhenzhi-knowledge task pull KT-20260618-001
+# Agent Ring or an authorized local runner processes the task source material
+zhenzhi-knowledge task finish KT-20260618-001 --result done --summary "<what changed>"
+zhenzhi-knowledge sync push
+```
+
+Agent Ring integration:
+
+- Agent Ring is external to this project.
+- This project owns the protocol and central records, not the Agent Ring product design.
+- Agent Ring may have its own subscriptions, Agent configuration, Codex / Claude / local model integration, Skill and tool management, local security, UI, automation, and runtime behavior.
+- Each Agent Ring runner registers a distributed computer, its Agents, capabilities, tools, repository access, data scopes, load, and heartbeat.
+- Scheduler tasks are matched to Agent Ring runners, not to human owners.
+- Protocol docs: [Agent Ring Communication Protocol](docs/protocols/agent-ring-communication-protocol.md).
+
 Online API used by the bootstrap script:
 
 ```txt
@@ -79,6 +135,9 @@ This repository is not a raw file dump. Agents must not place arbitrary document
 
 Reusable knowledge must be structured for AI consumption:
 
+- Feishu/Lark intake first creates `SourceMaterial` and a `ProjectTask` / `KnowledgeTask`; it does not directly publish reusable knowledge.
+- Heavy parsing, summarization, structuring, and execution are dispatched to an Agent Ring runner with matching capabilities and permissions.
+- Task completion must write a `TaskResult`, link original source material, runner, Agent, evidence, and update task status before notification or review.
 - `KnowledgeItem` files live under `knowledge/<category>/`.
 - Allowed content categories are `company`, `engineering`, `product`, `business`, `operations`, `research`, and `customer`.
 - Every `KnowledgeItem` must include `sourceRef`, `confidence`, `status`, `owner`, and `scope`.
@@ -104,9 +163,15 @@ zhenzhi-knowledge api export
 
 Default deployment binds to `127.0.0.1:8765` on the server and exposes it through the Agent Work Nginx route `/knowledge-api/`.
 
+Operational checks, log paths, Feishu card diagnostics, DeepSeek router diagnostics, and Agent Ring runtime checks are maintained in [Central Processor Ops Runbook](docs/ops/central-processor-ops-runbook.md).
+
 ## Core Owns
 
 - Project.
+- AgentRunner registry records.
+- ProjectTask / KnowledgeTask.
+- TaskResult.
+- NotificationRecord.
 - Agent.
 - ToolAsset.
 - SourceMaterial.
@@ -118,10 +183,14 @@ Default deployment binds to `127.0.0.1:8765` on the server and exposes it throug
 - EvalCase / EvalRun.
 - MetricsReport.
 - AuditLog.
+- KnowledgeGraphEdge.
+- GraphSnapshot.
 
 ## Core Does Not Own
 
 - Full source code. Code lives in Git.
-- Full project management system. Current project cards are temporary until the product is ready.
+- Full project management product UI. Current project and task cards are the first-stage source of truth until the product is ready.
+- Agent Ring implementation. Agent Ring is an external workstation/connector project.
+- Direct execution on distributed computers. This project schedules, records, reviews, and audits; Agent Ring runs local execution engines.
 - Secret values, keys, or credentials.
 - Business-domain-specific schemas.

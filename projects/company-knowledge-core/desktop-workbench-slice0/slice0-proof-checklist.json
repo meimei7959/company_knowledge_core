@@ -1,0 +1,127 @@
+{
+  "checklistVersion": "desktop-workbench-slice0.v1",
+  "projectId": "company-knowledge-core",
+  "taskId": "kt-ai-native-os-impl-desktop-workbench-slice0",
+  "sourceMaterialRefs": [
+    "projects/company-knowledge-core/technical-solutions/ai-native-os-desktop-workbench-console.md",
+    "projects/company-knowledge-core/product-reviews/ai-native-os-desktop-workbench-revision-review.md"
+  ],
+  "allowedStatuses": ["static_pass", "manual_required", "external_blocked"],
+  "gates": [
+    {
+      "id": "mac-packaging-path",
+      "category": "mac_packaging",
+      "status": "external_blocked",
+      "launchBlocking": true,
+      "proofIntent": "Verify Tauri v2 macOS universal app feasibility, DMG or PKG packaging, install, launch, and uninstall.",
+      "executableCheck": "tauri build --target universal-apple-darwin; install packaged app; launch app; uninstall app; record artifact hash and OS version.",
+      "blocker": "No target macOS version, signing owner, certificate, or packaging account confirmed for real package proof.",
+      "ownerNeeded": "Project Manager Agent"
+    },
+    {
+      "id": "windows-packaging-path",
+      "category": "windows_packaging",
+      "status": "external_blocked",
+      "launchBlocking": true,
+      "proofIntent": "Verify signed MSI or NSIS packaging, per-user install, launch, uninstall, and machine-wide install decision inputs.",
+      "executableCheck": "tauri build --runner cargo-xwin or native Windows runner; install MSI/NSIS; launch app; uninstall app; record artifact hash and Windows version.",
+      "blocker": "No Windows runner, target Windows version, code-signing certificate, or installer policy confirmed.",
+      "ownerNeeded": "Project Manager Agent"
+    },
+    {
+      "id": "signing-notarization",
+      "category": "signing_notarization",
+      "status": "external_blocked",
+      "launchBlocking": true,
+      "proofIntent": "Verify macOS signing/notarization and Windows signed installer chain.",
+      "executableCheck": "codesign --verify; spctl --assess; notarytool submit and staple; signtool verify on Windows installer.",
+      "blocker": "Developer accounts, certificates, team IDs, and release signing responsibility are not confirmed.",
+      "ownerNeeded": "Project Manager Agent"
+    },
+    {
+      "id": "update-channels",
+      "category": "update_channels",
+      "status": "manual_required",
+      "launchBlocking": true,
+      "proofIntent": "Verify internal-dev, pilot, stable, and rollback channels with signed manifests and forced-update limits.",
+      "executableCheck": "Generate signed update manifests for all channels; switch channel URL; verify rollback serves previous signed version; verify forced update only for security or API-breaking incompatibility.",
+      "blocker": "Requires release channel owner and update signing key policy before execution.",
+      "ownerNeeded": "Project Manager Agent"
+    },
+    {
+      "id": "enterprise-network-proxy",
+      "category": "enterprise_network_proxy",
+      "status": "manual_required",
+      "launchBlocking": true,
+      "proofIntent": "Verify API reachability, updater reachability, proxy/VPN/custom CA behavior, and readable failure messages.",
+      "executableCheck": "Run API and updater diagnostics through direct network, proxy, VPN, and custom CA/certificate-inspection environments; confirm redacted diagnostics.",
+      "blocker": "Target enterprise proxy/VPN/custom CA environments are not confirmed.",
+      "ownerNeeded": "Project Manager Agent"
+    },
+    {
+      "id": "secure-storage-auth",
+      "category": "secure_storage_auth",
+      "status": "manual_required",
+      "launchBlocking": true,
+      "proofIntent": "Verify OS secure-storage plugin viability and no raw token or secret persistence.",
+      "executableCheck": "Store credential reference; inspect app config, logs, crash reports, and cache for token/secret patterns; verify clear-storage behavior.",
+      "blocker": "Requires selected Tauri secure-storage plugin or custom Rust bridge implementation in shell proof.",
+      "ownerNeeded": "Development Agent"
+    },
+    {
+      "id": "native-bridge-boundary",
+      "category": "native_bridge",
+      "status": "static_pass",
+      "launchBlocking": true,
+      "proofIntent": "Verify native bridge command boundary is explicit, permission-gated, redacted, and shell-independent.",
+      "executableCheck": "python3 scripts/validate_desktop_workbench_slice0.py",
+      "blocker": "",
+      "ownerNeeded": "Development Agent"
+    },
+    {
+      "id": "deep-link-registration",
+      "category": "deep_links",
+      "status": "manual_required",
+      "launchBlocking": true,
+      "proofIntent": "Verify object links and runner pairing deep links resolve without bypassing permissions.",
+      "executableCheck": "Register app protocol; open object-link URI and runner-pairing URI; confirm central API permission check and no lease mutation.",
+      "blocker": "Requires minimal shell build to execute.",
+      "ownerNeeded": "Development Agent"
+    },
+    {
+      "id": "notification-permission",
+      "category": "notification_permission",
+      "status": "manual_required",
+      "launchBlocking": true,
+      "proofIntent": "Verify OS notification permission prompt timing and audit trail.",
+      "executableCheck": "Trigger first user-visible NotificationRecord; verify permission prompt, display result, central delivery attempt, and no silent subscription.",
+      "blocker": "Requires minimal shell build and OS target matrix.",
+      "ownerNeeded": "Development Agent"
+    },
+    {
+      "id": "runner-pairing-proof",
+      "category": "runner_pairing",
+      "status": "manual_required",
+      "launchBlocking": true,
+      "proofIntent": "Verify central API-issued scoped pairing proof handoff to local runner after user confirmation.",
+      "executableCheck": "Issue pairing proof from central API; hand off through desktop bridge; runner writes AgentRun/TaskResult through central API; desktop cannot mutate lease or private runner state.",
+      "blocker": "Requires Agent Ring runner pairing endpoint and local runner test fixture.",
+      "ownerNeeded": "Project Manager Agent"
+    },
+    {
+      "id": "environment-release-permissions",
+      "category": "environment_release_permissions",
+      "status": "external_blocked",
+      "launchBlocking": true,
+      "proofIntent": "Confirm target macOS/Windows versions, release ownership, pilot channel policy, emergency rollback owner, and fallback decision recipient.",
+      "executableCheck": "Project Manager Agent records target OS matrix, signing owner, channel owner, rollback owner, enterprise network targets, and Electron fallback approver.",
+      "blocker": "PM confirmation still needed per product revision review.",
+      "ownerNeeded": "Project Manager Agent"
+    }
+  ],
+  "fallbackDecisionRequest": {
+    "requiredWhen": "Any launch-blocking Tauri proof fails and no Slice 0 fix is viable.",
+    "recipient": "Product Manager Agent and Project Manager Agent",
+    "currentState": "not_required_static_contract_passed_external_execution_pending"
+  }
+}

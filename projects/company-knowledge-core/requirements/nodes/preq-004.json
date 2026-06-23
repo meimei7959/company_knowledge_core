@@ -1,0 +1,59 @@
+{
+  "nodeId": "PREQ-004",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-004",
+  "statement": "Product must link requirements to ProjectTasks, Agent roles, dependencies, and launch gates.",
+  "whyItMatters": "Needs to coordinate many Agents without losing traceability.",
+  "successSignal": "Product must link requirements to ProjectTasks, Agent roles, dependencies, and launch gates.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-004:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-004"
+  ],
+  "childRefs": [
+    "ANOS-REQ-030",
+    "ANOS-REQ-031",
+    "ANOS-REQ-032",
+    "ANOS-REQ-033",
+    "ANOS-REQ-034",
+    "ANOS-REQ-050",
+    "ANOS-REQ-051",
+    "ANOS-REQ-052",
+    "ANOS-REQ-053",
+    "ANOS-REQ-054",
+    "ANOS-REQ-055",
+    "ANOS-REQ-056"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-EXE-001",
+    "GATE-AC-EXE-002",
+    "GATE-AC-PROD-003",
+    "GATE-AC-UI-002"
+  ],
+  "testCaseRefs": [
+    "TC-PROJ-001",
+    "TC-PROJ-002",
+    "TC-PROJ-003",
+    "TC-PROJ-004",
+    "TC-PROJ-005",
+    "TC-SCH-001",
+    "TC-SCH-002",
+    "TC-SCH-003",
+    "TC-SCH-004",
+    "TC-SCH-005",
+    "TC-SCH-006",
+    "TC-SCH-007"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

@@ -1,0 +1,27 @@
+{
+  "gateId": "GATE-AC-TEST-005",
+  "type": "AcceptanceGate",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "requirementRefs": [
+    "ANOS-REQ-023",
+    "ANOS-REQ-110",
+    "ANOS-REQ-111",
+    "ANOS-REQ-112",
+    "ANOS-REQ-113",
+    "ANOS-REQ-114"
+  ],
+  "ownerRole": "agent.company.test",
+  "verificationMethod": "document_check",
+  "observableSignal": "AC-TEST-005 is checked against acceptance checklist evidence before launch.",
+  "requiredEvidenceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "status": "draft",
+  "waiverDecisionRef": "",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "auditRefs": []
+}

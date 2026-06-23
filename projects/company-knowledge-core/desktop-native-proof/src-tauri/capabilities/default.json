@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Desktop native proof permissions for updater, secure storage, deep links, notifications, and runner pairing.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "deep-link:default",
+    "deep-link:allow-is-registered",
+    "deep-link:allow-register",
+    "notification:default",
+    "stronghold:default",
+    "updater:default"
+  ]
+}

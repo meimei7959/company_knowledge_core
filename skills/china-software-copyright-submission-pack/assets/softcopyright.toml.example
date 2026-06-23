@@ -1,0 +1,85 @@
+# 中国计算机软件著作权登记材料配置
+# 带 HUMAN_ONLY 的字段只能由申请负责人根据真实情况填写；Agent 不得起草、补全或推断。
+
+[software]
+# HUMAN_ONLY：须与官网申请表、源程序页眉、说明书页眉完全一致。
+full_name = "示例智能助手APP软件"
+short_name = "示例助手"
+version = "V1.0"
+
+# HUMAN_ONLY：不得从 Git、构建时间、安装包时间或聊天上下文推断。
+completion_date = "2026-06-22"
+publication_status = "unpublished" # unpublished | published
+first_publication_date = ""         # published 时由人填写
+copyright_owner = ""                # 著作权人法定名称
+
+manual_type = "user-manual"         # user-manual | design-description
+platforms = ["Android"]
+app_display_name = "示例助手"
+package_id = "com.example.assistant"
+hardware_environment = "Android 10及以上智能手机，建议4GB及以上内存"
+software_environment = "Android 10及以上，网络连接正常"
+technical_characteristics = ""       # HUMAN_ONLY：人工原创并确认
+
+[application]
+# HUMAN_ONLY：以下值决定正式材料中哪些证明文件属于“当前适用”。
+applicant_type = "enterprise"       # enterprise | individual | other
+development_mode = "independent"    # independent | cooperative | commissioned | task
+rights_acquisition = "original"     # original | inherited | assigned | undertaken
+software_category = "应用软件"
+rights_scope = "全部权利"
+
+# 条件材料开关。存在任一情形时应按真实情况改为 true。
+has_ownership_contract_or_task = false
+based_on_original_software = false
+uses_registration_agent = false
+has_foreign_documents = false
+registration_channel = "ccopyright-online"
+
+# HUMAN_ONLY：由人根据当前软件实际功能独立撰写。
+# 当前公开转载的新版申请表说明显示该字段需 500—1300 字；提交前必须再次核对官网当前要求。
+main_function_description = ""
+# HUMAN_ONLY：按提交当日表单说明确认；公开转载的 2026-03 版本为 500—1300。
+main_function_min_chars = 500
+main_function_max_chars = 1300
+human_author_name = ""
+human_confirmed_on = ""             # YYYY-MM-DD
+
+[source]
+# 顺序即“规范化连续源程序”的目录顺序。只列第一方核心源码。
+roots = ["app/src/main/java", "app/src/main/kotlin", "src"]
+include_extensions = [
+  ".java", ".kt", ".kts", ".swift", ".m", ".mm", ".dart", ".py", ".go",
+  ".rs", ".c", ".h", ".cpp", ".hpp", ".cs", ".js", ".jsx", ".ts", ".tsx",
+  ".vue", ".php", ".rb", ".scala", ".sql", ".xml", ".html", ".css", ".scss"
+]
+exclude_globs = [
+  ".git/**", "**/.git/**", "node_modules/**", "**/node_modules/**",
+  "vendor/**", "**/vendor/**", "Pods/**", "**/Pods/**",
+  ".gradle/**", "**/.gradle/**", "dist/**", "**/dist/**",
+  "build/**", "**/build/**", "target/**", "**/target/**",
+  "out/**", "**/out/**", "coverage/**", "**/coverage/**",
+  "generated/**", "**/generated/**", "**/*.generated.*", "**/*.g.dart",
+  "**/*.min.js", "**/*.map", "**/*.lock", "**/package-lock.json",
+  "**/yarn.lock", "**/pnpm-lock.yaml", "**/Podfile.lock",
+  "**/.env", "**/.env.*", "**/*.pem", "**/*.key", "**/*.p12",
+  "**/*.jks", "**/*.keystore", "**/google-services.json"
+]
+omit_blank_lines = true
+print_width = 110
+lines_per_page = 50
+deposit_mode = "general"             # 仅支持 general；例外交存须人工处理
+
+[build]
+build_command = ""
+test_command = ""
+screenshot_command = ""
+require_clean_git = true
+
+[automation]
+# 只允许发布流程触发 collect。不得自动运行 finalize-human。
+generate_on_release = false
+trigger_file = ".release/softcopyright-ready"
+
+[output]
+generate_pdf = true

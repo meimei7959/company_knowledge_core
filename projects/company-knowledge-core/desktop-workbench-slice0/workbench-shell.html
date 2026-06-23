@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>真知 V1 Agent 工作台</title>
+    <link rel="stylesheet" href="./workbench-shell.css">
+  </head>
+  <body>
+    <div class="app-shell" data-workbench-shell>
+      <aside class="rail" aria-label="工作台导航">
+        <div class="brand">
+          <strong>真知</strong>
+          <span>V1 Agent 工作台</span>
+        </div>
+        <nav id="surface-nav" class="surface-nav"></nav>
+      </aside>
+      <div class="workspace">
+        <header class="topbar">
+          <div class="project-context">
+            <label class="project-picker" for="project-select">
+              <span>项目选择</span>
+              <select id="project-select" aria-describedby="project-summary">
+                <option value="company-knowledge-core" selected>真知公司知识核心</option>
+              </select>
+            </label>
+            <div class="project-toolbar" aria-label="项目操作">
+              <button id="new-project-entry" class="secondary-button" type="button">新建项目</button>
+              <span>建议一个项目一个独立文件夹；同时会在真知中枢注册项目记录。</span>
+            </div>
+            <h1 id="project-title">真知公司知识核心</h1>
+            <p id="project-summary" class="project-summary">工作台可发起创建项目、邀请电脑和注册工具；任务执行、结果写回和验收结论由中枢与 Agent 流程处理。</p>
+          </div>
+          <div id="runtime-summary" class="runtime-summary"></div>
+        </header>
+        <main id="workbench-root" class="content" tabindex="-1"></main>
+        <footer class="status-strip">
+          <span id="sync-state"></span>
+          <span id="package-boundary"></span>
+        </footer>
+      </div>
+    </div>
+    <script src="./workbench-read-model.js"></script>
+    <script src="./workbench-live-read-model.js"></script>
+    <script src="./workbench-shell.js"></script>
+  </body>
+</html>

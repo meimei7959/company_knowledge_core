@@ -1,0 +1,40 @@
+---
+type: EvalCase
+title: Agent improvement regression for kt-ai-native-os-impl-requirement-prd-domain
+description: Regression case generated from a failed or rejected Agent delivery.
+timestamp: "2026-06-21T07:13:25Z"
+evalId: eval-agent-improvement-kt-ai-native-os-impl-requirement-prd-domain.20260621T071325765391Z
+owner: agent.company.development-engineer
+status: draft
+targetRef: task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md
+agentTargetRef: agent.company.development-engineer
+sourceResultRef: task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md
+taskId: kt-ai-native-os-impl-requirement-prd-domain
+projectId: company-knowledge-core
+requires:
+  - summary
+  - evidence or artifact refs
+  - qualityEvaluation
+  - handoff or terminal reason
+  - next action
+expected: TaskResult must include summary, evidence/artifacts, qualityEvaluation, handoff/terminal reason, and retry or escalation decision when it fails.
+---
+
+## Trigger
+
+- taskId: kt-ai-native-os-impl-requirement-prd-domain
+- resultRef: task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md
+- agentId: agent.company.development-engineer
+
+## Failure Reasons
+
+- missing tests/checks
+- common rule: engineering/test task missing tests or checks
+
+## Expected
+
+TaskResult must include summary, evidence/artifacts, qualityEvaluation, handoff/terminal reason, and retry or escalation decision when it fails.
+
+## Usage
+
+This EvalCase is a draft regression guard. The responsible Agent or Skill maintainer should refine it, run it against the improved workflow/skill, and only promote it after review.

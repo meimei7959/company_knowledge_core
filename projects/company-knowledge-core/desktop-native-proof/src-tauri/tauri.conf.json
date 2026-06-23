@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Zhenzhi AI Native OS",
+  "version": "0.1.0-native-proof",
+  "identifier": "com.zhenzhi.ai-native-os",
+  "build": {
+    "frontendDist": "../REQUIRES_REAL_PRODUCT_FRONTEND_BUILD",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": ""
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Zhenzhi AI Native OS",
+        "width": 1280,
+        "height": 820,
+        "minWidth": 1080,
+        "minHeight": 720,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' https://api.zhenzhi.local https://updates.zhenzhi.local; img-src 'self' asset: https://asset.localhost; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "app", "nsis", "msi"],
+    "createUpdaterArtifacts": true,
+    "publisher": "Zhenzhi",
+    "category": "DeveloperTool",
+    "resources": ["resources/runner-pairing.schema.json"],
+    "macOS": {
+      "signingIdentity": null,
+      "hardenedRuntime": true,
+      "entitlements": null,
+      "exceptionDomain": ""
+    },
+    "windows": {
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "https://timestamp.digicert.com",
+      "wix": {
+        "language": "en-US"
+      },
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["zhenzhi-ai-native"]
+      }
+    },
+    "updater": {
+      "pubkey": "NATIVE_PROOF_REPLACE_WITH_TAURI_SIGNER_PUBLIC_KEY",
+      "endpoints": [
+        "https://updates.zhenzhi.local/desktop/{{target}}/{{arch}}/{{current_version}}/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "mappingId": "map.rt.company-knowledge-core.ai-native-os.v20260621113000.anos-req-015.existing-work.2951b369de70a05a",
+  "type": "RequirementMapping",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "fromRef": "ANOS-REQ-015",
+  "toRef": "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+  "mappingKind": "implemented_by",
+  "confidence": "backfill_inferred",
+  "rationale": "Existing-work backfill from PM coverage matrix; package-level evidence is traceable but does not mark completion.",
+  "sourceRefs": [
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md",
+    "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+    "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+  ],
+  "createdByAgentRef": "agent.company.development",
+  "reviewState": "needs_review",
+  "backfillRef": "projects/company-knowledge-core/requirements/backfills/requirement-tree-existing-work-backfill.20260621112327.json",
+  "backfillStatus": "partial",
+  "executionUnlocking": false,
+  "auditRefs": [
+    "knowledge/audit/audit.20260621T112327747703Z.md"
+  ]
+}

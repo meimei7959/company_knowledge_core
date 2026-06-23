@@ -1,0 +1,43 @@
+{
+  "nodeId": "UREQ-009",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Receive source refs and result evidence before drafting knowledge.",
+  "statement": "Receive source refs and result evidence before drafting knowledge.",
+  "problem": "Raw material and task outputs can lack evidence.",
+  "acceptanceSignal": "Product must require SourceMaterial and TaskResult links for knowledge drafts.",
+  "ownerRole": "Knowledge Engineering Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-009",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-004"
+  ],
+  "childRefs": [
+    "PREQ-009"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-KNO-001",
+    "GATE-AC-KNO-002",
+    "GATE-AC-KNO-003",
+    "GATE-AC-KNO-004",
+    "GATE-AC-REQ-005"
+  ],
+  "testCaseRefs": [
+    "TC-KNO-001",
+    "TC-KNO-002",
+    "TC-KNO-003",
+    "TC-KNO-004",
+    "TC-KNO-005",
+    "TC-E2E-005"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

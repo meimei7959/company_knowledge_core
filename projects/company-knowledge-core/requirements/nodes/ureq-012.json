@@ -1,0 +1,46 @@
+{
+  "nodeId": "UREQ-012",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "See adoption, feedback, task quality, failures, and improvement opportunities.",
+  "statement": "See adoption, feedback, task quality, failures, and improvement opportunities.",
+  "problem": "Product can ship without feedback and quality loop.",
+  "acceptanceSignal": "Product must provide Operations and Quality Dashboard metrics.",
+  "ownerRole": "Operations Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-012",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-001",
+    "BR-005"
+  ],
+  "childRefs": [
+    "PREQ-012"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-OPS-001",
+    "GATE-AC-OPS-003",
+    "GATE-AC-OPS-004",
+    "GATE-AC-UI-006"
+  ],
+  "testCaseRefs": [
+    "TC-MET-001",
+    "TC-MET-002",
+    "TC-MET-003",
+    "TC-MET-004",
+    "TC-MET-005",
+    "TC-OPS-001",
+    "TC-OPS-002",
+    "TC-OPS-003",
+    "TC-E2E-007"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

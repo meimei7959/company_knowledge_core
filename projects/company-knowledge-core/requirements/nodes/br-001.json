@@ -1,0 +1,31 @@
+{
+  "nodeId": "BR-001",
+  "type": "RequirementNode",
+  "nodeKind": "business",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "BR-001",
+  "statement": "The company needs an operating system for AI-native work so human requests, Agent work, local runners, reviews, and reusable knowledge form one traceable production loop.",
+  "whyItMatters": "Without this, Agent work stays scattered across chats, files, local computers, and hidden human memory.",
+  "successSignal": "A request can be traced from intake to requirement, task, runner, result, review, knowledge, notification, and metrics.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#business-requirements:BR-001",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [],
+  "childRefs": [
+    "UREQ-001",
+    "UREQ-004",
+    "UREQ-005",
+    "UREQ-012"
+  ],
+  "acceptanceGateRefs": [],
+  "testCaseRefs": [],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

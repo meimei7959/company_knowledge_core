@@ -1,0 +1,30 @@
+{
+  "nodeId": "BR-003",
+  "type": "RequirementNode",
+  "nodeKind": "business",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "BR-003",
+  "statement": "The company needs distributed local execution without losing central governance.",
+  "whyItMatters": "Codex, Claude, local models, and tools run on different computers, but the organization needs one source of truth.",
+  "successSignal": "Runners execute only authorized tasks and write back TaskResult, audit, and notification.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#business-requirements:BR-003",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [],
+  "childRefs": [
+    "UREQ-005",
+    "UREQ-008",
+    "UREQ-013"
+  ],
+  "acceptanceGateRefs": [],
+  "testCaseRefs": [],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

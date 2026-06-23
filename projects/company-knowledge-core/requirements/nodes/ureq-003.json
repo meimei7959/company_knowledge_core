@@ -1,0 +1,46 @@
+{
+  "nodeId": "UREQ-003",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "See PRD, decisions needed, assumptions, evidence, risks, and acceptance criteria",
+  "statement": "See PRD, decisions needed, assumptions, evidence, risks, and acceptance criteria.",
+  "problem": "Cannot approve work if assumptions and tradeoffs are hidden.",
+  "acceptanceSignal": "Product must expose PRD versions, Decision records, evidence, and approval state.",
+  "ownerRole": "Project Owner",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-003",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-002"
+  ],
+  "childRefs": [
+    "PREQ-003"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-REQ-003",
+    "GATE-AC-REQ-004",
+    "GATE-AC-REQ-005",
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002"
+  ],
+  "testCaseRefs": [
+    "TC-PRD-001",
+    "TC-PRD-002",
+    "TC-PRD-003",
+    "TC-PRD-004",
+    "TC-PRD-005",
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

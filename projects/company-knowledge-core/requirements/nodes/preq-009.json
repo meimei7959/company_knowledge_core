@@ -1,0 +1,47 @@
+{
+  "nodeId": "PREQ-009",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-009",
+  "statement": "Product must require SourceMaterial and TaskResult links for knowledge drafts.",
+  "whyItMatters": "Raw material and task outputs can lack evidence.",
+  "successSignal": "Product must require SourceMaterial and TaskResult links for knowledge drafts.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-009:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-009"
+  ],
+  "childRefs": [
+    "ANOS-REQ-080",
+    "ANOS-REQ-081",
+    "ANOS-REQ-082",
+    "ANOS-REQ-083",
+    "ANOS-REQ-084"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-KNO-001",
+    "GATE-AC-KNO-002",
+    "GATE-AC-KNO-003",
+    "GATE-AC-KNO-004",
+    "GATE-AC-REQ-005"
+  ],
+  "testCaseRefs": [
+    "TC-KNO-001",
+    "TC-KNO-002",
+    "TC-KNO-003",
+    "TC-KNO-004",
+    "TC-KNO-005",
+    "TC-E2E-005"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

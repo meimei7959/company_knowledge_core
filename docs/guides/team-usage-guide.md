@@ -19,7 +19,20 @@ http://124.221.138.151/knowledge-api
 
 ### 1.1 API Token 从哪里来
 
-API Token 由项目负责人维护，不由同事自己生成。当前 token 存在两个地方：
+API Token 是访问凭证的一种。中央处理器负责申请、审批、授权范围、审计和通知；token 明文不应该进入知识库、项目文件、群聊、截图或任务描述。
+
+当前第一阶段仍可由项目负责人维护团队共享 token，但这是临时接入方式。长期应改为：
+
+```txt
+飞书入口发起访问凭证申请
+-> 中央处理器创建 credential request
+-> owner 审批
+-> 中央 API token / runner token 由受控服务发放
+-> 本地工具或项目服务 secret 由 Secret Manager 或 Agent Ring 本地安全存储管理
+-> 中央只记录 secretRef、scope、expiry、owner、audit
+```
+
+临时团队共享 token 当前存在两个地方：
 
 ```txt
 本地负责人机器:
@@ -35,7 +48,7 @@ deploy/lighthouse/.env
 grep '^ZHENZHI_KNOWLEDGE_API_TOKEN=' deploy/lighthouse/.env
 ```
 
-给同事配置时，只发送 token 值，不发送 `.env` 文件。同事在自己的终端里设置：
+给同事配置时，只能通过安全渠道发送 token 值，不发送 `.env` 文件。同事在自己的终端里设置：
 
 ```bash
 export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<团队 token>
@@ -55,6 +68,7 @@ bash scripts/setup-teammate.sh --user-id <同事名> --ai-tool codex
 不要把 deploy/lighthouse/.env 发给同事。
 不要把 token 填进 Agent 任务描述。
 只通过安全渠道发给需要接入知识工程的成员。
+能使用 secretRef 的场景，不直接发送 token 明文。
 ```
 
 如果怀疑 token 泄露，负责人应立即轮换：
@@ -75,22 +89,62 @@ bash deploy/lighthouse/deploy.sh
 export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<新的团队 token>
 ```
 
-### 1.2 通过飞书机器人申请 Token
+### 1.2 通过飞书机器人申请访问凭证
 
-团队可以把飞书机器人作为 token 申请入口。机器人负责识别申请人、记录审批链路、把配置说明发给本人。
+团队可以把飞书机器人作为 Agent Hub 入口。机器人负责识别申请人、记录审批链路、创建访问凭证申请任务、通知审批结果和配置说明。
+
+同一个机器人有两种工作模式：
+
+```txt
+私聊机器人:
+公司 Agent Hub 模式。用于创建项目、查知识、申请访问凭证、申请工具/技能、召唤 Agent、跨项目协作。
+
+项目群里 @ 机器人:
+项目助手模式。用于项目资料沉淀、会议纪要、项目内 Agent 协作、审核提醒、阶段交接。
+```
+
+早期不需要为每个公司级 Agent 创建一个独立飞书机器人。员工面对一个入口，后端通过私聊/群聊、chat_id、project binding、命令内容和权限规则路由到 Project Manager Agent、职能 Agent、Knowledge Engineering Agent review sub-agent 或 Knowledge Engineering Agent ops sub-agent。
+
+新人说明文档：
+
+```txt
+docs/guides/agent-hub-user-guide.md
+```
+
+推荐给机器人配置统一快捷菜单。飞书自定义菜单不能按私聊和群聊分别配置，菜单本身应保持全局统一；机器人后端会根据 chat_type、chat_id、project binding 和用户输入判断当前是公司 Agent Hub 还是项目助手。
+
+```txt
+开始:
+新手引导 / 查知识
+
+项目:
+创建项目 / 绑定项目群 / 项目交接
+
+Agent:
+组建 Agent 团队 / 召唤 Agent
+
+知识:
+记录资料 / 会议纪要 / 待审核
+
+权限:
+申请工具/技能 / 申请访问凭证
+```
+
+菜单只是快捷入口，不代表授权。删除、清空、权限变更、外部发送、客户承诺、生产变更等高风险动作必须走审批。
 
 推荐流程：
 
 ```txt
-1. 同事在飞书里私聊机器人：申请知识工程 token。
-2. 机器人读取飞书 user_id/open_id，并要求填写姓名、使用工具、默认项目、GitHub 账号。
-3. 机器人创建 TokenRequest 记录，状态为 pending。
-4. 项目负责人在飞书卡片里审批。
-5. 审批通过后，机器人只把 token 和初始化命令私发给申请人。
-6. 机器人写 AuditLog，记录谁申请、谁审批、发给谁、何时发放，不记录 token 明文。
+1. 同事在飞书里私聊机器人：申请知识工程 token 或申请访问凭证。
+2. 机器人读取飞书 user_id/open_id，并要求填写使用人、用途、默认项目、使用工具、需要的凭证类型。
+3. 机器人创建 CredentialRequest / ProjectTask，状态为 pending。
+4. owner 在飞书卡片里审批。
+5. 审批通过后，中央 API token 或 runner token 由受控服务发放；本地工具 secret 由 Secret Manager 或 Agent Ring 本地安全存储配置。
+6. 机器人只发送必要的配置说明或安全渠道提示，不在群里发送 secret。
+7. 机器人写 AuditLog，记录谁申请、谁审批、授权范围、secretRef、有效期和通知记录，不记录 token 明文。
 ```
 
-第一阶段可以继续使用团队共享 token，但必须通过机器人审批后私发。长期应改为每人一个 token：
+第一阶段可以继续使用团队共享 token，但必须通过审批后走安全渠道。长期应改为每人/每 runner/每服务一个可吊销凭证：
 
 ```txt
 共享 token:
@@ -109,7 +163,7 @@ export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<你的 token>
 bash scripts/setup-teammate.sh --user-id <同事名> --ai-tool codex
 ```
 
-机器人不能在群里发送 token。只能私聊发送，且不把 token 写入知识库、AuditLog、运行日志、飞书群消息或截图。
+机器人不能在群里处理或发送 secret。个人配置说明只能私聊发送；secret 明文不写入知识库、AuditLog、运行日志、飞书群消息或截图。
 
 同事本地需要：
 
@@ -159,7 +213,6 @@ scripts/setup-teammate.sh
 .zhenzhi/codex-start.md
 .zhenzhi/claude-start.md
 .zhenzhi/antigravity-start.md
-.zhenzhi/index.sqlite3
 agents/agent.<同事名>.<ai-tool>.md
 ```
 
@@ -171,7 +224,7 @@ agents/agent.<同事名>.<ai-tool>.md
 | `.zhenzhi/agent-entrypoint.md` | 给本地 Agent 读的统一入口 | 不提交 |
 | `.zhenzhi/*-start.md` | 各 AI 工具启动提示 | 不提交 |
 | `.zhenzhi/context/current.md` | 每次 `start` 后生成的任务上下文 | 不提交 |
-| `.zhenzhi/index.sqlite3` | 本地索引和检索缓存 | 不提交 |
+| PostgreSQL `DATABASE_URL` | 本地开发和线上一致的数据库连接 | 不提交密钥 |
 | `agents/agent.<同事名>.<ai-tool>.md` | 团队可见的 Agent 注册记录 | 需要提交 |
 
 ## 3. 每天怎么用
@@ -687,7 +740,7 @@ reviewer:
 ```txt
 学习资料：<URL 或文章内容>
 用途：<希望团队/Agent 学会什么，可选>
-项目：<项目ID，可选；不填则按通用学习资料处理>
+项目：<项目名称，可选；不填则按通用学习资料处理>
 ```
 
 ```txt
@@ -701,7 +754,7 @@ reviewer:
 ```
 
 ```txt
-安装包：<项目ID 或通用>
+安装包：项目 <项目名称或通用用途>
 名称：
 版本：
 来源：
@@ -734,7 +787,7 @@ reviewer:
 | 对象 | 初始状态 | 通过后状态 | 审核人 |
 | --- | --- | --- | --- |
 | 普通知识、经验、会议整理 | draft | verified | Knowledge Reviewer / Project Owner |
-| 低风险学习笔记、技能笔记 | draft | observed/draft | Knowledge Review Agent |
+| 低风险学习笔记、技能笔记 | draft | observed/draft | Knowledge Engineering Agent review sub-agent |
 | 项目原始资料 SourceMaterial | draft | verified | Project Owner |
 | 工具 ToolAsset | testing | approved | Tool Owner |
 | 冲突 ConflictRecord | open | resolved | Project Owner / Knowledge Reviewer |

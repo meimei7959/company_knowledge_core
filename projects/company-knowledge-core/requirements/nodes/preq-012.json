@@ -1,0 +1,52 @@
+{
+  "nodeId": "PREQ-012",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-012",
+  "statement": "Product must provide Operations and Quality Dashboard metrics.",
+  "whyItMatters": "Product can ship without feedback and quality loop.",
+  "successSignal": "Product must provide Operations and Quality Dashboard metrics.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-012:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-012"
+  ],
+  "childRefs": [
+    "ANOS-REQ-110",
+    "ANOS-REQ-111",
+    "ANOS-REQ-112",
+    "ANOS-REQ-113",
+    "ANOS-REQ-114",
+    "ANOS-REQ-140",
+    "ANOS-REQ-141",
+    "ANOS-REQ-142"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-OPS-001",
+    "GATE-AC-OPS-003",
+    "GATE-AC-OPS-004",
+    "GATE-AC-UI-006"
+  ],
+  "testCaseRefs": [
+    "TC-MET-001",
+    "TC-MET-002",
+    "TC-MET-003",
+    "TC-MET-004",
+    "TC-MET-005",
+    "TC-OPS-001",
+    "TC-OPS-002",
+    "TC-OPS-003",
+    "TC-E2E-007"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

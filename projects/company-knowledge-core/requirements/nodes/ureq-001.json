@@ -1,0 +1,48 @@
+{
+  "nodeId": "UREQ-001",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Submit in natural language and get guided clarification plus visible status.",
+  "statement": "Submit in natural language and get guided clarification plus visible status.",
+  "problem": "Does not know how to write PRD or pick Agents.",
+  "acceptanceSignal": "Product must classify intent, create SourceMaterial/Requirement, ask focused questions, and notify next action.",
+  "ownerRole": "Requirement Submitter",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-001",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-001"
+  ],
+  "childRefs": [
+    "PREQ-001"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-REQ-001",
+    "GATE-AC-REQ-002",
+    "GATE-AC-PROD-003",
+    "GATE-AC-OPS-003"
+  ],
+  "testCaseRefs": [
+    "TC-HUB-001",
+    "TC-HUB-002",
+    "TC-HUB-003",
+    "TC-HUB-004",
+    "TC-HUB-005",
+    "TC-HUB-006",
+    "TC-HUB-007",
+    "TC-NOT-001",
+    "TC-NOT-002",
+    "TC-NOT-003",
+    "TC-E2E-001",
+    "TC-E2E-002"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

@@ -3,7 +3,9 @@ name = "zhenzhi-knowledge"
 version = "0.1.0"
 description = "Local connector for Zhenzhi OKF-compatible knowledge bundle"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "psycopg[binary]>=3.2",
+]
 
 [project.scripts]
 zhenzhi-knowledge = "zhenzhi_knowledge.cli:main"
@@ -11,4 +13,3 @@ zhenzhi-knowledge = "zhenzhi_knowledge.cli:main"
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
-

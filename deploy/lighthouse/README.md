@@ -40,6 +40,12 @@ Deploy:
 bash deploy/lighthouse/deploy.sh
 ```
 
+Publish behavior:
+
+- Container startup runs `zhenzhi-knowledge publish`, which validates the bundle and rebuilds object/RAG indexes.
+- `deploy.sh` calls `POST /v0/publish/rebuild` after health checks, so synced knowledge is published into the service index before deploy is considered successful.
+- Runtime retrieval still checks source fingerprints before search and rebuilds stale RAG indexes as a final fallback.
+
 Client profile:
 
 ```bash

@@ -59,7 +59,7 @@ Responsibilities:
 - Link Interaction records to SourceMaterial and KnowledgeItem records.
 - Preserve external message IDs for traceability.
 - Ingest learning materials such as website articles, public account articles, videos, audio, PDFs, images, screenshots, packages, binaries, model files, and datasets as SourceMaterial.
-- Select material-specific extractors before Knowledge Extraction Agent runs.
+- Select material-specific extractors before Knowledge Engineering Agent extraction sub-agent runs.
 - Store raw material by sourceRef/storageRef/contentHash, not as reusable KnowledgeItem text.
 - Preserve title, author, publisher, originUrl, materialType, license, sensitivity, extractionTool, extractionStatus, transcriptRef, and contentHash when available.
 
@@ -71,6 +71,12 @@ Material extractor responsibilities:
 - Document/OCR extractor: page or region references plus structured summary.
 - Package/binary registrar: storageRef, contentHash, version, source, license, owner, risk, install notes, validation notes, and allowed use.
 - Repo document extractor: README/API docs/CHANGELOG/commit summary only; full source stays in Git.
+
+Default material reader registry:
+
+- ToolAsset: `tools/tool.knowledge-material-readers.md`
+- Agent profile: `agents/agent.company-knowledge-core.knowledge-engineering.md`
+- Skill pack: `docs/agent-team/knowledge-engineering-agent-skill-pack.md`
 
 ## missing facts
 
@@ -92,11 +98,11 @@ Responsibilities:
 
 Responsibilities:
 
-- `start` validates projectId, agentId, policy, and tool permissions.
+- `start` validates projectId, agentId, policy, and readable context. It may list relevant ToolAsset records, but tool use, project writeback, and knowledge publication are checked separately.
 - `start` generates `.zhenzhi/context/current.md`.
 - `finish` generates AgentRun, ProjectUpdate draft, KnowledgeDraft, and ToolUpdate draft.
 - Agent/CLI push content must be recorded as AgentRun, SourceMaterial, ToolUpdate, or ProjectUpdate input before extraction.
-- CLI-pushed content must go through Knowledge Extraction Agent before Knowledge Review Agent classification.
+- CLI-pushed content must go through Knowledge Engineering Agent extraction sub-agent before Knowledge Engineering Agent review sub-agent classification.
 
 ## review
 
@@ -107,7 +113,7 @@ Responsibilities:
 
 Responsibilities:
 
-- Run the Knowledge Review Agent gate before indexing, human approval, or status promotion.
+- Run the Knowledge Engineering Agent review sub-agent gate before indexing, human approval, or status promotion.
 - Classify each candidate as auto observed, human approval required, clarification required, conflict required, or rejected.
 - Directly store passed low-risk lessons, pitfalls, issue reviews, integration notes, and debugging conclusions as `observed/draft`.
 - Directly store passed low-risk learning notes and skill notes as `observed/draft` when source, license, sensitivity, applicability, and extraction quality are clear.
@@ -128,7 +134,7 @@ Responsibilities:
 Responsibilities:
 
 - Create Policy objects.
-- Express Agent read/write/tool risk permissions.
+- Express Agent read/write permissions and high-risk tool approval requirements.
 - Support later Gateway enforcement.
 
 ## eval
@@ -193,11 +199,12 @@ Responsibilities:
 Responsibilities:
 
 - Scan frontmatter.
-- Build local SQLite metadata index.
-- Build local chunk retrieval index.
+- Build PostgreSQL metadata index.
+- Build PostgreSQL chunk retrieval index.
 - Exclude secrets and customer-confidential content from retrieval.
 - Provide metadata search and local RAG retrieval with sourceRefs.
 - Keep RAG as context recall, not source of truth.
+- Local development must use PostgreSQL through `DATABASE_URL`; SQLite is not an accepted development backend after migration.
 
 ## tool invocation
 
@@ -206,7 +213,12 @@ Responsibilities:
 Responsibilities:
 
 - Block unregistered tools.
-- Check Project, Agent, Policy, ToolAsset risk, allowedProjects, and allowedAgents.
+- Check Project, Agent, ToolAsset allowedProjects, and ToolAsset allowedAgents.
 - Default to dry-run; local safe execution supports only explicitly safe entrypoints.
+- Allow broader dry-run/discovery for registered tools.
+- Require explicit approval for high-risk or external side-effect execution.
+- Return tool results to the requester without treating them as project memory or reusable knowledge by default.
+- Require separate project writeback permission before saving results under a project.
+- Require Knowledge Engineering Agent review sub-agent gate before storing results as KnowledgeItem drafts.
 - Write AuditLog for allowed and denied invocation attempts.
 - Generate default invocationPolicy from riskLevel during tool registration.

@@ -1,4 +1,4 @@
-version: '3.3'
+version: "2.4"
 
 services:
   api:
@@ -7,47 +7,37 @@ services:
       context: ../..
       dockerfile: deploy/lighthouse/Dockerfile
     restart: unless-stopped
-    environment:
-      ZHENZHI_KNOWLEDGE_API_TOKEN: ${ZHENZHI_KNOWLEDGE_API_TOKEN}
-      FEISHU_APP_ID: ${FEISHU_APP_ID:-}
-      FEISHU_APP_SECRET: ${FEISHU_APP_SECRET:-}
-      FEISHU_VERIFICATION_TOKEN: ${FEISHU_VERIFICATION_TOKEN:-}
-      FEISHU_ALLOW_UNSIGNED_EVENTS: ${FEISHU_ALLOW_UNSIGNED_EVENTS:-false}
-      FEISHU_REPLY_ENABLED: ${FEISHU_REPLY_ENABLED:-true}
-      FEISHU_TOKEN_AUTO_APPROVE: ${FEISHU_TOKEN_AUTO_APPROVE:-false}
-      FEISHU_APPROVAL_ENABLED: ${FEISHU_APPROVAL_ENABLED:-false}
-      FEISHU_APPROVAL_CODE_PROJECT: ${FEISHU_APPROVAL_CODE_PROJECT:-}
-      FEISHU_APPROVAL_CODE_COMMON: ${FEISHU_APPROVAL_CODE_COMMON:-}
-      FEISHU_APPROVAL_CODE_SECURITY: ${FEISHU_APPROVAL_CODE_SECURITY:-}
-      FEISHU_APPROVAL_NODE_APPROVER_KEY: ${FEISHU_APPROVAL_NODE_APPROVER_KEY:-}
-      FEISHU_COMMON_REVIEWER_OPEN_IDS: ${FEISHU_COMMON_REVIEWER_OPEN_IDS:-}
-      FEISHU_SECURITY_REVIEWER_OPEN_IDS: ${FEISHU_SECURITY_REVIEWER_OPEN_IDS:-}
-      FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON: ${FEISHU_PROJECT_REVIEWER_OPEN_IDS_JSON:-{}}
-      FEISHU_USER_OPEN_ID_MAP_JSON: ${FEISHU_USER_OPEN_ID_MAP_JSON:-{}}
-      FEISHU_TOKEN_SEND_ON_APPROVAL: ${FEISHU_TOKEN_SEND_ON_APPROVAL:-false}
-      FEISHU_APPROVAL_WIDGET_CHANGE_TYPE: ${FEISHU_APPROVAL_WIDGET_CHANGE_TYPE:-widget17816810502430001}
-      FEISHU_APPROVAL_WIDGET_PROJECT_NAME: ${FEISHU_APPROVAL_WIDGET_PROJECT_NAME:-widget17816812084890001}
-      FEISHU_APPROVAL_WIDGET_PROJECT_OWNER: ${FEISHU_APPROVAL_WIDGET_PROJECT_OWNER:-widget17816816166430001}
-      FEISHU_APPROVAL_WIDGET_SUB_TYPE: ${FEISHU_APPROVAL_WIDGET_SUB_TYPE:-widget17816812747070001}
-      FEISHU_APPROVAL_WIDGET_MEMBER: ${FEISHU_APPROVAL_WIDGET_MEMBER:-widget17816813081730001}
-      FEISHU_APPROVAL_WIDGET_DESCRIPTION: ${FEISHU_APPROVAL_WIDGET_DESCRIPTION:-widget17816813651240001}
-      FEISHU_APPROVAL_TYPE_VALUE_AGENT_TOKEN: ${FEISHU_APPROVAL_TYPE_VALUE_AGENT_TOKEN:-mqhqw8sk-3kt86yj7owt-0}
-      FEISHU_APPROVAL_TYPE_VALUE_PROJECT_INIT: ${FEISHU_APPROVAL_TYPE_VALUE_PROJECT_INIT:-mqhqw8sk-x7hpdoqx0p-0}
-      FEISHU_APPROVAL_TYPE_VALUE_KNOWLEDGE_INGEST: ${FEISHU_APPROVAL_TYPE_VALUE_KNOWLEDGE_INGEST:-mqhqw8sk-kybdohz4afi-0}
-      FEISHU_APPROVAL_SUB_TYPE_DEFAULT_VALUE: ${FEISHU_APPROVAL_SUB_TYPE_DEFAULT_VALUE:-}
-      FEISHU_APPROVAL_DOC_FOLDER_TOKEN: ${FEISHU_APPROVAL_DOC_FOLDER_TOKEN:-}
-      FEISHU_APPROVAL_DOC_FOLDER_TOKENS_JSON: ${FEISHU_APPROVAL_DOC_FOLDER_TOKENS_JSON:-{}}
-      FEISHU_APPROVAL_DOC_SHARE_NAMES: ${FEISHU_APPROVAL_DOC_SHARE_NAMES:-梅晓华}
-      FEISHU_APPROVAL_DOC_DOMAIN: ${FEISHU_APPROVAL_DOC_DOMAIN:-https://xcn68awb7dsi.feishu.cn}
+    env_file:
+      - .env
     ports:
       - "${ZHENZHI_KNOWLEDGE_API_BIND}:8765:8765"
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - /opt/projects/company_knowledge_core/repo:/knowledge
     command:
       - /bin/sh
       - -c
       - |
-        python -m zhenzhi_knowledge --root /knowledge validate
-        python -m zhenzhi_knowledge --root /knowledge index rebuild
-        python -m zhenzhi_knowledge --root /knowledge rag rebuild
+        python -m zhenzhi_knowledge --root /knowledge publish --actor system.boot --reason container-startup
         python -m zhenzhi_knowledge --root /knowledge api serve --host 0.0.0.0 --port 8765
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: zhenzhi-knowledge-postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_BIND:-127.0.0.1}:${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zhenzhi -d zhenzhi_knowledge"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres-data:

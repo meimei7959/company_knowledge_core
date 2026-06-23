@@ -1,0 +1,51 @@
+{
+  "nodeId": "UREQ-002",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Build requirement tree before functional decomposition.",
+  "statement": "Build requirement tree before functional decomposition.",
+  "problem": "Feature lists can be mistaken for requirements.",
+  "acceptanceSignal": "Product must store business, user, product, functional, non-functional, test, and acceptance mapping.",
+  "ownerRole": "Product Manager Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-002",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-002"
+  ],
+  "childRefs": [
+    "PREQ-002"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-REQ-001",
+    "GATE-AC-REQ-002",
+    "GATE-AC-REQ-003",
+    "GATE-AC-REQ-004",
+    "GATE-AC-REQ-005",
+    "GATE-AC-TEST-001"
+  ],
+  "testCaseRefs": [
+    "TC-REQ-001",
+    "TC-REQ-002",
+    "TC-REQ-003",
+    "TC-REQ-004",
+    "TC-REQ-005",
+    "TC-REQ-006",
+    "TC-REQ-007",
+    "TC-PRD-001",
+    "TC-PRD-002",
+    "TC-PRD-003",
+    "TC-PRD-004",
+    "TC-PRD-005",
+    "TC-E2E-003"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

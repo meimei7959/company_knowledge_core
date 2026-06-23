@@ -5,6 +5,7 @@ description: Project context for Company Knowledge Core.
 timestamp: "2026-06-16T14:43:11Z"
 projectId: company-knowledge-core
 owner: meimei
+humanOwner: 梅晓华
 status: draft
 scope: project
 members:
@@ -14,18 +15,37 @@ relatedRepos:
 relatedAgents:
   - agent.codex.local
   - agent.antigravity.local
+  - agent.company.project-manager
+  - agent.company.knowledge-query
+  - agent.company.product-manager
+  - agent.company.design
+  - agent.company.development
+  - agent.company.test
+  - agent.company.operations
 relatedTools:
   - tool.zhenzhi-knowledge
+updatedAt: "2026-06-23T11:19:45Z"
+lastProjectManagerReviewRef: projects/company-knowledge-core/pm-reviews/pm-review.20260623T111945154676Z.md
+health: blocked
 ---
 
 ## Goal
 
-Build Zhenzhi's AI-native company knowledge engineering foundation so local AI agents can share project context, reusable tools, experience, decisions, review state, permissions, and audit evidence.
+Build Zhenzhi's AI-native central processor: Agent Hub entry, scheduler, and knowledge engineering foundation, so distributed Agent Workbench runners can share project context, tasks, reusable tools, experience, decisions, review state, permissions, and audit evidence.
 
 ## Scope
 
-Core company knowledge objects, local connector, OKF-compatible Git bundle, Agent start/finish workflow, ToolAsset registry, review/audit, retrieval, evaluation, stale detection, backup, and API/Gateway prototype.
+Project/task orchestration, Feishu Agent Hub intake, Agent and Runner registry, task lifecycle, Agent Ring integration contract, project context sync, SourceMaterial and KnowledgeItem review pipeline, ToolAsset registry, review/audit, retrieval, evaluation, stale detection, backup, and API/Gateway prototype.
 
 ## Current Focus
 
-Complete the task checklist for a long-term operable, extensible, auditable knowledge engineering system before broader product development.
+Continue from initialized central processor to the next acceptance phase:
+
+1. verify the real Feishu production closed loop;
+2. prepare the Agent Workbench integration package;
+3. build universal material ingest;
+4. implement knowledge graph phase one.
+
+These four tasks are the current验收 scope. They should be completed with evidence before the next human acceptance review.
+
+Active task list: [projects/company-knowledge-core/tasks/index.md](tasks/index.md).

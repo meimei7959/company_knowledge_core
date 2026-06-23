@@ -1,0 +1,45 @@
+{
+  "nodeId": "PREQ-010",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-010",
+  "statement": "Product must route KnowledgeItem through Review Center before promotion.",
+  "whyItMatters": "Low-quality or sensitive knowledge can pollute reuse.",
+  "successSignal": "Product must route KnowledgeItem through Review Center before promotion.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-010:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-010"
+  ],
+  "childRefs": [
+    "ANOS-REQ-090",
+    "ANOS-REQ-091",
+    "ANOS-REQ-092",
+    "ANOS-REQ-093"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002",
+    "GATE-AC-GOV-003",
+    "GATE-AC-GOV-004",
+    "GATE-AC-KNO-002"
+  ],
+  "testCaseRefs": [
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004",
+    "TC-E2E-005"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

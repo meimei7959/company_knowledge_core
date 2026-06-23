@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RunnerPairingTokenExchange",
+  "type": "object",
+  "required": ["runnerId", "pairingToken", "nonce", "issuedAt", "expiresAt", "centralApiOrigin"],
+  "properties": {
+    "runnerId": {"type": "string", "minLength": 8},
+    "pairingToken": {"type": "string", "minLength": 24},
+    "nonce": {"type": "string", "minLength": 16},
+    "issuedAt": {"type": "string", "format": "date-time"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "centralApiOrigin": {"type": "string", "pattern": "^https://"},
+    "storageTarget": {"const": "tauri-plugin-stronghold"},
+    "handoff": {"enum": ["deep-link", "manual-code", "qr-code"]}
+  },
+  "additionalProperties": false
+}

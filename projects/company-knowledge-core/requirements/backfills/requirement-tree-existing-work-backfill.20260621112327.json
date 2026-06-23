@@ -1,0 +1,4037 @@
+{
+  "backfillId": "requirement-tree-existing-work-backfill.20260621112327",
+  "type": "RequirementTreeExistingWorkBackfill",
+  "backfillVersion": "requirement-tree-existing-work-backfill.v1",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "projectRef": "projects/company-knowledge-core/project.md",
+  "generatedAt": "2026-06-21T11:23:27Z",
+  "generatedByAgentRef": "agent.company.development",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "coverageMatrixRef": "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md",
+  "policy": {
+    "rewriteHistoricalTaskResults": false,
+    "promotePartialToComplete": false,
+    "inferredMappingsExecutionUnlocking": false,
+    "evidenceRule": "Only existing refs named by the PM coverage matrix and present on disk are linked."
+  },
+  "counts": {
+    "functionalRequirements": 74,
+    "partial": 70,
+    "blocked": 4,
+    "uncovered": 0,
+    "completePromotions": 0,
+    "executionUnlockingMappings": 0,
+    "taskRefs": 14,
+    "resultRefs": 18,
+    "mappingRecords": 370
+  },
+  "records": [
+    {
+      "functionalRequirementRef": "ANOS-REQ-001",
+      "businessRequirementRefs": [
+        "BR-001"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; Feishu card/routing results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-002",
+      "businessRequirementRefs": [
+        "BR-001"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; Feishu card/routing results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-003",
+      "businessRequirementRefs": [
+        "BR-001"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; Feishu card/routing results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-004",
+      "businessRequirementRefs": [
+        "BR-001"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; Feishu card/routing results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-005",
+      "businessRequirementRefs": [
+        "BR-001"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; Feishu card/routing results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-006",
+      "businessRequirementRefs": [
+        "BR-001"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; Feishu card/routing results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-010",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-011",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-012",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-013",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-014",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-015",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-016",
+      "businessRequirementRefs": [
+        "BR-002"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-UI-001"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-020",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002",
+        "UREQ-003",
+        "UREQ-007",
+        "UREQ-006",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002",
+        "PREQ-003",
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test; product review",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-021",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-005",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002",
+        "UREQ-003",
+        "UREQ-007",
+        "UREQ-014",
+        "UREQ-006"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002",
+        "PREQ-003",
+        "PREQ-007",
+        "PREQ-014"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test; product review",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-022",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002",
+        "UREQ-003",
+        "UREQ-007",
+        "UREQ-006",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002",
+        "PREQ-003",
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test; product review",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-023",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002",
+        "UREQ-003",
+        "UREQ-006",
+        "UREQ-007",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002",
+        "PREQ-003",
+        "PREQ-006",
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-E2E-001",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-TEST-002",
+        "GATE-AC-TEST-003",
+        "GATE-AC-TEST-004",
+        "GATE-AC-TEST-005",
+        "GATE-AC-OPS-004",
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test; product review",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-024",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-002",
+        "UREQ-003",
+        "UREQ-007",
+        "UREQ-006",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-002",
+        "PREQ-003",
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-REQ-001",
+        "TC-REQ-002",
+        "TC-REQ-003",
+        "TC-REQ-004",
+        "TC-REQ-005",
+        "TC-REQ-006",
+        "TC-REQ-007",
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-E2E-003",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-TEST-001",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md",
+        "task-results/tr-kt-ai-native-os-product-review-technical-solutions.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Requirement/PRD domain implementation/test; product review",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-030",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-031",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-032",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-033",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-034",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-040",
+      "businessRequirementRefs": [
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-007"
+      ],
+      "productRequirementRefs": [
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; role operating specs/results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-041",
+      "businessRequirementRefs": [
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-007"
+      ],
+      "productRequirementRefs": [
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; role operating specs/results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-042",
+      "businessRequirementRefs": [
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-007"
+      ],
+      "productRequirementRefs": [
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; role operating specs/results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-043",
+      "businessRequirementRefs": [
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-007"
+      ],
+      "productRequirementRefs": [
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; role operating specs/results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-044",
+      "businessRequirementRefs": [
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-007"
+      ],
+      "productRequirementRefs": [
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; role operating specs/results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-045",
+      "businessRequirementRefs": [
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-007"
+      ],
+      "productRequirementRefs": [
+        "PREQ-007"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-AGENT-001",
+        "TC-AGENT-002",
+        "TC-AGENT-003",
+        "TC-AGENT-004",
+        "TC-AGENT-005",
+        "TC-AGENT-006",
+        "TC-AGENT-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-001",
+        "GATE-AC-AGENT-002",
+        "GATE-AC-AGENT-003",
+        "GATE-AC-UI-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md",
+        "task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Desktop Slice 0 implementation/test; role operating specs/results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-050",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-051",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-052",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-053",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-054",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-055",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-056",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-004",
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-004",
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-PROJ-001",
+        "TC-PROJ-002",
+        "TC-PROJ-003",
+        "TC-PROJ-004",
+        "TC-PROJ-005",
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-UI-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md",
+        "task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; automation hub result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-060",
+      "businessRequirementRefs": [
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-008"
+      ],
+      "productRequirementRefs": [
+        "PREQ-008"
+      ],
+      "testCaseRefs": [
+        "TC-RUN-001",
+        "TC-RUN-002",
+        "TC-RUN-003",
+        "TC-RUN-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-UI-004"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-agent-ring-stub-runner-tests.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-agent-ring-protocol.md",
+        "task-results/tr-kt-agent-ring-stub-runner-tests.md"
+      ],
+      "coverageStatus": "blocked",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; Agent Ring protocol/stub runner results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-061",
+      "businessRequirementRefs": [
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-008"
+      ],
+      "productRequirementRefs": [
+        "PREQ-008"
+      ],
+      "testCaseRefs": [
+        "TC-RUN-001",
+        "TC-RUN-002",
+        "TC-RUN-003",
+        "TC-RUN-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-UI-004"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-agent-ring-stub-runner-tests.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-agent-ring-protocol.md",
+        "task-results/tr-kt-agent-ring-stub-runner-tests.md"
+      ],
+      "coverageStatus": "blocked",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; Agent Ring protocol/stub runner results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-062",
+      "businessRequirementRefs": [
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-008"
+      ],
+      "productRequirementRefs": [
+        "PREQ-008"
+      ],
+      "testCaseRefs": [
+        "TC-RUN-001",
+        "TC-RUN-002",
+        "TC-RUN-003",
+        "TC-RUN-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-UI-004"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-agent-ring-stub-runner-tests.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-agent-ring-protocol.md",
+        "task-results/tr-kt-agent-ring-stub-runner-tests.md"
+      ],
+      "coverageStatus": "blocked",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; Agent Ring protocol/stub runner results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-063",
+      "businessRequirementRefs": [
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-008"
+      ],
+      "productRequirementRefs": [
+        "PREQ-008"
+      ],
+      "testCaseRefs": [
+        "TC-RUN-001",
+        "TC-RUN-002",
+        "TC-RUN-003",
+        "TC-RUN-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-UI-004"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-agent-ring-stub-runner-tests.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-agent-ring-protocol.md",
+        "task-results/tr-kt-agent-ring-stub-runner-tests.md"
+      ],
+      "coverageStatus": "blocked",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; Agent Ring protocol/stub runner results",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-070",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; metadata migration repair",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-071",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; metadata migration repair",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-072",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; metadata migration repair",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-073",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-003"
+      ],
+      "userRequirementRefs": [
+        "UREQ-005"
+      ],
+      "productRequirementRefs": [
+        "PREQ-005"
+      ],
+      "testCaseRefs": [
+        "TC-SCH-001",
+        "TC-SCH-002",
+        "TC-SCH-003",
+        "TC-SCH-004",
+        "TC-SCH-005",
+        "TC-SCH-006",
+        "TC-SCH-007",
+        "TC-RES-001",
+        "TC-RES-002",
+        "TC-RES-003",
+        "TC-RES-004",
+        "TC-E2E-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-EXE-001",
+        "GATE-AC-EXE-002",
+        "GATE-AC-EXE-003",
+        "GATE-AC-EXE-004",
+        "GATE-AC-EXE-005",
+        "GATE-AC-AGENT-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md",
+        "task-results/tr-kt-ai-native-os-repair-taskresult-metadata-migration.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Scheduler/runner/result implementation/test; metadata migration repair",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-080",
+      "businessRequirementRefs": [
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-009",
+        "UREQ-011"
+      ],
+      "productRequirementRefs": [
+        "PREQ-009",
+        "PREQ-011"
+      ],
+      "testCaseRefs": [
+        "TC-KNO-001",
+        "TC-KNO-002",
+        "TC-KNO-003",
+        "TC-KNO-004",
+        "TC-KNO-005",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-KNO-001",
+        "GATE-AC-KNO-002",
+        "GATE-AC-KNO-003",
+        "GATE-AC-KNO-004",
+        "GATE-AC-REQ-005"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-knowledge-governance-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; knowledge governance loop",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-081",
+      "businessRequirementRefs": [
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-009",
+        "UREQ-011"
+      ],
+      "productRequirementRefs": [
+        "PREQ-009",
+        "PREQ-011"
+      ],
+      "testCaseRefs": [
+        "TC-KNO-001",
+        "TC-KNO-002",
+        "TC-KNO-003",
+        "TC-KNO-004",
+        "TC-KNO-005",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-KNO-001",
+        "GATE-AC-KNO-002",
+        "GATE-AC-KNO-003",
+        "GATE-AC-KNO-004",
+        "GATE-AC-REQ-005"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-knowledge-governance-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; knowledge governance loop",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-082",
+      "businessRequirementRefs": [
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-009",
+        "UREQ-011"
+      ],
+      "productRequirementRefs": [
+        "PREQ-009",
+        "PREQ-011"
+      ],
+      "testCaseRefs": [
+        "TC-KNO-001",
+        "TC-KNO-002",
+        "TC-KNO-003",
+        "TC-KNO-004",
+        "TC-KNO-005",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-KNO-001",
+        "GATE-AC-KNO-002",
+        "GATE-AC-KNO-003",
+        "GATE-AC-KNO-004",
+        "GATE-AC-REQ-005"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-knowledge-governance-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; knowledge governance loop",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-083",
+      "businessRequirementRefs": [
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-009",
+        "UREQ-011",
+        "UREQ-015"
+      ],
+      "productRequirementRefs": [
+        "PREQ-009",
+        "PREQ-011",
+        "PREQ-015"
+      ],
+      "testCaseRefs": [
+        "TC-KNO-001",
+        "TC-KNO-002",
+        "TC-KNO-003",
+        "TC-KNO-004",
+        "TC-KNO-005",
+        "TC-E2E-005",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-KNO-001",
+        "GATE-AC-KNO-002",
+        "GATE-AC-KNO-003",
+        "GATE-AC-KNO-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-OPS-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-knowledge-governance-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; knowledge governance loop",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-084",
+      "businessRequirementRefs": [
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-009",
+        "UREQ-011"
+      ],
+      "productRequirementRefs": [
+        "PREQ-009",
+        "PREQ-011"
+      ],
+      "testCaseRefs": [
+        "TC-KNO-001",
+        "TC-KNO-002",
+        "TC-KNO-003",
+        "TC-KNO-004",
+        "TC-KNO-005",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-KNO-001",
+        "GATE-AC-KNO-002",
+        "GATE-AC-KNO-003",
+        "GATE-AC-KNO-004",
+        "GATE-AC-REQ-005"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-knowledge-governance-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; knowledge governance loop",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-090",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-003",
+        "UREQ-010",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-003",
+        "PREQ-010",
+        "PREQ-014"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-KNO-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-policy-quality-gates.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; policy gates result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-091",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-003",
+        "UREQ-010",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-003",
+        "PREQ-010",
+        "PREQ-014"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-KNO-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-policy-quality-gates.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; policy gates result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-092",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-003",
+        "UREQ-010",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-003",
+        "PREQ-010",
+        "PREQ-014"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-KNO-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-policy-quality-gates.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; policy gates result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-093",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-003",
+        "UREQ-010",
+        "UREQ-014"
+      ],
+      "productRequirementRefs": [
+        "PREQ-003",
+        "PREQ-010",
+        "PREQ-014"
+      ],
+      "testCaseRefs": [
+        "TC-PRD-001",
+        "TC-PRD-002",
+        "TC-PRD-003",
+        "TC-PRD-004",
+        "TC-PRD-005",
+        "TC-REV-001",
+        "TC-REV-002",
+        "TC-REV-003",
+        "TC-REV-004",
+        "TC-E2E-005"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-003",
+        "GATE-AC-REQ-004",
+        "GATE-AC-REQ-005",
+        "GATE-AC-GOV-001",
+        "GATE-AC-GOV-002",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-KNO-002"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-policy-quality-gates.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; policy gates result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-100",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-os-digital-worker-capability-registry.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-digital-worker-capability-registry.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; digital worker registry result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-101",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-os-digital-worker-capability-registry.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-digital-worker-capability-registry.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; digital worker registry result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-102",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-os-digital-worker-capability-registry.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-kt-os-digital-worker-capability-registry.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; digital worker registry result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-110",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-006",
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-006",
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-PRD-004",
+        "TC-E2E-001",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-TEST-001",
+        "GATE-AC-TEST-002",
+        "GATE-AC-TEST-003",
+        "GATE-AC-TEST-004",
+        "GATE-AC-TEST-005",
+        "GATE-AC-OPS-004",
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-111",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-006",
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-006",
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-PRD-004",
+        "TC-E2E-001",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-TEST-001",
+        "GATE-AC-TEST-002",
+        "GATE-AC-TEST-003",
+        "GATE-AC-TEST-004",
+        "GATE-AC-TEST-005",
+        "GATE-AC-OPS-004",
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-112",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-006",
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-006",
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-PRD-004",
+        "TC-E2E-001",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-TEST-001",
+        "GATE-AC-TEST-002",
+        "GATE-AC-TEST-003",
+        "GATE-AC-TEST-004",
+        "GATE-AC-TEST-005",
+        "GATE-AC-OPS-004",
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-113",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-006",
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-006",
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-PRD-004",
+        "TC-E2E-001",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-TEST-001",
+        "GATE-AC-TEST-002",
+        "GATE-AC-TEST-003",
+        "GATE-AC-TEST-004",
+        "GATE-AC-TEST-005",
+        "GATE-AC-OPS-004",
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-114",
+      "businessRequirementRefs": [
+        "BR-002",
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-006",
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-006",
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-PRD-004",
+        "TC-E2E-001",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007",
+        "TC-E2E-006"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-TEST-001",
+        "GATE-AC-TEST-002",
+        "GATE-AC-TEST-003",
+        "GATE-AC-TEST-004",
+        "GATE-AC-TEST-005",
+        "GATE-AC-OPS-004",
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-120",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001",
+        "UREQ-015"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001",
+        "PREQ-015"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002",
+        "TC-KNO-004",
+        "TC-E2E-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003",
+        "GATE-AC-KNO-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-project-approval-notification-closed-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; notification loop result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-121",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001",
+        "UREQ-015"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001",
+        "PREQ-015"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002",
+        "TC-KNO-004",
+        "TC-E2E-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003",
+        "GATE-AC-KNO-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-project-approval-notification-closed-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; notification loop result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-122",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-004"
+      ],
+      "userRequirementRefs": [
+        "UREQ-001",
+        "UREQ-015"
+      ],
+      "productRequirementRefs": [
+        "PREQ-001",
+        "PREQ-015"
+      ],
+      "testCaseRefs": [
+        "TC-HUB-001",
+        "TC-HUB-002",
+        "TC-HUB-003",
+        "TC-HUB-004",
+        "TC-HUB-005",
+        "TC-HUB-006",
+        "TC-HUB-007",
+        "TC-NOT-001",
+        "TC-NOT-002",
+        "TC-NOT-003",
+        "TC-E2E-001",
+        "TC-E2E-002",
+        "TC-KNO-004",
+        "TC-E2E-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-REQ-001",
+        "GATE-AC-REQ-002",
+        "GATE-AC-PROD-003",
+        "GATE-AC-OPS-003",
+        "GATE-AC-KNO-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md",
+        "task-results/tr-project-approval-notification-closed-loop.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test; notification loop result",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-130",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-131",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-132",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-133",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-140",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-OPS-004",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-141",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-OPS-004",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-142",
+      "businessRequirementRefs": [
+        "BR-001",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-012"
+      ],
+      "productRequirementRefs": [
+        "PREQ-012"
+      ],
+      "testCaseRefs": [
+        "TC-MET-001",
+        "TC-MET-002",
+        "TC-MET-003",
+        "TC-MET-004",
+        "TC-MET-005",
+        "TC-OPS-001",
+        "TC-OPS-002",
+        "TC-OPS-003",
+        "TC-E2E-007"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-OPS-001",
+        "GATE-AC-OPS-003",
+        "GATE-AC-OPS-004",
+        "GATE-AC-UI-006"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-150",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007",
+        "GATE-AC-OPS-001",
+        "GATE-AC-PROD-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-151",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007",
+        "GATE-AC-OPS-001",
+        "GATE-AC-PROD-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    },
+    {
+      "functionalRequirementRef": "ANOS-REQ-152",
+      "businessRequirementRefs": [
+        "BR-003",
+        "BR-005"
+      ],
+      "userRequirementRefs": [
+        "UREQ-013"
+      ],
+      "productRequirementRefs": [
+        "PREQ-013"
+      ],
+      "testCaseRefs": [
+        "TC-REG-001",
+        "TC-REG-002",
+        "TC-REG-003",
+        "TC-ADM-001",
+        "TC-ADM-002",
+        "TC-ADM-003",
+        "TC-ADM-004",
+        "TC-API-001",
+        "TC-API-002",
+        "TC-API-003",
+        "TC-API-004"
+      ],
+      "acceptanceGateRefs": [
+        "GATE-AC-AGENT-004",
+        "GATE-AC-AGENT-005",
+        "GATE-AC-GOV-003",
+        "GATE-AC-GOV-004",
+        "GATE-AC-UI-007",
+        "GATE-AC-OPS-001",
+        "GATE-AC-PROD-003"
+      ],
+      "taskRefs": [
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "resultRefs": [
+        "task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md",
+        "task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md"
+      ],
+      "coverageStatus": "partial",
+      "confidence": "backfill_inferred",
+      "executionUnlocking": false,
+      "evidenceText": "Governance/quality/ops/API implementation/test",
+      "limitations": [
+        "package-level evidence; does not promote requirement to complete",
+        "backfill mapping is not execution-unlocking"
+      ]
+    }
+  ],
+  "auditRefs": [
+    "knowledge/audit/audit.20260621T112327747703Z.md"
+  ],
+  "importResult": {
+    "treeRef": "projects/company-knowledge-core/requirements/requirement-trees/rt.company-knowledge-core.ai-native-os.v20260621113000.json",
+    "treeId": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+    "treeVersion": "v20260621113000",
+    "counts": {
+      "BR": 5,
+      "UREQ": 15,
+      "product": 15,
+      "functional": 74,
+      "acceptance": 38,
+      "tests": 84,
+      "tasks": 0,
+      "results": 0,
+      "blockers": 0
+    },
+    "recordCounts": {
+      "nodes": 109,
+      "mappings": 1534,
+      "gates": 38,
+      "snapshots": 1
+    },
+    "sourceRefs": [
+      "docs/product/ai-native-os/requirement-tree.md",
+      "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+    ],
+    "auditRef": "knowledge/audit/audit.20260621T112327693120Z.md"
+  }
+}

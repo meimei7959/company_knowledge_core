@@ -1,0 +1,21 @@
+# 由申请负责人在最终打包前按真实情况填写。
+# Agent 不得代填、不得建议填写 no、不得把未知事实改成已确认。
+
+[attestation]
+# 已由负责人打开并核对提交当日官网生成的最新版申请表及声明。
+reviewed_current_official_form = false
+
+# yes | no | unknown
+# 这里记录的是拟申报软件及拟上报材料的真实创作/生成过程。
+code_ai_used = "unknown"
+document_ai_used = "unknown"
+registration_material_ai_used = "unknown"
+
+# 仅在相应内容确由人独立完成并逐项复核时填写 true。
+manual_human_authored = false
+feature_evidence_human_authored = false
+application_text_human_authored = false
+
+confirmed_by = ""
+confirmed_on = "" # YYYY-MM-DD
+notes = ""

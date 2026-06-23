@@ -1,0 +1,1709 @@
+{
+  "snapshotId": "requirements/snapshots/coverage-snapshot.20260621113000.json",
+  "type": "RequirementCoverageSnapshot",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "treeVersion": "v20260621113000",
+  "counts": {
+    "BR": 5,
+    "UREQ": 15,
+    "product": 15,
+    "functional": 74,
+    "acceptance": 38,
+    "tests": 84,
+    "tasks": 14,
+    "results": 18,
+    "blockers": 4
+  },
+  "coverageRows": [
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-001",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-002",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-003",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-004",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-005",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-006",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-120",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-121",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-001",
+      "productRequirementRef": "PREQ-001",
+      "functionalRequirementRef": "ANOS-REQ-122",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-010",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-011",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-012",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-013",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-014",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-015",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-016",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-020",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-021",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-022",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-023",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-002",
+      "productRequirementRef": "PREQ-002",
+      "functionalRequirementRef": "ANOS-REQ-024",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-020",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-021",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-022",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-023",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-024",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-090",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-091",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-092",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-003",
+      "productRequirementRef": "PREQ-003",
+      "functionalRequirementRef": "ANOS-REQ-093",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-030",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-031",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-032",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-033",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-034",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-050",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-051",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-052",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-053",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-054",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-055",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-056",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-030",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-031",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-032",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-033",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-034",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-050",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-051",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-052",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-053",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-054",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-055",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-004",
+      "productRequirementRef": "PREQ-004",
+      "functionalRequirementRef": "ANOS-REQ-056",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-050",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-051",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-052",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-053",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-054",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-055",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-056",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-070",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-071",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-072",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-073",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-050",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-051",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-052",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-053",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-054",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-055",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-056",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PROJ-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-070",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-071",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-072",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-005",
+      "productRequirementRef": "PREQ-005",
+      "functionalRequirementRef": "ANOS-REQ-073",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-SCH-001",
+      "acceptanceGateRef": "GATE-AC-EXE-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-006",
+      "productRequirementRef": "PREQ-006",
+      "functionalRequirementRef": "ANOS-REQ-023",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-006",
+      "productRequirementRef": "PREQ-006",
+      "functionalRequirementRef": "ANOS-REQ-110",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-006",
+      "productRequirementRef": "PREQ-006",
+      "functionalRequirementRef": "ANOS-REQ-111",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-006",
+      "productRequirementRef": "PREQ-006",
+      "functionalRequirementRef": "ANOS-REQ-112",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-006",
+      "productRequirementRef": "PREQ-006",
+      "functionalRequirementRef": "ANOS-REQ-113",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-006",
+      "productRequirementRef": "PREQ-006",
+      "functionalRequirementRef": "ANOS-REQ-114",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-020",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-021",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-022",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-023",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-024",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-040",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-041",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-042",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-043",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-044",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-007",
+      "productRequirementRef": "PREQ-007",
+      "functionalRequirementRef": "ANOS-REQ-045",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-008",
+      "productRequirementRef": "PREQ-008",
+      "functionalRequirementRef": "ANOS-REQ-060",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-RUN-001",
+      "acceptanceGateRef": "GATE-AC-EXE-002"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-008",
+      "productRequirementRef": "PREQ-008",
+      "functionalRequirementRef": "ANOS-REQ-061",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-RUN-001",
+      "acceptanceGateRef": "GATE-AC-EXE-002"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-008",
+      "productRequirementRef": "PREQ-008",
+      "functionalRequirementRef": "ANOS-REQ-062",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-RUN-001",
+      "acceptanceGateRef": "GATE-AC-EXE-002"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-008",
+      "productRequirementRef": "PREQ-008",
+      "functionalRequirementRef": "ANOS-REQ-063",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-RUN-001",
+      "acceptanceGateRef": "GATE-AC-EXE-002"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-009",
+      "productRequirementRef": "PREQ-009",
+      "functionalRequirementRef": "ANOS-REQ-080",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-009",
+      "productRequirementRef": "PREQ-009",
+      "functionalRequirementRef": "ANOS-REQ-081",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-009",
+      "productRequirementRef": "PREQ-009",
+      "functionalRequirementRef": "ANOS-REQ-082",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-009",
+      "productRequirementRef": "PREQ-009",
+      "functionalRequirementRef": "ANOS-REQ-083",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-009",
+      "productRequirementRef": "PREQ-009",
+      "functionalRequirementRef": "ANOS-REQ-084",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-090",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-091",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-092",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-093",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-090",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-091",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-092",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-010",
+      "productRequirementRef": "PREQ-010",
+      "functionalRequirementRef": "ANOS-REQ-093",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-011",
+      "productRequirementRef": "PREQ-011",
+      "functionalRequirementRef": "ANOS-REQ-083",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-011",
+      "productRequirementRef": "PREQ-011",
+      "functionalRequirementRef": "ANOS-REQ-080",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-011",
+      "productRequirementRef": "PREQ-011",
+      "functionalRequirementRef": "ANOS-REQ-081",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-011",
+      "productRequirementRef": "PREQ-011",
+      "functionalRequirementRef": "ANOS-REQ-082",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-011",
+      "productRequirementRef": "PREQ-011",
+      "functionalRequirementRef": "ANOS-REQ-084",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-110",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-111",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-112",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-113",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-114",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-140",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-OPS-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-141",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-OPS-001"
+    },
+    {
+      "businessRequirementRef": "BR-001",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-142",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-OPS-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-110",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-111",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-112",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-113",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-114",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-TEST-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-140",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-OPS-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-141",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-OPS-001"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-012",
+      "productRequirementRef": "PREQ-012",
+      "functionalRequirementRef": "ANOS-REQ-142",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-MET-001",
+      "acceptanceGateRef": "GATE-AC-OPS-001"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-100",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-101",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-102",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-130",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-131",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-132",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-133",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-150",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-151",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-003",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-152",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-100",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-101",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-102",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-130",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-131",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-132",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-133",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-150",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-151",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-005",
+      "userRequirementRef": "UREQ-013",
+      "productRequirementRef": "PREQ-013",
+      "functionalRequirementRef": "ANOS-REQ-152",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REG-001",
+      "acceptanceGateRef": "GATE-AC-AGENT-004"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-021",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-090",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-091",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-092",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-002",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-093",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-021",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-REQ-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-090",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-091",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-092",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-014",
+      "productRequirementRef": "PREQ-014",
+      "functionalRequirementRef": "ANOS-REQ-093",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-PRD-001",
+      "acceptanceGateRef": "GATE-AC-REQ-003"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-015",
+      "productRequirementRef": "PREQ-015",
+      "functionalRequirementRef": "ANOS-REQ-083",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-KNO-001",
+      "acceptanceGateRef": "GATE-AC-KNO-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-015",
+      "productRequirementRef": "PREQ-015",
+      "functionalRequirementRef": "ANOS-REQ-120",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-015",
+      "productRequirementRef": "PREQ-015",
+      "functionalRequirementRef": "ANOS-REQ-121",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    },
+    {
+      "businessRequirementRef": "BR-004",
+      "userRequirementRef": "UREQ-015",
+      "productRequirementRef": "PREQ-015",
+      "functionalRequirementRef": "ANOS-REQ-122",
+      "taskRef": "",
+      "resultRef": "",
+      "testCaseRef": "TC-HUB-001",
+      "acceptanceGateRef": "GATE-AC-REQ-001"
+    }
+  ],
+  "blockers": [
+    {
+      "severity": "high",
+      "ownerRole": "agent.company.development",
+      "nodeRef": "ANOS-REQ-060",
+      "reason": "Existing-work backfill preserves blocked Agent Ring live contract status.",
+      "suggestedFix": "Complete live Agent Ring PostgreSQL contract verification before treating this row as complete."
+    },
+    {
+      "severity": "high",
+      "ownerRole": "agent.company.development",
+      "nodeRef": "ANOS-REQ-061",
+      "reason": "Existing-work backfill preserves blocked Agent Ring live contract status.",
+      "suggestedFix": "Complete live Agent Ring PostgreSQL contract verification before treating this row as complete."
+    },
+    {
+      "severity": "high",
+      "ownerRole": "agent.company.development",
+      "nodeRef": "ANOS-REQ-062",
+      "reason": "Existing-work backfill preserves blocked Agent Ring live contract status.",
+      "suggestedFix": "Complete live Agent Ring PostgreSQL contract verification before treating this row as complete."
+    },
+    {
+      "severity": "high",
+      "ownerRole": "agent.company.development",
+      "nodeRef": "ANOS-REQ-063",
+      "reason": "Existing-work backfill preserves blocked Agent Ring live contract status.",
+      "suggestedFix": "Complete live Agent Ring PostgreSQL contract verification before treating this row as complete."
+    }
+  ],
+  "generatedAt": "2026-06-21T11:23:27Z",
+  "generatedByAgentRef": "agent.company.development",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "auditRefs": [
+    "knowledge/audit/audit.20260621T112327693120Z.md",
+    "knowledge/audit/audit.20260621T112327747703Z.md"
+  ]
+}

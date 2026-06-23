@@ -4,6 +4,10 @@ Harness is the quality gate for the knowledge core. Implementation comes after t
 
 The first implementation target is the `zhenzhi-knowledge` local connector operating on the OKF-compatible bundle.
 
+Agent Ring is external and may not be available during early testing. Use the stub strategy to test the central chain before the real workstation exists:
+
+- [Agent Ring Stub Test Strategy](agent-ring-stub-test-strategy.md)
+
 ## OKF Format Checks
 
 - Every knowledge object file must have YAML frontmatter.
@@ -74,13 +78,13 @@ The local connector must support:
 
 ## Governance Checks
 
-- Every reusable knowledge write candidate must have a Knowledge Review Agent result before indexing, human approval, or status promotion.
-- Knowledge Review Agent must block candidates missing sourceRef, owner, status, scope, confidence, category, or readable summary.
-- Knowledge Review Agent must classify candidates into auto observed, human approval required, clarification required, conflict required, or rejected.
+- Every reusable knowledge write candidate must have a Knowledge Engineering Agent review sub-agent result before indexing, human approval, or status promotion.
+- Knowledge Engineering Agent review sub-agent must block candidates missing sourceRef, owner, status, scope, confidence, category, or readable summary.
+- Knowledge Engineering Agent review sub-agent must classify candidates into auto observed, human approval required, clarification required, conflict required, or rejected.
 - Passed low-risk lessons, pitfalls, issue reviews, integration notes, and debugging conclusions may be stored as observed/draft without human approval.
 - Passed low-risk learning notes and skill notes may be stored as observed/draft without human approval when source, license, sensitivity, applicability, and extraction quality are clear.
-- Knowledge Review Agent must create or reference IssueRecord when it finds missing information, duplicate risk, conflict risk, sensitivity risk, or unreadable approval content.
-- Knowledge Review Agent must not promote its own output to verified, approved, active, policy, permission, security, or cross-team standard status.
+- Knowledge Engineering Agent review sub-agent must create or reference IssueRecord when it finds missing information, duplicate risk, conflict risk, sensitivity risk, or unreadable approval content.
+- Knowledge Engineering Agent review sub-agent must not promote its own output to verified, approved, active, policy, permission, security, or cross-team standard status.
 - verified KnowledgeItem requires human review.
 - approved ToolAsset requires Tool Owner approval.
 - approved ToolAsset must be blocked when a failing EvalRun targets it.

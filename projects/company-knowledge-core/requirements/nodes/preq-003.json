@@ -1,0 +1,54 @@
+{
+  "nodeId": "PREQ-003",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-003",
+  "statement": "Product must expose PRD versions, Decision records, evidence, and approval state.",
+  "whyItMatters": "Cannot approve work if assumptions and tradeoffs are hidden.",
+  "successSignal": "Product must expose PRD versions, Decision records, evidence, and approval state.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-003:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-003"
+  ],
+  "childRefs": [
+    "ANOS-REQ-020",
+    "ANOS-REQ-021",
+    "ANOS-REQ-022",
+    "ANOS-REQ-023",
+    "ANOS-REQ-024",
+    "ANOS-REQ-090",
+    "ANOS-REQ-091",
+    "ANOS-REQ-092",
+    "ANOS-REQ-093"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-REQ-003",
+    "GATE-AC-REQ-004",
+    "GATE-AC-REQ-005",
+    "GATE-AC-GOV-001",
+    "GATE-AC-GOV-002"
+  ],
+  "testCaseRefs": [
+    "TC-PRD-001",
+    "TC-PRD-002",
+    "TC-PRD-003",
+    "TC-PRD-004",
+    "TC-PRD-005",
+    "TC-REV-001",
+    "TC-REV-002",
+    "TC-REV-003",
+    "TC-REV-004"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

@@ -1,0 +1,43 @@
+{
+  "nodeId": "PREQ-011",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-011",
+  "statement": "Product must search reviewed knowledge and expose citation/gap state.",
+  "whyItMatters": "Answers without citations are unsafe.",
+  "successSignal": "Product must search reviewed knowledge and expose citation/gap state.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-011:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-011"
+  ],
+  "childRefs": [
+    "ANOS-REQ-083",
+    "ANOS-REQ-080",
+    "ANOS-REQ-081",
+    "ANOS-REQ-082",
+    "ANOS-REQ-084"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-KNO-003",
+    "GATE-AC-KNO-004"
+  ],
+  "testCaseRefs": [
+    "TC-KNO-001",
+    "TC-KNO-002",
+    "TC-KNO-003",
+    "TC-KNO-004",
+    "TC-KNO-005"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

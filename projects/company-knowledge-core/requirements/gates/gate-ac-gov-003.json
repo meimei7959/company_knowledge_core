@@ -1,0 +1,35 @@
+{
+  "gateId": "GATE-AC-GOV-003",
+  "type": "AcceptanceGate",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "requirementRefs": [
+    "ANOS-REQ-090",
+    "ANOS-REQ-091",
+    "ANOS-REQ-092",
+    "ANOS-REQ-093",
+    "ANOS-REQ-100",
+    "ANOS-REQ-101",
+    "ANOS-REQ-102",
+    "ANOS-REQ-130",
+    "ANOS-REQ-131",
+    "ANOS-REQ-132",
+    "ANOS-REQ-133",
+    "ANOS-REQ-150",
+    "ANOS-REQ-151",
+    "ANOS-REQ-152"
+  ],
+  "ownerRole": "agent.company.test",
+  "verificationMethod": "document_check",
+  "observableSignal": "AC-GOV-003 is checked against acceptance checklist evidence before launch.",
+  "requiredEvidenceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "status": "draft",
+  "waiverDecisionRef": "",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "auditRefs": []
+}

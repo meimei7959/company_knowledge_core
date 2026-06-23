@@ -1,0 +1,40 @@
+{
+  "nodeId": "UREQ-008",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "See runner eligibility, lease, heartbeat, scope, and failure state.",
+  "statement": "See runner eligibility, lease, heartbeat, scope, and failure state.",
+  "problem": "Distributed execution can drift from central state.",
+  "acceptanceSignal": "Product must provide Agent Ring Console and enforce runner authorization.",
+  "ownerRole": "Agent Ring Runner Admin",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-008",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-003"
+  ],
+  "childRefs": [
+    "PREQ-008"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-EXE-002",
+    "GATE-AC-EXE-003",
+    "GATE-AC-UI-004"
+  ],
+  "testCaseRefs": [
+    "TC-RUN-001",
+    "TC-RUN-002",
+    "TC-RUN-003",
+    "TC-RUN-004",
+    "TC-E2E-004"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

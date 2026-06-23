@@ -1,0 +1,47 @@
+{
+  "version": "2026-06-22",
+  "purpose": "External reference sources used to design Zhenzhi production skill delivery standards. These are references only; third-party content must not be copied into company skills.",
+  "sources": [
+    {
+      "repo": "alirezarezvani/claude-skills",
+      "url": "https://github.com/alirezarezvani/claude-skills",
+      "starsObserved": 18765,
+      "adoptedIdeas": [
+        "large skill library organized by professional domain",
+        "skill authoring standard",
+        "pipeline and templates around skill production"
+      ]
+    },
+    {
+      "repo": "mohitagw15856/pm-claude-skills",
+      "url": "https://github.com/mohitagw15856/pm-claude-skills",
+      "starsObserved": 1010,
+      "adoptedIdeas": [
+        "skill sources registry",
+        "examples and evals for skill quality",
+        "workflow-oriented skill packaging"
+      ]
+    },
+    {
+      "repo": "trailofbits/skills",
+      "url": "https://github.com/trailofbits/skills",
+      "starsObserved": 5807,
+      "adoptedIdeas": [
+        "specialized expert skills",
+        "quality and security oriented usage boundaries",
+        "audit-style workflows"
+      ]
+    },
+    {
+      "repo": "lackeyjb/playwright-skill",
+      "url": "https://github.com/lackeyjb/playwright-skill",
+      "starsObserved": 2803,
+      "adoptedIdeas": [
+        "tool-backed browser automation skill",
+        "model-invoked executable validation",
+        "repeatable testing workflow"
+      ]
+    }
+  ]
+}
+

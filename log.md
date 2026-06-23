@@ -30,3 +30,2093 @@
 - 2026-06-17T02:14:14Z rebuilt retrieval index chunks=13
 - 2026-06-17T02:28:24Z registered Agent agent.antigravity.local
 - 2026-06-17T02:34:06Z rebuilt retrieval index chunks=17
+- 2026-06-18T11:05:31Z audit task.finish projects/company-knowledge-core/tasks/kt-feishu-deepseek-router.md
+- 2026-06-18T11:05:31Z finished task KT-FEISHU-DEEPSEEK-ROUTER status=done
+- 2026-06-18T11:07:57Z audit task.finish projects/company-knowledge-core/tasks/kt-access-credential-secret-flow.md
+- 2026-06-18T11:07:57Z finished task KT-ACCESS-CREDENTIAL-SECRET-FLOW status=done
+- 2026-06-18T11:15:40Z audit task.finish projects/company-knowledge-core/tasks/kt-agent-ring-protocol-integration.md
+- 2026-06-18T11:15:40Z finished task KT-AGENT-RING-PROTOCOL status=done
+- 2026-06-18T11:15:52Z audit task.finish projects/company-knowledge-core/tasks/kt-agent-ring-stub-runner-tests.md
+- 2026-06-18T11:15:52Z finished task KT-AGENT-RING-STUB-RUNNER-TESTS status=done
+- 2026-06-18T11:28:32Z audit task.finish projects/company-knowledge-core/tasks/kt-deepseek-observability-evals.md
+- 2026-06-18T11:28:32Z finished task KT-DEEPSEEK-OBSERVABILITY-EVALS status=done
+- 2026-06-18T11:29:07Z audit task.finish projects/company-knowledge-core/tasks/kt-feishu-agent-ring-dispatch.md
+- 2026-06-18T11:29:07Z finished task KT-FEISHU-AGENT-RING-DISPATCH status=done
+- 2026-06-18T11:29:18Z audit task.finish projects/company-knowledge-core/tasks/kt-feishu-card-workflow-closure.md
+- 2026-06-18T11:29:18Z finished task KT-FEISHU-CARD-WORKFLOW status=done
+- 2026-06-18T11:29:31Z audit task.finish projects/company-knowledge-core/tasks/kt-feishu-routing-safety-gate.md
+- 2026-06-18T11:29:31Z finished task KT-FEISHU-ROUTING-SAFETY status=done
+- 2026-06-18T11:29:43Z audit task.finish projects/company-knowledge-core/tasks/kt-project-context-sync.md
+- 2026-06-18T11:29:43Z finished task KT-PROJECT-CONTEXT-SYNC status=done
+- 2026-06-18T16:09:57Z audit task.finish projects/company-knowledge-core/tasks/kt-doc-entry-alignment.md
+- 2026-06-18T16:09:57Z finished task TASK-DOC-ENTRY-ALIGNMENT status=done
+- 2026-06-19T01:13:22Z audit task.finish projects/company-knowledge-core/tasks/kt-project-status-dashboard.md
+- 2026-06-19T01:13:22Z finished task TASK-PROJECT-STATUS-DASHBOARD status=done
+- 2026-06-19T01:18:51Z audit task.finish projects/company-knowledge-core/tasks/kt-runner-agent-registry-hardening.md
+- 2026-06-19T01:18:51Z finished task TASK-RUNNER-AGENT-REGISTRY-HARDENING status=done
+- 2026-06-19T01:27:10Z audit task.finish projects/company-knowledge-core/tasks/kt-task-notification-loop.md
+- 2026-06-19T01:27:10Z audit task.notification.record projects/company-knowledge-core/tasks/kt-task-notification-loop.md feishu
+- 2026-06-19T01:27:10Z finished task TASK-TASK-NOTIFICATION-LOOP status=done
+- 2026-06-19T01:34:45Z audit task.finish projects/company-knowledge-core/tasks/kt-knowledge-capture-review-pipeline.md
+- 2026-06-19T01:34:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-knowledge-capture-review-pipeline.md feishu
+- 2026-06-19T01:34:45Z finished task TASK-KNOWLEDGE-CAPTURE-REVIEW-PIPELINE status=done
+- 2026-06-19T01:48:01Z audit task.finish projects/company-knowledge-core/tasks/kt-agent-workbench-contract-tests.md
+- 2026-06-19T01:48:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-agent-workbench-contract-tests.md feishu
+- 2026-06-19T01:48:01Z finished task TASK-AGENT-WORKBENCH-CONTRACT-TESTS status=done
+- 2026-06-19T01:48:53Z audit task.finish projects/company-knowledge-core/tasks/kt-agent-workbench-contract-tests.md
+- 2026-06-19T01:48:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-agent-workbench-contract-tests.md feishu
+- 2026-06-19T01:48:53Z finished task TASK-AGENT-WORKBENCH-CONTRACT-TESTS status=done
+- 2026-06-19T01:54:34Z audit task.finish projects/company-knowledge-core/tasks/kt-deployment-observability-ops.md
+- 2026-06-19T01:54:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-deployment-observability-ops.md feishu
+- 2026-06-19T01:54:34Z finished task TASK-DEPLOYMENT-OBSERVABILITY-OPS status=done
+- 2026-06-19T01:57:34Z audit task.finish projects/company-knowledge-core/tasks/kt-project-initialization-closeout.md
+- 2026-06-19T01:57:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-project-initialization-closeout.md feishu
+- 2026-06-19T01:57:34Z finished task TASK-PROJECT-INITIALIZATION-CLOSEOUT status=done
+- 2026-06-19T01:57:50Z audit task.finish projects/company-knowledge-core/tasks/project-init-company-knowledge-core.md
+- 2026-06-19T01:57:50Z audit task.notification.record projects/company-knowledge-core/tasks/project-init-company-knowledge-core.md feishu
+- 2026-06-19T01:57:50Z finished task PROJECT-INIT-COMPANY-KNOWLEDGE-CORE status=done
+- 2026-06-19T02:56:13Z audit task.finish projects/company-knowledge-core/tasks/kt-universal-material-ingest.md
+- 2026-06-19T02:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-universal-material-ingest.md feishu
+- 2026-06-19T02:56:13Z finished task TASK-UNIVERSAL-MATERIAL-INGEST status=done
+- 2026-06-19T02:56:29Z audit task.finish projects/company-knowledge-core/tasks/kt-knowledge-graph-phase-one.md
+- 2026-06-19T02:56:29Z audit task.notification.record projects/company-knowledge-core/tasks/kt-knowledge-graph-phase-one.md feishu
+- 2026-06-19T02:56:29Z finished task TASK-KNOWLEDGE-GRAPH-PHASE-ONE status=done
+- 2026-06-19T02:56:44Z audit task.finish projects/company-knowledge-core/tasks/kt-agent-workbench-integration-package.md
+- 2026-06-19T02:56:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-agent-workbench-integration-package.md feishu
+- 2026-06-19T02:56:44Z finished task TASK-AGENT-WORKBENCH-INTEGRATION-PACKAGE status=done
+- 2026-06-19T02:57:03Z audit task.finish projects/company-knowledge-core/tasks/kt-production-closed-loop-acceptance.md
+- 2026-06-19T02:57:03Z audit task.notification.record projects/company-knowledge-core/tasks/kt-production-closed-loop-acceptance.md feishu
+- 2026-06-19T02:57:03Z finished task TASK-PRODUCTION-CLOSED-LOOP-ACCEPTANCE status=done
+- 2026-06-19T11:32:38Z started context context.20260619T113238499112Z for project=company-knowledge-core agent=agent.company-knowledge-core.knowledge-engineering
+- 2026-06-20T08:18:02Z audit agent.role_operating_check role-reviews/role-review-product-manager.20260620T081802439893Z.md role_operating_spec
+- 2026-06-20T08:18:02Z role operating check product-manager status=ready gaps=0
+- 2026-06-20T08:18:54Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260620T081854708081Z.md role_operating_spec
+- 2026-06-20T08:18:54Z role operating check project-manager status=ready gaps=0
+- 2026-06-20T08:18:54Z audit agent.role_operating_check role-reviews/role-review-product-manager.20260620T081854796005Z.md role_operating_spec
+- 2026-06-20T08:18:54Z role operating check product-manager status=ready gaps=0
+- 2026-06-20T08:18:54Z audit agent.role_operating_check role-reviews/role-review-design.20260620T081854887031Z.md role_operating_spec
+- 2026-06-20T08:18:54Z role operating check design status=ready gaps=0
+- 2026-06-20T08:18:54Z audit agent.role_operating_check role-reviews/role-review-development.20260620T081854970875Z.md role_operating_spec
+- 2026-06-20T08:18:54Z role operating check development status=ready gaps=0
+- 2026-06-20T08:18:55Z audit agent.role_operating_check role-reviews/role-review-test.20260620T081855057416Z.md role_operating_spec
+- 2026-06-20T08:18:55Z role operating check test status=ready gaps=0
+- 2026-06-20T08:18:55Z audit agent.role_operating_check role-reviews/role-review-operations.20260620T081855141923Z.md role_operating_spec
+- 2026-06-20T08:18:55Z role operating check operations status=ready gaps=0
+- 2026-06-20T08:18:55Z audit agent.role_operating_check role-reviews/role-review-knowledge-engineering.20260620T081855225973Z.md role_operating_spec
+- 2026-06-20T08:18:55Z role operating check knowledge-engineering status=ready gaps=0
+- 2026-06-20T08:18:55Z audit agent.role_operating_check role-reviews/role-review-knowledge-query.20260620T081855309701Z.md role_operating_spec
+- 2026-06-20T08:18:55Z role operating check knowledge-query status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-design.20260620T085716072774Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check design status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-development.20260620T085716152367Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check development status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-knowledge-engineering.20260620T085716230495Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check knowledge-engineering status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-knowledge-query.20260620T085716309292Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check knowledge-query status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-operations.20260620T085716387583Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check operations status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-product-manager.20260620T085716465641Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check product-manager status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260620T085716544038Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check project-manager status=ready gaps=0
+- 2026-06-20T08:57:16Z audit agent.role_operating_check role-reviews/role-review-test.20260620T085716623763Z.md role_operating_spec
+- 2026-06-20T08:57:16Z role operating check test status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260620T090821327461Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check project-manager status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-product-manager.20260620T090821383825Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check product-manager status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-design.20260620T090821447247Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check design status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-development.20260620T090821505658Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check development status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-test.20260620T090821564534Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check test status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-operations.20260620T090821622138Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check operations status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-knowledge-engineering.20260620T090821679380Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check knowledge-engineering status=ready gaps=0
+- 2026-06-20T09:08:21Z audit agent.role_operating_check role-reviews/role-review-knowledge-query.20260620T090821737238Z.md role_operating_spec
+- 2026-06-20T09:08:21Z role operating check knowledge-query status=ready gaps=0
+- 2026-06-20T09:55:17Z registered Agent agent.company.project-manager
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z registered Agent agent.company.knowledge-query
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z registered Agent agent.company.product-manager
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z registered Agent agent.company.design
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z registered Agent agent.company.development
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z registered Agent agent.company.test
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z registered Agent agent.company.operations
+- 2026-06-20T09:55:17Z audit agent.attachProject projects/company-knowledge-core/project.md draft
+- 2026-06-20T09:55:17Z audit runner.register runners/runner.meimei-mac-local-codex.md agent_ring
+- 2026-06-20T09:55:17Z registered runner runner.meimei-mac-local-codex
+- 2026-06-20T09:55:33Z audit actor.context.upsert actors/actor-bfdc41fb01.md human
+- 2026-06-20T09:55:33Z audit actor.context.upsert actors/runner.meimei-mac-local-codex.md runner
+- 2026-06-20T09:57:29Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260620T095729113491Z.md pm_agent_operating_check
+- 2026-06-20T09:57:29Z project manager health check company-knowledge-core health=on_track risks=0
+- 2026-06-20T15:24:33Z audit task.create tasks/project-approval-notification-closed-loop.md
+- 2026-06-20T15:24:33Z audit task.notification.record tasks/project-approval-notification-closed-loop.md feishu
+- 2026-06-20T15:24:33Z created task project-approval-notification-closed-loop assigned=agent.company.development
+- 2026-06-20T15:50:04Z audit task.finish tasks/project-approval-notification-closed-loop.md
+- 2026-06-20T15:50:04Z audit task.notification.record tasks/project-approval-notification-closed-loop.md feishu
+- 2026-06-20T15:50:04Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-project-approval-notification-closed-loop.20260620T155004658404Z.md
+- 2026-06-20T15:50:04Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260620T155004658934Z.md
+- 2026-06-20T15:50:04Z audit task.notification.record tasks/project-approval-notification-closed-loop.md feishu
+- 2026-06-20T15:50:04Z audit task.notification.record tasks/project-approval-notification-closed-loop.md feishu
+- 2026-06-20T15:50:04Z audit task.create tasks/project-approval-notification-closed-loop-retry.md
+- 2026-06-20T15:50:04Z audit task.notification.record tasks/project-approval-notification-closed-loop-retry.md feishu
+- 2026-06-20T15:50:04Z created task project-approval-notification-closed-loop-retry assigned=agent.company.development
+- 2026-06-20T15:50:04Z audit task.notification.record tasks/project-approval-notification-closed-loop-retry.md feishu
+- 2026-06-20T15:50:04Z audit workflow.followup.retry tasks/project-approval-notification-closed-loop-retry.md
+- 2026-06-20T15:50:04Z finished task project-approval-notification-closed-loop status=done
+- 2026-06-20T16:31:14Z audit task.finish tasks/unified-task-runtime-core.md
+- 2026-06-20T16:31:14Z audit task.notification.record tasks/unified-task-runtime-core.md feishu
+- 2026-06-20T16:31:14Z audit task.notification.record tasks/unified-task-runtime-core.md feishu
+- 2026-06-20T16:31:14Z audit task.notification.record tasks/unified-task-runtime-core.md feishu
+- 2026-06-20T16:31:14Z finished task unified-task-runtime-core status=done
+- 2026-06-20T16:34:29Z audit task.notification.record tasks/unified-task-runtime-core.md feishu
+- 2026-06-20T16:34:29Z audit task.acceptance task-results/tr-unified-task-runtime-core.md human_acceptance
+- 2026-06-20T17:01:31Z audit task.finish tasks/feishu-project-create-ux-polish.md
+- 2026-06-20T17:01:31Z audit task.notification.record tasks/feishu-project-create-ux-polish.md feishu
+- 2026-06-20T17:01:31Z audit task.notification.record tasks/feishu-project-create-ux-polish.md feishu
+- 2026-06-20T17:01:31Z audit task.notification.record tasks/feishu-project-create-ux-polish.md feishu
+- 2026-06-20T17:01:31Z finished task feishu-project-create-ux-polish status=done
+- 2026-06-21T02:19:00Z audit task.create projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md
+- 2026-06-21T02:19:00Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:19:00Z created task agent-runtime-rules-layering assigned=agent.company.development
+- 2026-06-21T02:32:36Z audit task.finish projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md
+- 2026-06-21T02:32:36Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:32:36Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:32:36Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:32:36Z finished task agent-runtime-rules-layering status=done
+- 2026-06-21T02:50:38Z audit task.finish projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md
+- 2026-06-21T02:50:38Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:50:38Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:50:38Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T02:50:38Z finished task agent-runtime-rules-layering status=done
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-agent-directory.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-directory.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T05:29:18Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T05:29:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T05:33:27Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260621T053327952699Z.md role_operating_spec
+- 2026-06-21T05:33:27Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260621T053327959403Z.md pm_agent_operating_check
+- 2026-06-21T05:33:27Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T05:33:27Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-21T05:33:27Z project manager health check company-knowledge-core health=needs_decision risks=21
+- 2026-06-21T05:33:27Z role operating check project-manager status=ready gaps=0
+- 2026-06-21T05:33:38Z audit runner.upsert runners/runner.meimei-mac-local-codex.md agent_ring
+- 2026-06-21T05:33:38Z upserted runner runner.meimei-mac-local-codex
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T05:33:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T05:33:49Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T05:34:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T05:34:30Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T05:42:31Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md
+- 2026-06-21T05:42:31Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md feishu
+- 2026-06-21T05:55:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:55:18Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:55:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:55:18Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:55:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:55:18Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:55:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:55:18Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:55:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:55:18Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:55:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:55:18Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T05:55:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T05:55:24Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T05:55:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T05:55:54Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T05:56:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T05:56:13Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T06:12:51Z audit task.finish projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md
+- 2026-06-21T06:12:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md feishu
+- 2026-06-21T06:12:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md feishu
+- 2026-06-21T06:12:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md feishu
+- 2026-06-21T06:12:51Z finished task kt-autoexec-dev-pm-autopilot-runtime status=submitted
+- 2026-06-21T06:13:07Z audit task.finish projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md feishu
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md feishu
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md feishu
+- 2026-06-21T06:13:07Z finished task kt-autoexec-dev-agent-worker-runtime status=submitted
+- 2026-06-21T06:13:07Z audit task.finish projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md feishu
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md feishu
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md feishu
+- 2026-06-21T06:13:07Z finished task kt-autoexec-dev-state-result-flow status=submitted
+- 2026-06-21T06:13:07Z audit task.finish projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md feishu
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md feishu
+- 2026-06-21T06:13:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md feishu
+- 2026-06-21T06:13:07Z finished task kt-autoexec-dev-workbench-data-api status=submitted
+- 2026-06-21T06:13:17Z audit task.finish projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md
+- 2026-06-21T06:13:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md feishu
+- 2026-06-21T06:13:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md feishu
+- 2026-06-21T06:13:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md feishu
+- 2026-06-21T06:13:17Z finished task kt-autoexec-test-closed-loop-suite status=submitted
+- 2026-06-21T06:13:35Z audit task.finish projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md
+- 2026-06-21T06:13:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md feishu
+- 2026-06-21T06:13:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md feishu
+- 2026-06-21T06:13:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md feishu
+- 2026-06-21T06:13:35Z finished task kt-autoexec-pm-final-acceptance status=submitted
+- 2026-06-21T06:14:08Z audit task.create projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime-handoff.md
+- 2026-06-21T06:14:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime-handoff.md feishu
+- 2026-06-21T06:14:08Z created task kt-autoexec-dev-pm-autopilot-runtime-handoff assigned=agent.company.test
+- 2026-06-21T06:14:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime-handoff.md feishu
+- 2026-06-21T06:14:08Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime-handoff.md
+- 2026-06-21T06:14:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime.md feishu
+- 2026-06-21T06:14:08Z audit task.acceptance task-results/tr-kt-autoexec-dev-pm-autopilot-runtime.md pm_acceptance
+- 2026-06-21T06:14:22Z audit task.create projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime-handoff.md
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime-handoff.md feishu
+- 2026-06-21T06:14:22Z created task kt-autoexec-dev-agent-worker-runtime-handoff assigned=agent.company.test
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime-handoff.md feishu
+- 2026-06-21T06:14:22Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime-handoff.md
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-pm-final-acceptance.md feishu
+- 2026-06-21T06:14:22Z audit task.acceptance task-results/tr-kt-autoexec-pm-final-acceptance.md pm_acceptance
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime.md feishu
+- 2026-06-21T06:14:22Z audit task.acceptance task-results/tr-kt-autoexec-dev-agent-worker-runtime.md pm_acceptance
+- 2026-06-21T06:14:22Z audit task.create projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow-handoff.md
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow-handoff.md feishu
+- 2026-06-21T06:14:22Z created task kt-autoexec-dev-state-result-flow-handoff assigned=agent.company.test
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow-handoff.md feishu
+- 2026-06-21T06:14:22Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow-handoff.md
+- 2026-06-21T06:14:22Z audit task.create projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api-handoff.md
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow.md feishu
+- 2026-06-21T06:14:22Z audit task.acceptance task-results/tr-kt-autoexec-dev-state-result-flow.md pm_acceptance
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api-handoff.md feishu
+- 2026-06-21T06:14:22Z created task kt-autoexec-dev-workbench-data-api-handoff assigned=agent.company.test
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api-handoff.md feishu
+- 2026-06-21T06:14:22Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api-handoff.md
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api.md feishu
+- 2026-06-21T06:14:22Z audit task.acceptance task-results/tr-kt-autoexec-dev-workbench-data-api.md pm_acceptance
+- 2026-06-21T06:14:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-test-closed-loop-suite.md feishu
+- 2026-06-21T06:14:22Z audit task.acceptance task-results/tr-kt-autoexec-test-closed-loop-suite.md pm_acceptance
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-pm-orchestrate-solution-review.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-pm-orchestrate-solution-review.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md
+- 2026-06-21T06:18:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime-handoff.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-pm-autopilot-runtime-handoff.md feishu
+- 2026-06-21T06:18:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime-handoff.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-agent-worker-runtime-handoff.md feishu
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T06:18:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow-handoff.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-state-result-flow-handoff.md feishu
+- 2026-06-21T06:18:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api-handoff.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-autoexec-dev-workbench-data-api-handoff.md feishu
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T06:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T06:18:55Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T06:24:04Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md
+- 2026-06-21T06:24:04Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md
+- 2026-06-21T06:24:04Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md feishu
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md feishu
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md feishu
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md feishu
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md feishu
+- 2026-06-21T06:24:04Z finished task kt-ai-native-os-tech-solution-requirement-prd-domain status=submitted
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md feishu
+- 2026-06-21T06:24:04Z finished task kt-ai-native-os-tech-solution-scheduler-runner-result status=submitted
+- 2026-06-21T06:24:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:24:04Z finished task kt-ai-native-os-tech-solution-desktop-workbench-console status=submitted
+- 2026-06-21T06:24:06Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md
+- 2026-06-21T06:24:06Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md feishu
+- 2026-06-21T06:24:06Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md feishu
+- 2026-06-21T06:24:06Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md feishu
+- 2026-06-21T06:24:06Z finished task kt-ai-native-os-tech-solution-governance-quality-ops-api status=submitted
+- 2026-06-21T06:28:27Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md
+- 2026-06-21T06:28:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md feishu
+- 2026-06-21T06:28:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md feishu
+- 2026-06-21T06:28:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md feishu
+- 2026-06-21T06:28:27Z finished task kt-ai-native-os-product-review-technical-solutions status=submitted
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-governance-quality-ops-api.md feishu
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-requirement-prd-domain.md feishu
+- 2026-06-21T06:29:30Z audit task.acceptance task-results/tr-kt-ai-native-os-tech-solution-governance-quality-ops-api.md pm_acceptance
+- 2026-06-21T06:29:30Z audit task.acceptance task-results/tr-kt-ai-native-os-tech-solution-requirement-prd-domain.md pm_acceptance
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-scheduler-runner-result.md feishu
+- 2026-06-21T06:29:30Z audit task.acceptance task-results/tr-kt-ai-native-os-tech-solution-scheduler-runner-result.md pm_acceptance
+- 2026-06-21T06:29:30Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:29:30Z created task kt-ai-native-os-tech-solution-desktop-workbench-console-retry assigned=agent.company.project-manager
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:29:30Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md
+- 2026-06-21T06:29:30Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-tech-solution-desktop-workbench-console.20260621T062930445151Z.md
+- 2026-06-21T06:29:30Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T062930446459Z.md
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:29:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console.md feishu
+- 2026-06-21T06:29:30Z audit task.acceptance task-results/tr-kt-ai-native-os-tech-solution-desktop-workbench-console.md pm_acceptance
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-pm-orchestrate-solution-review.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-pm-orchestrate-solution-review.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md
+- 2026-06-21T06:29:40Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-context-pack-engine.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-evaluation-engine.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-event-notification-bus.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-knowledge-core-governance.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-policy-engine.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-policy-engine.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-workflow-state-machine.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-console-surfaces.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-governance-quality-ops.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-requirement-prd-domain.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-dev-scheduler-runner-result.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-test-acceptance-suite.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-agent-collaboration-protocol.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-runner-fabric.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-runner-fabric.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-self-improvement-pipeline.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-skill-registry-lifecycle.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-os-tool-registry-policy.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-review-approval-routing.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-ops-launch-readiness.md
+- 2026-06-21T06:29:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md feishu
+- 2026-06-21T06:29:40Z audit scheduler.task.assign projects/company-knowledge-core/tasks/kt-ai-native-os-knowledge-governance-mapping.md
+- 2026-06-21T06:30:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-product-review-technical-solutions.md feishu
+- 2026-06-21T06:30:24Z audit task.acceptance task-results/tr-kt-ai-native-os-product-review-technical-solutions.md pm_acceptance
+- 2026-06-21T06:34:47Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md
+- 2026-06-21T06:34:47Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md
+- 2026-06-21T06:34:47Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:34:47Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:34:47Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:34:47Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:34:47Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:34:47Z finished task kt-ai-native-os-tech-solution-desktop-workbench-console-revision status=submitted
+- 2026-06-21T06:34:47Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:34:47Z finished task kt-ai-native-os-tech-solution-desktop-workbench-console-retry status=submitted
+- 2026-06-21T06:38:24Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md
+- 2026-06-21T06:38:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:38:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md feishu
+- 2026-06-21T06:38:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:38:24Z audit task.acceptance task-results/tr-kt-ai-native-os-tech-solution-desktop-workbench-console-retry.md pm_acceptance
+- 2026-06-21T06:38:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:38:24Z finished task kt-ai-native-os-tech-solution-desktop-workbench-console-revision status=submitted
+- 2026-06-21T06:38:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md feishu
+- 2026-06-21T06:38:24Z audit task.acceptance task-results/tr-kt-ai-native-os-tech-solution-desktop-workbench-console-revision.md pm_acceptance
+- 2026-06-21T07:13:25Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md feishu
+- 2026-06-21T07:13:25Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-impl-requirement-prd-domain.20260621T071325765391Z.md
+- 2026-06-21T07:13:25Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T071325765938Z.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md feishu
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md feishu
+- 2026-06-21T07:13:25Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:13:25Z created task kt-ai-native-os-impl-requirement-prd-domain-retry assigned=agent.company.project-manager
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:13:25Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md
+- 2026-06-21T07:13:25Z finished task kt-ai-native-os-impl-requirement-prd-domain status=done
+- 2026-06-21T07:13:25Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md feishu
+- 2026-06-21T07:13:25Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-impl-scheduler-runner-result.20260621T071325847078Z.md
+- 2026-06-21T07:13:25Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T071325847403Z.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md feishu
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md feishu
+- 2026-06-21T07:13:25Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:13:25Z created task kt-ai-native-os-impl-scheduler-runner-result-retry assigned=agent.company.project-manager
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:13:25Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md
+- 2026-06-21T07:13:25Z finished task kt-ai-native-os-impl-scheduler-runner-result status=done
+- 2026-06-21T07:13:25Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md feishu
+- 2026-06-21T07:13:25Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-impl-governance-quality-ops-api.20260621T071325928631Z.md
+- 2026-06-21T07:13:25Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T071325929000Z.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md feishu
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md feishu
+- 2026-06-21T07:13:25Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:13:25Z created task kt-ai-native-os-impl-governance-quality-ops-api-retry assigned=agent.company.project-manager
+- 2026-06-21T07:13:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:13:25Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md
+- 2026-06-21T07:13:25Z finished task kt-ai-native-os-impl-governance-quality-ops-api status=done
+- 2026-06-21T07:13:26Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md
+- 2026-06-21T07:13:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:13:26Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-impl-desktop-workbench-slice0.20260621T071326006978Z.md
+- 2026-06-21T07:13:26Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T071326007311Z.md
+- 2026-06-21T07:13:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:13:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:13:26Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md
+- 2026-06-21T07:13:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:13:26Z created task kt-ai-native-os-impl-desktop-workbench-slice0-retry assigned=agent.company.project-manager
+- 2026-06-21T07:13:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:13:26Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md
+- 2026-06-21T07:13:26Z finished task kt-ai-native-os-impl-desktop-workbench-slice0 status=done
+- 2026-06-21T07:18:05Z audit scheduler.lease.stale_repair projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md lease_expired
+- 2026-06-21T07:18:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-design-console-experience.md feishu
+- 2026-06-21T07:18:05Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md
+- 2026-06-21T07:18:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:18:05Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md
+- 2026-06-21T07:18:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:18:05Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md
+- 2026-06-21T07:18:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:18:05Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md
+- 2026-06-21T07:18:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:18:05Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md
+- 2026-06-21T07:18:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:18:05Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T07:18:38Z audit runner.upsert runners/runner.meimei-mac-local-codex.md agent_ring
+- 2026-06-21T07:18:38Z upserted runner runner.meimei-mac-local-codex
+- 2026-06-21T07:18:38Z audit runner.heartbeat runners/runner.meimei-mac-local-codex.md agent_ring
+- 2026-06-21T07:18:38Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md
+- 2026-06-21T07:18:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:18:38Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T07:18:55Z audit runner.register runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T07:18:55Z registered runner runner.meimei-mac-local-test-1
+- 2026-06-21T07:18:55Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T07:18:55Z audit runner.register runners/runner.meimei-mac-local-test-2.md agent_ring
+- 2026-06-21T07:18:55Z registered runner runner.meimei-mac-local-test-2
+- 2026-06-21T07:18:55Z audit runner.heartbeat runners/runner.meimei-mac-local-test-2.md agent_ring
+- 2026-06-21T07:18:55Z audit runner.register runners/runner.meimei-mac-local-test-3.md agent_ring
+- 2026-06-21T07:18:55Z registered runner runner.meimei-mac-local-test-3
+- 2026-06-21T07:18:55Z audit runner.heartbeat runners/runner.meimei-mac-local-test-3.md agent_ring
+- 2026-06-21T07:18:55Z audit runner.register runners/runner.meimei-mac-local-test-4.md agent_ring
+- 2026-06-21T07:18:55Z registered runner runner.meimei-mac-local-test-4
+- 2026-06-21T07:18:55Z audit runner.heartbeat runners/runner.meimei-mac-local-test-4.md agent_ring
+- 2026-06-21T07:18:55Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md
+- 2026-06-21T07:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md feishu
+- 2026-06-21T07:18:55Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md
+- 2026-06-21T07:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md feishu
+- 2026-06-21T07:18:55Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md
+- 2026-06-21T07:18:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T07:18:55Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T07:21:33Z audit runner.heartbeat runners/runner.meimei-mac-local-codex.md agent_ring
+- 2026-06-21T07:21:34Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md
+- 2026-06-21T07:21:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:21:34Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md
+- 2026-06-21T07:21:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:21:34Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md
+- 2026-06-21T07:21:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:21:34Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md
+- 2026-06-21T07:21:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:21:34Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md
+- 2026-06-21T07:21:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T07:21:34Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T07:45:04Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md
+- 2026-06-21T07:45:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md feishu
+- 2026-06-21T07:45:04Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md
+- 2026-06-21T07:45:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T07:45:04Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md
+- 2026-06-21T07:45:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md feishu
+- 2026-06-21T07:45:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:45:04Z audit task.claim.blocked projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md missing_runner_requirement
+- 2026-06-21T07:45:17Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md
+- 2026-06-21T07:45:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:45:49Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md
+- 2026-06-21T07:45:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md feishu
+- 2026-06-21T07:45:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md feishu
+- 2026-06-21T07:45:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md feishu
+- 2026-06-21T07:45:49Z finished task kt-ai-native-os-test-requirement-prd-domain status=done
+- 2026-06-21T07:45:52Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md
+- 2026-06-21T07:45:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:45:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:45:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T07:45:52Z finished task kt-ai-native-os-test-desktop-workbench-slice0 status=done
+- 2026-06-21T07:46:20Z audit scheduler.lease.stale_repair projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md lease_expired
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0-retry.md feishu
+- 2026-06-21T07:46:20Z audit scheduler.lease.stale_repair projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md lease_expired
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api-retry.md feishu
+- 2026-06-21T07:46:20Z audit scheduler.lease.stale_repair projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md lease_expired
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain-retry.md feishu
+- 2026-06-21T07:46:20Z audit scheduler.lease.stale_repair projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md lease_expired
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result-retry.md feishu
+- 2026-06-21T07:46:20Z audit scheduler.lease.stale_repair projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md lease_expired
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T07:46:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T07:46:20Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T07:46:33Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md
+- 2026-06-21T07:46:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md feishu
+- 2026-06-21T07:46:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md feishu
+- 2026-06-21T07:46:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md feishu
+- 2026-06-21T07:46:33Z finished task kt-ai-native-os-test-governance-quality-ops-api status=done
+- 2026-06-21T07:50:30Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md
+- 2026-06-21T07:50:30Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T07:50:51Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md
+- 2026-06-21T07:50:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T07:50:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T07:50:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T07:50:51Z finished task kt-ai-native-os-test-scheduler-runner-result status=done
+- 2026-06-21T08:01:03Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md
+- 2026-06-21T08:01:03Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T08:11:09Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md
+- 2026-06-21T08:11:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T08:11:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T08:11:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T08:11:09Z finished task kt-ai-native-os-repair-taskresult-metadata-migration status=done
+- 2026-06-21T08:12:43Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-requirement-prd-domain.md feishu
+- 2026-06-21T08:12:43Z audit task.acceptance task-results/tr-kt-ai-native-os-impl-requirement-prd-domain.md pm_acceptance
+- 2026-06-21T08:12:43Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-scheduler-runner-result.md feishu
+- 2026-06-21T08:12:43Z audit task.acceptance task-results/tr-kt-ai-native-os-impl-scheduler-runner-result.md pm_acceptance
+- 2026-06-21T08:12:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-governance-quality-ops-api.md feishu
+- 2026-06-21T08:12:44Z audit task.acceptance task-results/tr-kt-ai-native-os-impl-governance-quality-ops-api.md pm_acceptance
+- 2026-06-21T08:12:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-workbench-slice0.md feishu
+- 2026-06-21T08:12:44Z audit task.acceptance task-results/tr-kt-ai-native-os-impl-desktop-workbench-slice0.md pm_acceptance
+- 2026-06-21T08:12:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-requirement-prd-domain.md feishu
+- 2026-06-21T08:12:51Z audit task.acceptance task-results/tr-kt-ai-native-os-test-requirement-prd-domain.md human_acceptance
+- 2026-06-21T08:12:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-scheduler-runner-result.md feishu
+- 2026-06-21T08:12:51Z audit task.acceptance task-results/tr-kt-ai-native-os-test-scheduler-runner-result.md human_acceptance
+- 2026-06-21T08:12:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-governance-quality-ops-api.md feishu
+- 2026-06-21T08:12:51Z audit task.acceptance task-results/tr-kt-ai-native-os-test-governance-quality-ops-api.md human_acceptance
+- 2026-06-21T08:12:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-workbench-slice0.md feishu
+- 2026-06-21T08:12:52Z audit task.acceptance task-results/tr-kt-ai-native-os-test-desktop-workbench-slice0.md human_acceptance
+- 2026-06-21T08:12:52Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration-handoff.md
+- 2026-06-21T08:12:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration-handoff.md feishu
+- 2026-06-21T08:12:52Z created task kt-ai-native-os-repair-taskresult-metadata-migration-handoff assigned=agent.company.test
+- 2026-06-21T08:12:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration-handoff.md feishu
+- 2026-06-21T08:12:52Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration-handoff.md
+- 2026-06-21T08:12:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration.md feishu
+- 2026-06-21T08:12:52Z audit task.acceptance task-results/tr-kt-ai-native-os-repair-taskresult-metadata-migration.md human_acceptance
+- 2026-06-21T08:23:54Z audit runner.register runners/runner.meimei-mac-local-dev-hub.md agent_ring
+- 2026-06-21T08:23:54Z registered runner runner.meimei-mac-local-dev-hub
+- 2026-06-21T08:23:54Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-hub.md agent_ring
+- 2026-06-21T08:23:54Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md
+- 2026-06-21T08:23:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:23:54Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration-handoff.md
+- 2026-06-21T08:23:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-repair-taskresult-metadata-migration-handoff.md feishu
+- 2026-06-21T08:23:54Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T08:24:12Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md
+- 2026-06-21T08:24:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:37:15Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md
+- 2026-06-21T08:37:15Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:37:15Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-dev-automation-hub-hard-capabilities.20260621T083715592255Z.md
+- 2026-06-21T08:37:15Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T083715592852Z.md
+- 2026-06-21T08:37:15Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:37:15Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:37:15Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities-blocker.md
+- 2026-06-21T08:37:15Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities-blocker.md feishu
+- 2026-06-21T08:37:15Z created task kt-ai-native-os-dev-automation-hub-hard-capabilities-blocker assigned=agent.company.project-manager
+- 2026-06-21T08:37:15Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities-blocker.md feishu
+- 2026-06-21T08:37:15Z audit workflow.followup.escalate projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities-blocker.md
+- 2026-06-21T08:37:15Z finished task kt-ai-native-os-dev-automation-hub-hard-capabilities status=blocked
+- 2026-06-21T08:37:48Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md
+- 2026-06-21T08:37:59Z audit runner.register runners/runner.meimei-mac-local-test-hub.md agent_ring
+- 2026-06-21T08:37:59Z registered runner runner.meimei-mac-local-test-hub
+- 2026-06-21T08:37:59Z audit runner.heartbeat runners/runner.meimei-mac-local-test-hub.md agent_ring
+- 2026-06-21T08:37:59Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md
+- 2026-06-21T08:37:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:37:59Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-21T08:38:09Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md
+- 2026-06-21T08:38:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:45:02Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md
+- 2026-06-21T08:45:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:45:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:45:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:45:02Z finished task kt-ai-native-os-test-automation-hub-hard-capabilities status=done
+- 2026-06-21T08:47:37Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-dev-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:47:37Z audit task.acceptance task-results/tr-kt-ai-native-os-dev-automation-hub-hard-capabilities.md pm_acceptance
+- 2026-06-21T08:47:37Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-test-automation-hub-hard-capabilities.md feishu
+- 2026-06-21T08:47:37Z audit task.acceptance task-results/tr-kt-ai-native-os-test-automation-hub-hard-capabilities.md human_acceptance
+- 2026-06-21T09:37:12Z audit runner.register runners/runner.meimei-mac-local-pm-rt.md agent_ring
+- 2026-06-21T09:37:12Z registered runner runner.meimei-mac-local-pm-rt
+- 2026-06-21T09:37:12Z audit runner.register runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T09:37:12Z registered runner runner.meimei-mac-local-dev-rt
+- 2026-06-21T09:37:12Z audit runner.register runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T09:37:12Z registered runner runner.meimei-mac-local-product-rt
+- 2026-06-21T09:37:12Z audit runner.heartbeat runners/runner.meimei-mac-local-pm-rt.md agent_ring
+- 2026-06-21T09:37:13Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T09:37:13Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T09:37:32Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md
+- 2026-06-21T09:37:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md feishu
+- 2026-06-21T09:37:32Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md
+- 2026-06-21T09:37:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md feishu
+- 2026-06-21T09:42:17Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md
+- 2026-06-21T09:42:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md feishu
+- 2026-06-21T09:42:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md feishu
+- 2026-06-21T09:42:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md feishu
+- 2026-06-21T09:42:17Z finished task kt-ai-native-os-rt-tech-solution-requirement-tree status=done
+- 2026-06-21T09:43:01Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md
+- 2026-06-21T09:43:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md feishu
+- 2026-06-21T09:43:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md feishu
+- 2026-06-21T09:43:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md feishu
+- 2026-06-21T09:43:01Z finished task kt-ai-native-os-rt-pm-coverage-matrix status=done
+- 2026-06-21T09:43:53Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix-handoff.md
+- 2026-06-21T09:43:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix-handoff.md feishu
+- 2026-06-21T09:43:53Z created task kt-ai-native-os-rt-pm-coverage-matrix-handoff assigned=agent.company.product-manager
+- 2026-06-21T09:43:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix-handoff.md feishu
+- 2026-06-21T09:43:53Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix-handoff.md
+- 2026-06-21T09:43:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix.md feishu
+- 2026-06-21T09:43:53Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-pm-coverage-matrix.md human_acceptance
+- 2026-06-21T09:46:32Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix-handoff.md
+- 2026-06-21T09:46:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-pm-coverage-matrix-handoff.md feishu
+- 2026-06-21T09:46:53Z audit runner.upsert runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T09:46:53Z upserted runner runner.meimei-mac-local-product-rt
+- 2026-06-21T09:47:19Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T09:47:28Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution.md
+- 2026-06-21T09:47:28Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution.md
+- 2026-06-21T09:47:28Z audit agent_worker.run project:company-knowledge-core agent_worker_minimal_runtime
+- 2026-06-21T09:48:02Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T09:48:03Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T09:48:03Z audit runner.heartbeat runners/runner.meimei-mac-local-pm-rt.md agent_ring
+- 2026-06-21T09:51:41Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution.md
+- 2026-06-21T09:51:41Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution.md feishu
+- 2026-06-21T09:51:41Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-rt-product-review-technical-solution.20260621T095141274023Z.md
+- 2026-06-21T09:51:41Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T095141274431Z.md
+- 2026-06-21T09:51:41Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution.md feishu
+- 2026-06-21T09:51:41Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution-retry.md
+- 2026-06-21T09:51:41Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution-retry.md feishu
+- 2026-06-21T09:51:41Z created task kt-ai-native-os-rt-product-review-technical-solution-retry assigned=agent.company.project-manager
+- 2026-06-21T09:51:41Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution-retry.md feishu
+- 2026-06-21T09:51:41Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution-retry.md
+- 2026-06-21T09:51:41Z finished task kt-ai-native-os-rt-product-review-technical-solution status=done
+- 2026-06-21T09:54:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-review-technical-solution.md feishu
+- 2026-06-21T09:54:00Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-product-review-technical-solution.md human_acceptance
+- 2026-06-21T09:54:00Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree-handoff.md
+- 2026-06-21T09:54:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree-handoff.md feishu
+- 2026-06-21T09:54:00Z created task kt-ai-native-os-rt-tech-solution-requirement-tree-handoff assigned=agent.company.test
+- 2026-06-21T09:54:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree-handoff.md feishu
+- 2026-06-21T09:54:00Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree-handoff.md
+- 2026-06-21T09:54:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-tech-solution-requirement-tree.md feishu
+- 2026-06-21T09:54:00Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-tech-solution-requirement-tree.md human_acceptance
+- 2026-06-21T09:54:25Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T09:54:25Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md
+- 2026-06-21T09:54:25Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md
+- 2026-06-21T09:56:26Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md
+- 2026-06-21T10:04:14Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md
+- 2026-06-21T10:04:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md feishu
+- 2026-06-21T10:04:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md feishu
+- 2026-06-21T10:04:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md feishu
+- 2026-06-21T10:04:14Z finished task kt-ai-native-os-rt-dev-object-model-slice status=done
+- 2026-06-21T10:05:53Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T10:05:53Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice.md
+- 2026-06-21T10:05:53Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice.md
+- 2026-06-21T10:10:11Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice.md
+- 2026-06-21T10:10:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice.md feishu
+- 2026-06-21T10:10:11Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-os-rt-test-object-model-slice.20260621T101011407583Z.md
+- 2026-06-21T10:10:11Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260621T101011408268Z.md
+- 2026-06-21T10:10:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice.md feishu
+- 2026-06-21T10:10:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice.md feishu
+- 2026-06-21T10:10:11Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-blocker.md
+- 2026-06-21T10:10:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-blocker.md feishu
+- 2026-06-21T10:10:11Z created task kt-ai-native-os-rt-test-object-model-slice-blocker assigned=agent.company.project-manager
+- 2026-06-21T10:10:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-blocker.md feishu
+- 2026-06-21T10:10:11Z audit workflow.followup.escalate projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-blocker.md
+- 2026-06-21T10:10:11Z finished task kt-ai-native-os-rt-test-object-model-slice status=blocked
+- 2026-06-21T10:11:12Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md
+- 2026-06-21T10:11:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md feishu
+- 2026-06-21T10:11:12Z created task kt-ai-native-os-rt-dev-object-model-slice-repair assigned=agent.company.development
+- 2026-06-21T10:11:55Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T10:11:55Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md
+- 2026-06-21T10:11:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md
+- 2026-06-21T10:12:40Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md
+- 2026-06-21T10:14:33Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md
+- 2026-06-21T10:14:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md feishu
+- 2026-06-21T10:14:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md feishu
+- 2026-06-21T10:14:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md feishu
+- 2026-06-21T10:14:33Z finished task kt-ai-native-os-rt-dev-object-model-slice-repair status=done
+- 2026-06-21T10:15:09Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md
+- 2026-06-21T10:15:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md feishu
+- 2026-06-21T10:15:09Z created task kt-ai-native-os-rt-test-object-model-slice-regression assigned=agent.company.test
+- 2026-06-21T10:15:49Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T10:15:49Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md
+- 2026-06-21T10:15:49Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md
+- 2026-06-21T10:18:09Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md
+- 2026-06-21T10:18:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md feishu
+- 2026-06-21T10:18:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md feishu
+- 2026-06-21T10:18:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md feishu
+- 2026-06-21T10:18:09Z finished task kt-ai-native-os-rt-test-object-model-slice-regression status=done
+- 2026-06-21T10:19:04Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-handoff.md
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-handoff.md feishu
+- 2026-06-21T10:19:04Z created task kt-ai-native-os-rt-dev-object-model-slice-handoff assigned=agent.company.test
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-handoff.md feishu
+- 2026-06-21T10:19:04Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-handoff.md
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice.md feishu
+- 2026-06-21T10:19:04Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-object-model-slice.md human_acceptance
+- 2026-06-21T10:19:04Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair-handoff.md
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair-handoff.md feishu
+- 2026-06-21T10:19:04Z created task kt-ai-native-os-rt-dev-object-model-slice-repair-handoff assigned=agent.company.test
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair-handoff.md feishu
+- 2026-06-21T10:19:04Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair-handoff.md
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-object-model-slice-repair.md feishu
+- 2026-06-21T10:19:04Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-object-model-slice-repair.md human_acceptance
+- 2026-06-21T10:19:04Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression-handoff.md
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression-handoff.md feishu
+- 2026-06-21T10:19:04Z created task kt-ai-native-os-rt-test-object-model-slice-regression-handoff assigned=agent.company.project-manager
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression-handoff.md feishu
+- 2026-06-21T10:19:04Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression-handoff.md
+- 2026-06-21T10:19:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression.md feishu
+- 2026-06-21T10:19:04Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-test-object-model-slice-regression.md human_acceptance
+- 2026-06-21T10:19:48Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T10:19:48Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md
+- 2026-06-21T10:19:48Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md
+- 2026-06-21T10:20:33Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md
+- 2026-06-21T10:28:51Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md
+- 2026-06-21T10:28:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md feishu
+- 2026-06-21T10:28:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md feishu
+- 2026-06-21T10:28:51Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md feishu
+- 2026-06-21T10:28:51Z finished task kt-ai-native-os-rt-dev-import-validation-slice status=done
+- 2026-06-21T10:29:54Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T10:29:54Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md
+- 2026-06-21T10:29:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md
+- 2026-06-21T10:32:08Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md
+- 2026-06-21T10:32:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md feishu
+- 2026-06-21T10:32:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md feishu
+- 2026-06-21T10:32:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md feishu
+- 2026-06-21T10:32:08Z finished task kt-ai-native-os-rt-test-import-validation-slice status=done
+- 2026-06-21T10:32:42Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice-handoff.md
+- 2026-06-21T10:32:42Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice-handoff.md feishu
+- 2026-06-21T10:32:42Z created task kt-ai-native-os-rt-dev-import-validation-slice-handoff assigned=agent.company.test
+- 2026-06-21T10:32:42Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice-handoff.md feishu
+- 2026-06-21T10:32:42Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice-handoff.md
+- 2026-06-21T10:32:42Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-import-validation-slice.md feishu
+- 2026-06-21T10:32:42Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-import-validation-slice.md human_acceptance
+- 2026-06-21T10:32:42Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice-handoff.md
+- 2026-06-21T10:32:42Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice-handoff.md feishu
+- 2026-06-21T10:32:42Z created task kt-ai-native-os-rt-test-import-validation-slice-handoff assigned=agent.company.project-manager
+- 2026-06-21T10:32:42Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice-handoff.md feishu
+- 2026-06-21T10:32:42Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice-handoff.md
+- 2026-06-21T10:32:42Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice.md feishu
+- 2026-06-21T10:32:42Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-test-import-validation-slice.md human_acceptance
+- 2026-06-21T10:33:19Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T10:33:19Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md
+- 2026-06-21T10:33:19Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md
+- 2026-06-21T10:33:59Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md
+- 2026-06-21T10:39:46Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md
+- 2026-06-21T10:39:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:39:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:39:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:39:46Z finished task kt-ai-native-os-rt-dev-task-queue-compiler-slice status=done
+- 2026-06-21T10:41:10Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T10:41:10Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md
+- 2026-06-21T10:41:10Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md
+- 2026-06-21T10:44:16Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md
+- 2026-06-21T10:44:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:44:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:44:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:44:16Z finished task kt-ai-native-os-rt-test-task-queue-compiler-slice status=done
+- 2026-06-21T10:44:49Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice-handoff.md
+- 2026-06-21T10:44:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice-handoff.md feishu
+- 2026-06-21T10:44:49Z created task kt-ai-native-os-rt-dev-task-queue-compiler-slice-handoff assigned=agent.company.test
+- 2026-06-21T10:44:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice-handoff.md feishu
+- 2026-06-21T10:44:49Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice-handoff.md
+- 2026-06-21T10:44:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:44:49Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-task-queue-compiler-slice.md human_acceptance
+- 2026-06-21T10:44:49Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff.md
+- 2026-06-21T10:44:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff.md feishu
+- 2026-06-21T10:44:49Z created task kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff assigned=agent.company.project-manager
+- 2026-06-21T10:44:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff.md feishu
+- 2026-06-21T10:44:49Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff.md
+- 2026-06-21T10:44:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice.md feishu
+- 2026-06-21T10:44:49Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-test-task-queue-compiler-slice.md human_acceptance
+- 2026-06-21T10:45:30Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T10:45:30Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md
+- 2026-06-21T10:45:30Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md
+- 2026-06-21T10:46:06Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md
+- 2026-06-21T10:49:28Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md
+- 2026-06-21T10:49:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md feishu
+- 2026-06-21T10:49:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md feishu
+- 2026-06-21T10:49:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md feishu
+- 2026-06-21T10:49:28Z finished task kt-ai-native-os-rt-dev-context-pack-slice status=done
+- 2026-06-21T10:50:31Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T10:50:31Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md
+- 2026-06-21T10:50:31Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md
+- 2026-06-21T10:57:18Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md
+- 2026-06-21T10:57:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md feishu
+- 2026-06-21T10:57:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md feishu
+- 2026-06-21T10:57:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md feishu
+- 2026-06-21T10:57:18Z finished task kt-ai-native-os-rt-test-context-pack-slice status=done
+- 2026-06-21T10:57:53Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice-handoff.md
+- 2026-06-21T10:57:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice-handoff.md feishu
+- 2026-06-21T10:57:53Z created task kt-ai-native-os-rt-dev-context-pack-slice-handoff assigned=agent.company.test
+- 2026-06-21T10:57:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice-handoff.md feishu
+- 2026-06-21T10:57:53Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice-handoff.md
+- 2026-06-21T10:57:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-context-pack-slice.md feishu
+- 2026-06-21T10:57:53Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-context-pack-slice.md human_acceptance
+- 2026-06-21T10:57:54Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice-handoff.md
+- 2026-06-21T10:57:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice-handoff.md feishu
+- 2026-06-21T10:57:54Z created task kt-ai-native-os-rt-test-context-pack-slice-handoff assigned=agent.company.project-manager
+- 2026-06-21T10:57:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice-handoff.md feishu
+- 2026-06-21T10:57:54Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice-handoff.md
+- 2026-06-21T10:57:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-context-pack-slice.md feishu
+- 2026-06-21T10:57:54Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-test-context-pack-slice.md human_acceptance
+- 2026-06-21T10:58:33Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T10:58:33Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md
+- 2026-06-21T10:58:33Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md
+- 2026-06-21T10:59:03Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md
+- 2026-06-21T11:04:34Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md
+- 2026-06-21T11:04:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md feishu
+- 2026-06-21T11:04:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md feishu
+- 2026-06-21T11:04:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md feishu
+- 2026-06-21T11:04:34Z finished task kt-ai-native-os-rt-dev-workbench-slice status=done
+- 2026-06-21T11:05:32Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T11:05:32Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md
+- 2026-06-21T11:05:33Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md
+- 2026-06-21T11:09:22Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md
+- 2026-06-21T11:09:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md feishu
+- 2026-06-21T11:09:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md feishu
+- 2026-06-21T11:09:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md feishu
+- 2026-06-21T11:09:22Z finished task kt-ai-native-os-rt-test-workbench-slice status=done
+- 2026-06-21T11:09:56Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice-handoff.md
+- 2026-06-21T11:09:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice-handoff.md feishu
+- 2026-06-21T11:09:56Z created task kt-ai-native-os-rt-dev-workbench-slice-handoff assigned=agent.company.test
+- 2026-06-21T11:09:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice-handoff.md feishu
+- 2026-06-21T11:09:56Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice-handoff.md
+- 2026-06-21T11:09:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-workbench-slice.md feishu
+- 2026-06-21T11:09:56Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-workbench-slice.md human_acceptance
+- 2026-06-21T11:09:57Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice-handoff.md
+- 2026-06-21T11:09:57Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice-handoff.md feishu
+- 2026-06-21T11:09:57Z created task kt-ai-native-os-rt-test-workbench-slice-handoff assigned=agent.company.project-manager
+- 2026-06-21T11:09:57Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice-handoff.md feishu
+- 2026-06-21T11:09:57Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice-handoff.md
+- 2026-06-21T11:09:57Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-workbench-slice.md feishu
+- 2026-06-21T11:09:57Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-test-workbench-slice.md human_acceptance
+- 2026-06-21T11:10:40Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T11:10:40Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md
+- 2026-06-21T11:10:40Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md
+- 2026-06-21T11:14:00Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md
+- 2026-06-21T11:23:27Z audit requirement_tree.import projects/company-knowledge-core/requirements/requirement-trees/rt.company-knowledge-core.ai-native-os.v20260621113000.json recorded
+- 2026-06-21T11:23:27Z audit requirement_tree.existing_work_backfill projects/company-knowledge-core/requirements/backfills/requirement-tree-existing-work-backfill.20260621112327.json recorded
+- 2026-06-21T11:26:46Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md
+- 2026-06-21T11:26:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md feishu
+- 2026-06-21T11:26:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md feishu
+- 2026-06-21T11:26:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md feishu
+- 2026-06-21T11:26:46Z finished task kt-ai-native-os-rt-dev-existing-work-backfill status=done
+- 2026-06-21T11:28:00Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T11:28:00Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md
+- 2026-06-21T11:28:00Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md
+- 2026-06-21T11:30:21Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md
+- 2026-06-21T11:30:21Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md feishu
+- 2026-06-21T11:30:21Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md feishu
+- 2026-06-21T11:30:21Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md feishu
+- 2026-06-21T11:30:21Z finished task kt-ai-native-os-rt-test-existing-work-backfill status=done
+- 2026-06-21T11:31:12Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill-handoff.md
+- 2026-06-21T11:31:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill-handoff.md feishu
+- 2026-06-21T11:31:12Z created task kt-ai-native-os-rt-dev-existing-work-backfill-handoff assigned=agent.company.test
+- 2026-06-21T11:31:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill-handoff.md feishu
+- 2026-06-21T11:31:12Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill-handoff.md
+- 2026-06-21T11:31:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-dev-existing-work-backfill.md feishu
+- 2026-06-21T11:31:12Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-dev-existing-work-backfill.md human_acceptance
+- 2026-06-21T11:31:12Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill-handoff.md
+- 2026-06-21T11:31:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill-handoff.md feishu
+- 2026-06-21T11:31:12Z created task kt-ai-native-os-rt-test-existing-work-backfill-handoff assigned=agent.company.project-manager
+- 2026-06-21T11:31:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill-handoff.md feishu
+- 2026-06-21T11:31:12Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill-handoff.md
+- 2026-06-21T11:31:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill.md feishu
+- 2026-06-21T11:31:12Z audit task.acceptance task-results/tr-kt-ai-native-os-rt-test-existing-work-backfill.md human_acceptance
+- 2026-06-21T11:35:55Z audit runner.upsert runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T11:35:55Z upserted runner runner.meimei-mac-local-product-rt
+- 2026-06-21T11:35:55Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T11:35:55Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md
+- 2026-06-21T11:35:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md feishu
+- 2026-06-21T11:35:55Z created task kt-ai-native-os-rt-product-final-acceptance assigned=agent.company.product-manager
+- 2026-06-21T11:35:55Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md
+- 2026-06-21T11:35:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md
+- 2026-06-21T11:37:54Z started context context.20260621T113754482331Z for project=company-knowledge-core agent=agent.company.product-manager
+- 2026-06-21T11:42:45Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md
+- 2026-06-21T11:42:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md feishu
+- 2026-06-21T11:42:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md feishu
+- 2026-06-21T11:42:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-product-final-acceptance.md feishu
+- 2026-06-21T11:42:45Z finished task kt-ai-native-os-rt-product-final-acceptance status=done
+- 2026-06-21T12:23:06Z audit runner.upsert runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T12:23:06Z upserted runner runner.meimei-mac-local-product-rt
+- 2026-06-21T12:23:06Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-21T12:23:07Z audit runner.upsert runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T12:23:07Z upserted runner runner.meimei-mac-local-dev-rt
+- 2026-06-21T12:23:07Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-21T12:23:07Z audit runner.register runners/runner.meimei-mac-local-design-rt.md agent_ring
+- 2026-06-21T12:23:07Z registered runner runner.meimei-mac-local-design-rt
+- 2026-06-21T12:23:07Z audit runner.heartbeat runners/runner.meimei-mac-local-design-rt.md agent_ring
+- 2026-06-21T12:23:07Z audit runner.upsert runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T12:23:07Z upserted runner runner.meimei-mac-local-test-1
+- 2026-06-21T12:23:07Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-21T12:23:07Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-gap-product-acceptance-criteria.md
+- 2026-06-21T12:23:07Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-product-acceptance-criteria.md
+- 2026-06-21T12:23:07Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md
+- 2026-06-21T12:23:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md
+- 2026-06-21T12:23:08Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-gap-design-desktop-client.md
+- 2026-06-21T12:23:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-design-desktop-client.md
+- 2026-06-21T12:23:08Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-feishu-api-postgres-live.md
+- 2026-06-21T12:23:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-feishu-api-postgres-live.md
+- 2026-06-21T12:23:08Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md
+- 2026-06-21T12:23:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md
+- 2026-06-21T12:23:08Z audit task.pull projects/company-knowledge-core/tasks/kt-ai-native-os-gap-test-launch-evidence-matrix.md
+- 2026-06-21T12:23:09Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-test-launch-evidence-matrix.md
+- 2026-06-21T12:25:22Z started context context.20260621T122522689437Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-21T12:25:22Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md
+- 2026-06-21T12:26:28Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md
+- 2026-06-21T12:27:57Z started context context.20260621T122757468561Z for project=company-knowledge-core agent=agent.company.test
+- 2026-06-21T12:28:27Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-gap-design-desktop-client.md
+- 2026-06-21T12:28:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-design-desktop-client.md feishu
+- 2026-06-21T12:28:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-design-desktop-client.md feishu
+- 2026-06-21T12:28:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-design-desktop-client.md feishu
+- 2026-06-21T12:28:27Z finished task kt-ai-native-os-gap-design-desktop-client status=done
+- 2026-06-21T12:30:00Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-feishu-api-postgres-live.md
+- 2026-06-21T12:30:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-feishu-api-postgres-live.md feishu
+- 2026-06-21T12:30:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-feishu-api-postgres-live.md feishu
+- 2026-06-21T12:30:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-feishu-api-postgres-live.md feishu
+- 2026-06-21T12:30:00Z finished task kt-ai-native-os-gap-tech-feishu-api-postgres-live status=submitted
+- 2026-06-21T12:30:11Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md
+- 2026-06-21T12:30:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md feishu
+- 2026-06-21T12:30:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md feishu
+- 2026-06-21T12:30:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-traceability-promotion.md feishu
+- 2026-06-21T12:30:11Z finished task kt-ai-native-os-gap-tech-traceability-promotion status=done
+- 2026-06-21T12:30:37Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md
+- 2026-06-21T12:30:37Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md feishu
+- 2026-06-21T12:30:37Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md feishu
+- 2026-06-21T12:30:37Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-tech-agent-ring-console-live-execution.md feishu
+- 2026-06-21T12:30:37Z finished task kt-ai-native-os-gap-tech-agent-ring-console-live-execution status=submitted
+- 2026-06-21T12:56:35Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-os-gap-product-acceptance-criteria.md
+- 2026-06-21T12:56:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-product-acceptance-criteria.md feishu
+- 2026-06-21T12:56:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-product-acceptance-criteria.md feishu
+- 2026-06-21T12:56:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-gap-product-acceptance-criteria.md feishu
+- 2026-06-21T12:56:35Z finished task kt-ai-native-os-gap-product-acceptance-criteria status=done
+- 2026-06-21T13:10:34Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-client-cross-platform.md
+- 2026-06-21T13:10:39Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-feishu-api-postgres-live.md
+- 2026-06-21T13:16:02Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-agent-finish-permission-boundary.md
+- 2026-06-21T13:21:43Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-desktop-client-cross-platform.md
+- 2026-06-21T13:25:06Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-agent-ring-console-live-execution.md
+- 2026-06-21T13:25:14Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-traceability-promotion.md
+- 2026-06-21T13:31:54Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-env-feishu-api-postgres-readiness.md
+- 2026-06-21T13:37:03Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-traceability-promotion.md
+- 2026-06-21T13:40:29Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-agent-ring-console-live-execution.md
+- 2026-06-21T13:47:33Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-doc-agent-ring-api-surface-sync.md
+- 2026-06-21T13:57:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-desktop-native-proof.md
+- 2026-06-21T13:57:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-impl-distributed-runner-proof.md
+- 2026-06-21T13:57:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-product-scope-exception-review.md
+- 2026-06-21T13:59:34Z started context context.20260621T135934070695Z for project=company-knowledge-core agent=agent.company.product-manager
+- 2026-06-21T14:05:05Z finished AgentRun run.20260621T140505802588Z
+- 2026-06-21T14:09:08Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-test-distributed-runner-proof.md
+- 2026-06-22T02:51:32Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression-handoff.md
+- 2026-06-22T02:51:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-object-model-slice-regression-handoff.md feishu
+- 2026-06-22T02:51:32Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice-handoff.md
+- 2026-06-22T02:51:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-import-validation-slice-handoff.md feishu
+- 2026-06-22T02:51:32Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff.md
+- 2026-06-22T02:51:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-task-queue-compiler-slice-handoff.md feishu
+- 2026-06-22T02:51:32Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill-handoff.md
+- 2026-06-22T02:51:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-os-rt-test-existing-work-backfill-handoff.md feishu
+- 2026-06-22T02:51:32Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-22T02:56:29Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-22T02:56:35Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-22T02:56:40Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md
+- 2026-06-22T02:56:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T02:59:49Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md agent_ring_lifecycle
+- 2026-06-22T02:59:49Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T02:59:56Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md
+- 2026-06-22T02:59:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T02:59:56Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md
+- 2026-06-22T02:59:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T02:59:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T02:59:56Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T02:59:56Z finished task kt-ai-native-agent-v1-product-requirement-structure status=submitted
+- 2026-06-22T02:59:56Z audit agent_worker.run project:company-knowledge-core agent_worker_minimal_runtime
+- 2026-06-22T03:00:24Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure-handoff.md
+- 2026-06-22T03:00:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure-handoff.md feishu
+- 2026-06-22T03:00:24Z created task kt-ai-native-agent-v1-product-requirement-structure-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:00:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure-handoff.md feishu
+- 2026-06-22T03:00:24Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure-handoff.md
+- 2026-06-22T03:00:24Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure.md feishu
+- 2026-06-22T03:00:24Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-product-requirement-structure.md human_acceptance
+- 2026-06-22T03:00:36Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md agent_ring_lifecycle
+- 2026-06-22T03:00:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md feishu
+- 2026-06-22T03:01:59Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-22T03:02:04Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md
+- 2026-06-22T03:02:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:04Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md
+- 2026-06-22T03:02:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:04Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:04Z finished task kt-ai-native-agent-v1-product-review-technical-solutions status=submitted
+- 2026-06-22T03:02:04Z audit agent_worker.run project:company-knowledge-core agent_worker_minimal_runtime
+- 2026-06-22T03:02:14Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md
+- 2026-06-22T03:02:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:02:14Z created task kt-ai-native-agent-v1-product-review-technical-solutions-retry assigned=agent.company.product-manager
+- 2026-06-22T03:02:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:02:14Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md
+- 2026-06-22T03:02:14Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-ai-native-agent-v1-product-review-technical-solutions.20260622T030214989133Z.md
+- 2026-06-22T03:02:14Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260622T030214989767Z.md
+- 2026-06-22T03:02:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions.md feishu
+- 2026-06-22T03:02:14Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-product-review-technical-solutions.md human_acceptance
+- 2026-06-22T03:02:40Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md
+- 2026-06-22T03:02:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md feishu
+- 2026-06-22T03:02:40Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md
+- 2026-06-22T03:02:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md feishu
+- 2026-06-22T03:02:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md feishu
+- 2026-06-22T03:02:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md feishu
+- 2026-06-22T03:02:40Z finished task kt-ai-native-agent-v1-product-scope-review status=submitted
+- 2026-06-22T03:02:40Z audit agent_worker.run project:company-knowledge-core agent_worker_minimal_runtime
+- 2026-06-22T03:02:46Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review-handoff.md
+- 2026-06-22T03:02:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review-handoff.md feishu
+- 2026-06-22T03:02:46Z created task kt-ai-native-agent-v1-product-scope-review-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:02:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review-handoff.md feishu
+- 2026-06-22T03:02:46Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review-handoff.md
+- 2026-06-22T03:02:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review.md feishu
+- 2026-06-22T03:02:46Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-product-scope-review.md human_acceptance
+- 2026-06-22T03:02:55Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md agent_ring_lifecycle
+- 2026-06-22T03:02:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md feishu
+- 2026-06-22T03:03:02Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md agent_ring_lifecycle
+- 2026-06-22T03:03:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md feishu
+- 2026-06-22T03:03:08Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md agent_ring_lifecycle
+- 2026-06-22T03:03:08Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md feishu
+- 2026-06-22T03:03:13Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md agent_ring_lifecycle
+- 2026-06-22T03:03:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md feishu
+- 2026-06-22T03:03:19Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-22T03:03:26Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-22T03:03:32Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-22T03:03:38Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md feishu
+- 2026-06-22T03:03:38Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md feishu
+- 2026-06-22T03:03:38Z finished task kt-ai-native-agent-v1-tech-profile-skill-registry status=submitted
+- 2026-06-22T03:03:38Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md feishu
+- 2026-06-22T03:03:38Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md feishu
+- 2026-06-22T03:03:38Z finished task kt-ai-native-agent-v1-tech-local-router-session-registry status=submitted
+- 2026-06-22T03:03:38Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md feishu
+- 2026-06-22T03:03:38Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md feishu
+- 2026-06-22T03:03:38Z finished task kt-ai-native-agent-v1-tech-agent-runtime-orchestrator status=submitted
+- 2026-06-22T03:03:38Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md feishu
+- 2026-06-22T03:03:38Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md feishu
+- 2026-06-22T03:03:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md feishu
+- 2026-06-22T03:03:38Z finished task kt-ai-native-agent-v1-tech-worktree-console-harness status=submitted
+- 2026-06-22T03:03:38Z audit agent_worker.run project:company-knowledge-core agent_worker_minimal_runtime
+- 2026-06-22T03:03:53Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry-handoff.md
+- 2026-06-22T03:03:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry-handoff.md feishu
+- 2026-06-22T03:03:53Z created task kt-ai-native-agent-v1-tech-profile-skill-registry-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:03:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry-handoff.md feishu
+- 2026-06-22T03:03:53Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry-handoff.md
+- 2026-06-22T03:03:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry.md feishu
+- 2026-06-22T03:03:53Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-tech-profile-skill-registry.md human_acceptance
+- 2026-06-22T03:03:59Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry-handoff.md
+- 2026-06-22T03:03:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry-handoff.md feishu
+- 2026-06-22T03:03:59Z created task kt-ai-native-agent-v1-tech-local-router-session-registry-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:03:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry-handoff.md feishu
+- 2026-06-22T03:03:59Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry-handoff.md
+- 2026-06-22T03:03:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry.md feishu
+- 2026-06-22T03:03:59Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-tech-local-router-session-registry.md human_acceptance
+- 2026-06-22T03:04:05Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff.md
+- 2026-06-22T03:04:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff.md feishu
+- 2026-06-22T03:04:05Z created task kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:04:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff.md feishu
+- 2026-06-22T03:04:05Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff.md
+- 2026-06-22T03:04:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md feishu
+- 2026-06-22T03:04:05Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-tech-agent-runtime-orchestrator.md human_acceptance
+- 2026-06-22T03:04:14Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness-handoff.md
+- 2026-06-22T03:04:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness-handoff.md feishu
+- 2026-06-22T03:04:14Z created task kt-ai-native-agent-v1-tech-worktree-console-harness-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:04:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness-handoff.md feishu
+- 2026-06-22T03:04:14Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness-handoff.md
+- 2026-06-22T03:04:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness.md feishu
+- 2026-06-22T03:04:14Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-tech-worktree-console-harness.md human_acceptance
+- 2026-06-22T03:04:21Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md agent_ring_lifecycle
+- 2026-06-22T03:04:21Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:04:40Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md
+- 2026-06-22T03:04:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:04:40Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md
+- 2026-06-22T03:04:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:04:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:04:40Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:04:40Z finished task kt-ai-native-agent-v1-product-review-technical-solutions-retry status=submitted
+- 2026-06-22T03:04:40Z audit agent_worker.run project:company-knowledge-core agent_worker_minimal_runtime
+- 2026-06-22T03:04:54Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff.md
+- 2026-06-22T03:04:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff.md feishu
+- 2026-06-22T03:04:54Z created task kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:04:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff.md feishu
+- 2026-06-22T03:04:54Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff.md
+- 2026-06-22T03:04:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry.md feishu
+- 2026-06-22T03:04:54Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-product-review-technical-solutions-retry.md human_acceptance
+- 2026-06-22T03:05:00Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md agent_ring_lifecycle
+- 2026-06-22T03:05:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:19:27Z audit v1.device.register runtime/devices/device.local.md v1_single_machine_device_aware
+- 2026-06-22T03:19:27Z audit runner.register runners/runner.v1.local.pm.md agent_ring
+- 2026-06-22T03:19:27Z registered runner runner.v1.local.pm
+- 2026-06-22T03:19:27Z audit runner.heartbeat runners/runner.v1.local.pm.md agent_ring
+- 2026-06-22T03:19:27Z audit runner.register runners/runner.v1.local.product.md agent_ring
+- 2026-06-22T03:19:27Z registered runner runner.v1.local.product
+- 2026-06-22T03:19:27Z audit runner.heartbeat runners/runner.v1.local.product.md agent_ring
+- 2026-06-22T03:19:27Z audit runner.register runners/runner.v1.local.dev.md agent_ring
+- 2026-06-22T03:19:27Z registered runner runner.v1.local.dev
+- 2026-06-22T03:19:27Z audit runner.heartbeat runners/runner.v1.local.dev.md agent_ring
+- 2026-06-22T03:19:27Z audit runner.register runners/runner.v1.local.test.md agent_ring
+- 2026-06-22T03:19:27Z registered runner runner.v1.local.test
+- 2026-06-22T03:19:27Z audit runner.heartbeat runners/runner.v1.local.test.md agent_ring
+- 2026-06-22T03:19:27Z audit v1.agent_profile.register runtime/agent-profiles/profile.agent.company.project-manager.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.agent_profile.register runtime/agent-profiles/profile.agent.company.product-manager.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.agent_profile.register runtime/agent-profiles/profile.agent.company.development.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.agent_profile.register runtime/agent-profiles/profile.agent.company.test.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.agent_profile.register runtime/agent-profiles/profile.agent.company.documentation.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.skill.register runtime/skills/orchestrator.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.skill.register runtime/skills/local_router.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.skill.register runtime/skills/agent_runtime.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.skill.register runtime/skills/worktree_manager.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.skill.register runtime/skills/acceptance_testing.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.session.register runtime/sessions/session.v1.group.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.session.register runtime/sessions/session.v1.product.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.session.register runtime/sessions/session.v1.development.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.session.register runtime/sessions/session.v1.test.md v1_single_machine
+- 2026-06-22T03:19:27Z audit task.create projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md feishu
+- 2026-06-22T03:19:27Z created task kt-v1-local-router-runtime-acceptance-dev assigned=agent.company.development
+- 2026-06-22T03:19:27Z audit v1.router.message runtime/messages/msg.20260622t031927612599z.md v1_local_router
+- 2026-06-22T03:19:27Z audit v1.task_package.compile runtime/task-packages/pkg.kt-v1-local-router-runtime-acceptance-dev.20260622t031927611878z.md v1_single_machine
+- 2026-06-22T03:19:27Z audit v1.worktree.allocate runtime/worktrees/worktree.kt-v1-local-router-runtime-acceptance-dev.agent.company.development.md v1_single_machine
+- 2026-06-22T03:19:27Z audit task.claim projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md feishu
+- 2026-06-22T03:19:27Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md feishu
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md feishu
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md feishu
+- 2026-06-22T03:19:27Z finished task kt-v1-local-router-runtime-acceptance-dev status=submitted
+- 2026-06-22T03:19:27Z audit v1.router.message runtime/messages/msg.20260622t031927621633z.md v1_local_router
+- 2026-06-22T03:19:27Z audit task.create projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md feishu
+- 2026-06-22T03:19:27Z created task kt-v1-local-router-runtime-acceptance-test assigned=agent.company.test
+- 2026-06-22T03:19:27Z audit v1.router.message runtime/messages/msg.20260622t031927635063z.md v1_local_router
+- 2026-06-22T03:19:27Z audit v1.task_package.compile runtime/task-packages/pkg.kt-v1-local-router-runtime-acceptance-test.20260622t031927634496z.md v1_single_machine
+- 2026-06-22T03:19:27Z audit task.claim projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md feishu
+- 2026-06-22T03:19:27Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md feishu
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md feishu
+- 2026-06-22T03:19:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md feishu
+- 2026-06-22T03:19:27Z finished task kt-v1-local-router-runtime-acceptance-test status=submitted
+- 2026-06-22T03:19:27Z audit v1.router.message runtime/messages/msg.20260622t031927642106z.md v1_local_router
+- 2026-06-22T03:19:27Z audit v1.router.message runtime/messages/msg.20260622t031927642926z.md v1_local_router
+- 2026-06-22T03:19:27Z audit v1.acceptance.run runtime/acceptance-runs/v1.acceptance.20260622t031927643283z.md v1_single_machine_closed_loop
+- 2026-06-22T03:19:40Z audit v1.router.message runtime/messages/msg.20260622t031940173629z.md v1_local_router
+- 2026-06-22T03:19:40Z audit v1.task_package.compile runtime/task-packages/pkg.kt-ai-native-agent-v1-dev-implementation.20260622t031940172710z.md v1_single_machine
+- 2026-06-22T03:19:55Z audit v1.worktree.allocate runtime/worktrees/worktree.kt-ai-native-agent-v1-dev-implementation.agent.company.development.md v1_single_machine
+- 2026-06-22T03:19:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:19:55Z audit task.claim.blocked projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md missing_runner_requirement
+- 2026-06-22T03:20:02Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-22T03:20:18Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md agent_ring_lifecycle
+- 2026-06-22T03:20:18Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:20:25Z audit v1.worktree.allocate runtime/worktrees/worktree.kt-ai-native-agent-v1-dev-implementation.agent.company.development.md v1_single_machine
+- 2026-06-22T03:20:25Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md
+- 2026-06-22T03:20:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:20:25Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md
+- 2026-06-22T03:20:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:20:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:20:25Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:20:25Z finished task kt-ai-native-agent-v1-dev-implementation status=submitted
+- 2026-06-22T03:20:25Z audit v1.router.message runtime/messages/msg.20260622t032025194804z.md v1_local_router
+- 2026-06-22T03:20:32Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation-handoff.md
+- 2026-06-22T03:20:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation-handoff.md feishu
+- 2026-06-22T03:20:32Z created task kt-ai-native-agent-v1-dev-implementation-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:20:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation-handoff.md feishu
+- 2026-06-22T03:20:32Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation-handoff.md
+- 2026-06-22T03:20:32Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation.md feishu
+- 2026-06-22T03:20:32Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-dev-implementation.md human_acceptance
+- 2026-06-22T03:20:55Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md agent_ring_lifecycle
+- 2026-06-22T03:20:55Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md feishu
+- 2026-06-22T03:21:03Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-22T03:21:11Z audit v1.router.message runtime/messages/msg.20260622t032111399167z.md v1_local_router
+- 2026-06-22T03:21:11Z audit v1.task_package.compile runtime/task-packages/pkg.kt-ai-native-agent-v1-test-closed-loop-acceptance.20260622t032111398235z.md v1_single_machine
+- 2026-06-22T03:21:27Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md
+- 2026-06-22T03:21:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md feishu
+- 2026-06-22T03:21:27Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md
+- 2026-06-22T03:21:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md feishu
+- 2026-06-22T03:21:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md feishu
+- 2026-06-22T03:21:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md feishu
+- 2026-06-22T03:21:27Z finished task kt-ai-native-agent-v1-test-closed-loop-acceptance status=submitted
+- 2026-06-22T03:21:27Z audit v1.router.message runtime/messages/msg.20260622t032127221275z.md v1_local_router
+- 2026-06-22T03:21:35Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff.md
+- 2026-06-22T03:21:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff.md feishu
+- 2026-06-22T03:21:35Z created task kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:21:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff.md feishu
+- 2026-06-22T03:21:35Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff.md
+- 2026-06-22T03:21:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance.md feishu
+- 2026-06-22T03:21:35Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-test-closed-loop-acceptance.md human_acceptance
+- 2026-06-22T03:21:44Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md agent_ring_lifecycle
+- 2026-06-22T03:21:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:21:50Z audit runner.heartbeat runners/runner.v1.local.pm.md agent_ring
+- 2026-06-22T03:21:56Z audit v1.router.message runtime/messages/msg.20260622t032156876182z.md v1_local_router
+- 2026-06-22T03:21:56Z audit v1.task_package.compile runtime/task-packages/pkg.kt-ai-native-agent-v1-pm-product-final-acceptance.20260622t032156875280z.md v1_single_machine
+- 2026-06-22T03:22:11Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:11Z audit task.claim.blocked projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md missing_runner_requirement
+- 2026-06-22T03:22:18Z audit runner.heartbeat runners/runner.v1.local.pm.md agent_ring
+- 2026-06-22T03:22:31Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md agent_ring_lifecycle
+- 2026-06-22T03:22:31Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:39Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md
+- 2026-06-22T03:22:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:39Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md
+- 2026-06-22T03:22:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:39Z finished task kt-ai-native-agent-v1-pm-product-final-acceptance status=submitted
+- 2026-06-22T03:22:39Z audit v1.router.message runtime/messages/msg.20260622t032239941443z.md v1_local_router
+- 2026-06-22T03:22:48Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance-handoff.md
+- 2026-06-22T03:22:48Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance-handoff.md feishu
+- 2026-06-22T03:22:48Z created task kt-ai-native-agent-v1-pm-product-final-acceptance-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:22:48Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance-handoff.md feishu
+- 2026-06-22T03:22:48Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance-handoff.md
+- 2026-06-22T03:22:48Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance.md feishu
+- 2026-06-22T03:22:48Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-pm-product-final-acceptance.md human_acceptance
+- 2026-06-22T03:23:34Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md
+- 2026-06-22T03:23:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:23:34Z created task kt-ai-native-agent-v1-product-final-acceptance assigned=agent.company.product-manager
+- 2026-06-22T03:23:47Z audit v1.router.message runtime/messages/msg.20260622t032347819251z.md v1_local_router
+- 2026-06-22T03:23:47Z audit v1.task_package.compile runtime/task-packages/pkg.kt-ai-native-agent-v1-product-final-acceptance.20260622t032347818463z.md v1_single_machine
+- 2026-06-22T03:24:01Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md
+- 2026-06-22T03:24:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:24:01Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md
+- 2026-06-22T03:24:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:24:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:24:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:24:01Z finished task kt-ai-native-agent-v1-product-final-acceptance status=submitted
+- 2026-06-22T03:24:01Z audit v1.router.message runtime/messages/msg.20260622t032401742255z.md v1_local_router
+- 2026-06-22T03:25:27Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff.md
+- 2026-06-22T03:25:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff.md feishu
+- 2026-06-22T03:25:27Z created task kt-ai-native-agent-v1-product-final-acceptance-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:25:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff.md feishu
+- 2026-06-22T03:25:27Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff.md
+- 2026-06-22T03:25:27Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:25:27Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-product-final-acceptance.md human_acceptance
+- 2026-06-22T03:29:28Z audit task.retry projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md agent_ring_lifecycle
+- 2026-06-22T03:29:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:29:33Z audit v1.router.message runtime/messages/msg.20260622t032933754347z.md v1_local_router
+- 2026-06-22T03:29:33Z audit v1.task_package.compile runtime/task-packages/pkg.kt-ai-native-agent-v1-product-final-acceptance.20260622t032933753333z.md v1_single_machine
+- 2026-06-22T03:29:38Z audit task.claim projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md
+- 2026-06-22T03:29:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:29:38Z audit task.finish projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md
+- 2026-06-22T03:29:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:29:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:29:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:29:38Z finished task kt-ai-native-agent-v1-product-final-acceptance status=submitted
+- 2026-06-22T03:29:38Z audit v1.router.message runtime/messages/msg.20260622t032938711644z.md v1_local_router
+- 2026-06-22T03:29:45Z audit task.create projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff-02.md
+- 2026-06-22T03:29:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff-02.md feishu
+- 2026-06-22T03:29:45Z created task kt-ai-native-agent-v1-product-final-acceptance-handoff-02 assigned=agent.company.project-manager
+- 2026-06-22T03:29:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff-02.md feishu
+- 2026-06-22T03:29:45Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff-02.md
+- 2026-06-22T03:29:45Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance.md feishu
+- 2026-06-22T03:29:45Z audit task.acceptance task-results/tr-kt-ai-native-agent-v1-product-final-acceptance.md human_acceptance
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-dev-implementation-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-pm-product-final-acceptance-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff-02.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff-02.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-final-acceptance-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-requirement-structure-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-review-technical-solutions-retry-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-product-scope-review-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-agent-runtime-orchestrator-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-local-router-session-registry-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-profile-skill-registry-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-tech-worktree-console-harness-handoff.md feishu
+- 2026-06-22T03:30:54Z audit task.cancel projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:30:54Z audit task.notification.record projects/company-knowledge-core/tasks/kt-ai-native-agent-v1-test-closed-loop-acceptance-handoff.md feishu
+- 2026-06-22T03:45:36Z audit v1.workbench.export projects/company-knowledge-core/desktop-workbench-slice0/workbench-live-read-model.js real_v1_runtime_read_model
+- 2026-06-22T03:46:07Z audit task.create projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev-handoff.md
+- 2026-06-22T03:46:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev-handoff.md feishu
+- 2026-06-22T03:46:07Z created task kt-v1-local-router-runtime-acceptance-dev-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:46:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev-handoff.md feishu
+- 2026-06-22T03:46:07Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev-handoff.md
+- 2026-06-22T03:46:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev.md feishu
+- 2026-06-22T03:46:07Z audit task.acceptance task-results/tr-kt-v1-local-router-runtime-acceptance-dev.md human_acceptance
+- 2026-06-22T03:46:07Z audit task.create projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test-handoff.md
+- 2026-06-22T03:46:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test-handoff.md feishu
+- 2026-06-22T03:46:07Z created task kt-v1-local-router-runtime-acceptance-test-handoff assigned=agent.company.project-manager
+- 2026-06-22T03:46:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test-handoff.md feishu
+- 2026-06-22T03:46:07Z audit workflow.followup.handoff projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test-handoff.md
+- 2026-06-22T03:46:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test.md feishu
+- 2026-06-22T03:46:07Z audit task.acceptance task-results/tr-kt-v1-local-router-runtime-acceptance-test.md human_acceptance
+- 2026-06-22T03:47:57Z audit task.cancel projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:47:57Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-dev-handoff.md feishu
+- 2026-06-22T03:47:57Z audit task.cancel projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test-handoff.md agent_ring_lifecycle
+- 2026-06-22T03:47:57Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-local-router-runtime-acceptance-test-handoff.md feishu
+- 2026-06-22T03:48:06Z audit v1.workbench.export projects/company-knowledge-core/desktop-workbench-slice0/workbench-live-read-model.js real_v1_runtime_read_model
+- 2026-06-22T03:49:38Z audit v1.workbench.export projects/company-knowledge-core/desktop-workbench-slice0/workbench-live-read-model.js real_v1_runtime_read_model
+- 2026-06-22T04:02:11Z audit v1.workbench.export projects/company-knowledge-core/desktop-workbench-slice0/workbench-live-read-model.js real_v1_runtime_read_model
+- 2026-06-22T04:31:53Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md
+- 2026-06-22T04:31:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md feishu
+- 2026-06-22T04:31:53Z created task kt-v1-workbench-codex-style-design assigned=agent.company.design
+- 2026-06-22T04:31:53Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md
+- 2026-06-22T04:31:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T04:31:53Z created task kt-v1-workbench-codex-style-dev assigned=agent.company.development
+- 2026-06-22T04:31:53Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md
+- 2026-06-22T04:31:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md feishu
+- 2026-06-22T04:31:53Z created task kt-v1-workbench-codex-style-product-review assigned=agent.company.product-manager
+- 2026-06-22T04:31:53Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md
+- 2026-06-22T04:31:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T04:31:53Z created task kt-v1-workbench-codex-style-test assigned=agent.company.test
+- 2026-06-22T04:34:09Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md
+- 2026-06-22T04:34:09Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md
+- 2026-06-22T04:34:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T04:34:09Z created task kt-v1-workbench-codex-style-product-final-acceptance assigned=agent.company.product-manager
+- 2026-06-22T04:34:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md feishu
+- 2026-06-22T04:34:09Z created task kt-v1-workbench-codex-style-pm-final-acceptance assigned=agent.company.project-manager
+- 2026-06-22T04:36:37Z audit scheduler.autopilot.run project:company-knowledge-core pm_autopilot
+- 2026-06-22T04:37:02Z audit runner.heartbeat runners/runner.meimei-mac-local-design-rt.md agent_ring
+- 2026-06-22T04:37:02Z audit runner.heartbeat runners/runner.meimei-mac-local-product-rt.md agent_ring
+- 2026-06-22T04:37:02Z audit runner.heartbeat runners/runner.meimei-mac-local-dev-rt.md agent_ring
+- 2026-06-22T04:37:02Z audit runner.heartbeat runners/runner.meimei-mac-local-test-1.md agent_ring
+- 2026-06-22T04:37:02Z audit runner.heartbeat runners/runner.v1.local.pm.md agent_ring
+- 2026-06-22T05:03:34Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md
+- 2026-06-22T05:07:03Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md
+- 2026-06-22T05:07:03Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md feishu
+- 2026-06-22T05:07:03Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md feishu
+- 2026-06-22T05:07:03Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-design.md feishu
+- 2026-06-22T05:07:03Z finished task kt-v1-workbench-codex-style-design status=submitted
+- 2026-06-22T05:11:55Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md
+- 2026-06-22T05:12:12Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md
+- 2026-06-22T05:12:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md feishu
+- 2026-06-22T05:12:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md feishu
+- 2026-06-22T05:12:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-review.md feishu
+- 2026-06-22T05:12:12Z finished task kt-v1-workbench-codex-style-product-review status=done
+- 2026-06-22T05:15:39Z created ConflictRecord conflict.20260622T051539724868Z
+- 2026-06-22T05:16:12Z started context context.20260622T051612908935Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-22T05:27:16Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md
+- 2026-06-22T05:27:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:27:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:27:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:27:16Z finished task kt-v1-workbench-codex-style-dev status=submitted
+- 2026-06-22T05:30:54Z started context context.20260622T053054775814Z for project=company-knowledge-core agent=agent.company.test
+- 2026-06-22T05:39:44Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md
+- 2026-06-22T05:39:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:39:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:39:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:39:44Z finished task kt-v1-workbench-codex-style-test status=done
+- 2026-06-22T05:41:43Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md agent_ring_lifecycle
+- 2026-06-22T05:41:43Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:46:02Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md
+- 2026-06-22T05:46:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:46:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:46:02Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T05:46:02Z finished task kt-v1-workbench-codex-style-dev status=submitted
+- 2026-06-22T05:47:48Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md agent_ring_lifecycle
+- 2026-06-22T05:47:48Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:51:22Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md
+- 2026-06-22T05:51:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:51:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:51:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T05:51:22Z finished task kt-v1-workbench-codex-style-test status=done
+- 2026-06-22T05:54:50Z started context context.20260622T055450457377Z for project=company-knowledge-core agent=agent.company.product-manager
+- 2026-06-22T06:04:50Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md
+- 2026-06-22T06:04:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:04:50Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-v1-workbench-codex-style-product-final-acceptance.20260622T060450262870Z.md
+- 2026-06-22T06:04:50Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260622T060450263500Z.md
+- 2026-06-22T06:04:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:04:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:04:50Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance-retry.md
+- 2026-06-22T06:04:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance-retry.md feishu
+- 2026-06-22T06:04:50Z created task kt-v1-workbench-codex-style-product-final-acceptance-retry assigned=agent.company.product-manager
+- 2026-06-22T06:04:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance-retry.md feishu
+- 2026-06-22T06:04:50Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance-retry.md
+- 2026-06-22T06:04:50Z finished task kt-v1-workbench-codex-style-product-final-acceptance status=done
+- 2026-06-22T06:05:00Z finished AgentRun run.20260622T060500713244Z
+- 2026-06-22T06:06:14Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md agent_ring_lifecycle
+- 2026-06-22T06:06:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T06:09:36Z started context context.20260622T060936035253Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-22T06:16:36Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md
+- 2026-06-22T06:16:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T06:16:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T06:16:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-dev.md feishu
+- 2026-06-22T06:16:36Z finished task kt-v1-workbench-codex-style-dev status=submitted
+- 2026-06-22T06:17:48Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md agent_ring_lifecycle
+- 2026-06-22T06:17:48Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T06:19:36Z started context context.20260622T061936806898Z for project=company-knowledge-core agent=agent.company.test
+- 2026-06-22T06:22:10Z finished AgentRun run.20260622T062210739782Z
+- 2026-06-22T06:22:46Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md
+- 2026-06-22T06:22:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T06:22:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T06:22:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-test.md feishu
+- 2026-06-22T06:22:46Z finished task kt-v1-workbench-codex-style-test status=submitted
+- 2026-06-22T06:24:14Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md agent_ring_lifecycle
+- 2026-06-22T06:24:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:27:44Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md
+- 2026-06-22T06:30:00Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md
+- 2026-06-22T06:30:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:30:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:30:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-product-final-acceptance.md feishu
+- 2026-06-22T06:30:00Z finished task kt-v1-workbench-codex-style-product-final-acceptance status=submitted
+- 2026-06-22T06:34:28Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md
+- 2026-06-22T06:34:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md feishu
+- 2026-06-22T06:34:28Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-v1-workbench-codex-style-pm-final-acceptance.20260622T063428646691Z.md
+- 2026-06-22T06:34:28Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260622T063428647236Z.md
+- 2026-06-22T06:34:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md feishu
+- 2026-06-22T06:34:28Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance-retry.md
+- 2026-06-22T06:34:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance-retry.md feishu
+- 2026-06-22T06:34:28Z created task kt-v1-workbench-codex-style-pm-final-acceptance-retry assigned=agent.company.project-manager
+- 2026-06-22T06:34:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance-retry.md feishu
+- 2026-06-22T06:34:28Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance-retry.md
+- 2026-06-22T06:34:28Z finished task kt-v1-workbench-codex-style-pm-final-acceptance status=done
+- 2026-06-22T06:37:16Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md
+- 2026-06-22T06:37:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md feishu
+- 2026-06-22T06:37:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md feishu
+- 2026-06-22T06:37:16Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance.md feishu
+- 2026-06-22T06:37:16Z finished task kt-v1-workbench-codex-style-pm-final-acceptance status=done
+- 2026-06-22T06:38:22Z audit task.cancel projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance-retry.md agent_ring_lifecycle
+- 2026-06-22T06:38:22Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-codex-style-pm-final-acceptance-retry.md feishu
+- 2026-06-22T08:31:20Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md
+- 2026-06-22T08:31:20Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T08:31:20Z created task kt-v1-workbench-user-copy-polish assigned=agent.company.development
+- 2026-06-22T08:32:35Z started context context.20260622T083235032731Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-22T08:43:29Z finished AgentRun run.20260622T084329748327Z
+- 2026-06-22T08:44:19Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md
+- 2026-06-22T08:44:19Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T08:44:19Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T08:44:19Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T08:44:19Z finished task kt-v1-workbench-user-copy-polish status=submitted
+- 2026-06-22T08:45:23Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T08:45:23Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:45:23Z created task kt-v1-workbench-user-copy-polish-test assigned=agent.company.test
+- 2026-06-22T08:49:28Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T08:49:39Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T08:49:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:49:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:49:39Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:49:39Z finished task kt-v1-workbench-user-copy-polish-test status=done
+- 2026-06-22T08:50:33Z audit task.manual_handoff projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md agent_ring_lifecycle
+- 2026-06-22T08:50:33Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:51:00Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T08:51:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:51:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:51:00Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T08:51:00Z finished task kt-v1-workbench-user-copy-polish-test status=done
+- 2026-06-22T08:51:52Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md
+- 2026-06-22T08:51:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md feishu
+- 2026-06-22T08:51:52Z created task kt-v1-workbench-user-copy-polish-product-review assigned=agent.company.product-manager
+- 2026-06-22T08:56:43Z started context context.20260622T085643580627Z for project=company-knowledge-core agent=agent.company.product-manager
+- 2026-06-22T08:56:55Z finished AgentRun run.20260622T085655574438Z
+- 2026-06-22T08:57:53Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md agent_ring_lifecycle
+- 2026-06-22T08:57:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:08:53Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md
+- 2026-06-22T09:08:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:08:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:08:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:08:53Z finished task kt-v1-workbench-user-copy-polish status=done
+- 2026-06-22T09:10:15Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md agent_ring_lifecycle
+- 2026-06-22T09:10:15Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:12:11Z started context context.20260622T091211603166Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-22T09:20:12Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md
+- 2026-06-22T09:20:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:20:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:20:12Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish.md feishu
+- 2026-06-22T09:20:12Z finished task kt-v1-workbench-user-copy-polish status=submitted
+- 2026-06-22T09:21:06Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md agent_ring_lifecycle
+- 2026-06-22T09:21:06Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T09:23:05Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T09:25:10Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T09:25:10Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T09:25:10Z audit agent.improvement.evalCase.create knowledge/evals/eval-agent-improvement-kt-v1-workbench-user-copy-polish-test.20260622T092510820541Z.md
+- 2026-06-22T09:25:10Z audit agent.improvement.proposal.create knowledge/agent-improvements/agent-improvement.20260622T092510822175Z.md
+- 2026-06-22T09:25:10Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T09:25:10Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T09:25:10Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test-retry.md
+- 2026-06-22T09:25:10Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test-retry.md feishu
+- 2026-06-22T09:25:10Z created task kt-v1-workbench-user-copy-polish-test-retry assigned=agent.company.test
+- 2026-06-22T09:25:10Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test-retry.md feishu
+- 2026-06-22T09:25:10Z audit workflow.followup.retry projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test-retry.md
+- 2026-06-22T09:25:10Z finished task kt-v1-workbench-user-copy-polish-test status=done
+- 2026-06-22T09:26:23Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md
+- 2026-06-22T09:26:23Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md feishu
+- 2026-06-22T09:26:23Z created task kt-v1-workbench-user-copy-polish-log-whitespace-repair assigned=agent.company.development
+- 2026-06-22T09:28:42Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md
+- 2026-06-22T09:29:09Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md
+- 2026-06-22T09:29:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md feishu
+- 2026-06-22T09:29:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md feishu
+- 2026-06-22T09:29:09Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-log-whitespace-repair.md feishu
+- 2026-06-22T09:29:09Z finished task kt-v1-workbench-user-copy-polish-log-whitespace-repair status=done
+- 2026-06-22T10:58:05Z audit agent.role_operating_check role-reviews/role-review-architecture.20260622T105805402931Z.md role_operating_spec
+- 2026-06-22T10:58:05Z role operating check architecture status=ready gaps=0
+- 2026-06-22T11:07:50Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md agent_ring_lifecycle
+- 2026-06-22T11:07:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T11:11:48Z started context context.20260622T111148735895Z for project=company-knowledge-core agent=agent.company.test
+- 2026-06-22T11:13:38Z finished AgentRun run.20260622T111338632805Z
+- 2026-06-22T11:15:34Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md
+- 2026-06-22T11:15:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T11:15:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T11:15:34Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-test.md feishu
+- 2026-06-22T11:15:34Z finished task kt-v1-workbench-user-copy-polish-test status=done
+- 2026-06-22T11:16:48Z audit task.retry projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md agent_ring_lifecycle
+- 2026-06-22T11:16:48Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md feishu
+- 2026-06-22T11:20:50Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md
+- 2026-06-22T11:20:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md feishu
+- 2026-06-22T11:20:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md feishu
+- 2026-06-22T11:20:50Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-user-copy-polish-product-review.md feishu
+- 2026-06-22T11:20:50Z finished task kt-v1-workbench-user-copy-polish-product-review status=done
+- 2026-06-22T11:22:17Z audit task.create projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix.md
+- 2026-06-22T11:22:17Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix.md feishu
+- 2026-06-22T11:22:17Z created task kt-audit-log-trailing-whitespace-systemic-fix assigned=agent.company.development
+- 2026-06-22T11:24:58Z audit task.finish projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix.md
+- 2026-06-22T11:24:58Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix.md feishu
+- 2026-06-22T11:24:58Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix.md feishu
+- 2026-06-22T11:24:58Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix.md feishu
+- 2026-06-22T11:24:58Z finished task kt-audit-log-trailing-whitespace-systemic-fix status=done
+- 2026-06-22T11:25:58Z audit task.create projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix-test.md
+- 2026-06-22T11:25:58Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix-test.md feishu
+- 2026-06-22T11:25:58Z created task kt-audit-log-trailing-whitespace-systemic-fix-test assigned=agent.company.test
+- 2026-06-22T11:28:47Z started context context.20260622T112847169712Z for project=company-knowledge-core agent=agent.company.test
+- 2026-06-22T11:28:56Z finished AgentRun run.20260622T112856113566Z
+- 2026-06-22T11:29:52Z audit task.finish projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix-test.md
+- 2026-06-22T11:29:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix-test.md feishu
+- 2026-06-22T11:29:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix-test.md feishu
+- 2026-06-22T11:29:52Z audit task.notification.record projects/company-knowledge-core/tasks/kt-audit-log-trailing-whitespace-systemic-fix-test.md feishu
+- 2026-06-22T11:29:52Z finished task kt-audit-log-trailing-whitespace-systemic-fix-test status=done
+- 2026-06-22T11:41:35Z audit task.create projects/company-knowledge-core/tasks/kt-v1-workbench-project-create-entry.md
+- 2026-06-22T11:41:35Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-project-create-entry.md feishu
+- 2026-06-22T11:41:35Z created task kt-v1-workbench-project-create-entry assigned=agent.company.development
+- 2026-06-22T11:42:54Z started context context.20260622T114253967122Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-22T11:47:26Z audit task.finish projects/company-knowledge-core/tasks/kt-v1-workbench-project-create-entry.md
+- 2026-06-22T11:47:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-project-create-entry.md feishu
+- 2026-06-22T11:47:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-project-create-entry.md feishu
+- 2026-06-22T11:47:26Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v1-workbench-project-create-entry.md feishu
+- 2026-06-22T11:47:26Z finished task kt-v1-workbench-project-create-entry status=submitted
+- 2026-06-22T11:47:37Z finished AgentRun run.20260622T114737029143Z
+- 2026-06-22T11:54:10Z started context context.20260622T115410823599Z for project=company-knowledge-core agent=agent.company.product-manager
+- 2026-06-22T11:54:28Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md
+- 2026-06-22T11:54:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md feishu
+- 2026-06-22T11:54:28Z created task kt-v2-colleague-runner-product-requirements assigned=agent.company.product-manager
+- 2026-06-22T11:54:29Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md
+- 2026-06-22T11:54:29Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md feishu
+- 2026-06-22T11:54:29Z created task kt-v2-colleague-runner-design-spec assigned=agent.company.design
+- 2026-06-22T11:54:29Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md
+- 2026-06-22T11:54:29Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md feishu
+- 2026-06-22T11:54:29Z created task kt-v2-colleague-runner-architecture-solution assigned=agent.company.architecture
+- 2026-06-22T11:54:29Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review.md
+- 2026-06-22T11:54:29Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review.md feishu
+- 2026-06-22T11:54:29Z created task kt-v2-colleague-runner-product-architecture-review assigned=agent.company.product-manager
+- 2026-06-22T11:54:29Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-development.md
+- 2026-06-22T11:54:29Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-development.md feishu
+- 2026-06-22T11:54:29Z created task kt-v2-colleague-runner-development assigned=agent.company.development
+- 2026-06-22T11:54:29Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-test.md
+- 2026-06-22T11:54:29Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-test.md feishu
+- 2026-06-22T11:54:29Z created task kt-v2-colleague-runner-test assigned=agent.company.test
+- 2026-06-22T11:54:37Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md
+- 2026-06-22T11:54:37Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md
+- 2026-06-22T11:58:24Z finished AgentRun run.20260622T115824917801Z
+- 2026-06-22T12:03:36Z audit task.finish projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md
+- 2026-06-22T12:03:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md feishu
+- 2026-06-22T12:03:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md feishu
+- 2026-06-22T12:03:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-requirements.md feishu
+- 2026-06-22T12:03:36Z finished task kt-v2-colleague-runner-product-requirements status=done
+- 2026-06-22T12:03:36Z audit task.finish projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md
+- 2026-06-22T12:03:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md feishu
+- 2026-06-22T12:03:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md feishu
+- 2026-06-22T12:03:36Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-design-spec.md feishu
+- 2026-06-22T12:03:36Z finished task kt-v2-colleague-runner-design-spec status=done
+- 2026-06-22T12:03:36Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md
+- 2026-06-22T12:10:05Z audit task.finish projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md
+- 2026-06-22T12:10:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md feishu
+- 2026-06-22T12:10:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md feishu
+- 2026-06-22T12:10:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-solution.md feishu
+- 2026-06-22T12:10:05Z finished task kt-v2-colleague-runner-architecture-solution status=done
+- 2026-06-22T12:11:04Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review.md
+- 2026-06-22T12:18:14Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-ui-interaction-design-revision.md
+- 2026-06-22T12:18:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-ui-interaction-design-revision.md feishu
+- 2026-06-22T12:18:14Z created task kt-v2-colleague-runner-ui-interaction-design-revision assigned=agent.company.design
+- 2026-06-22T12:18:14Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-ui-interaction-design-revision.md
+- 2026-06-22T12:31:01Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-information-architecture.md
+- 2026-06-22T12:31:01Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-information-architecture.md feishu
+- 2026-06-22T12:31:01Z created task kt-v2-colleague-runner-product-information-architecture assigned=agent.company.product-manager
+- 2026-06-22T12:31:02Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-information-architecture.md
+- 2026-06-22T12:43:31Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md
+- 2026-06-22T12:43:31Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md feishu
+- 2026-06-22T12:43:31Z created task kt-v2-colleague-runner-architecture-ia-design-impact-review assigned=agent.company.architecture
+- 2026-06-22T12:43:31Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md
+- 2026-06-22T12:46:28Z audit technical_solution.impact_review projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md
+- 2026-06-22T12:46:28Z audit task.finish projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md
+- 2026-06-22T12:46:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md feishu
+- 2026-06-22T12:46:28Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-architecture-ia-design-impact-review.md feishu
+- 2026-06-22T12:46:28Z finished task kt-v2-colleague-runner-architecture-ia-design-impact-review status=waiting_acceptance
+- 2026-06-22T12:50:44Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md
+- 2026-06-22T12:50:44Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md feishu
+- 2026-06-22T12:50:44Z created task kt-v2-colleague-runner-product-architecture-review-after-ia-ui assigned=agent.company.product-manager
+- 2026-06-22T12:50:44Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md
+- 2026-06-22T12:54:41Z audit product_review.ia_ui_addendum_acceptance projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md
+- 2026-06-22T12:54:41Z audit task.finish projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md
+- 2026-06-22T12:54:41Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md feishu
+- 2026-06-22T12:54:41Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-architecture-review-after-ia-ui.md feishu
+- 2026-06-22T12:54:41Z finished task kt-v2-colleague-runner-product-architecture-review-after-ia-ui status=waiting_acceptance
+- 2026-06-22T13:00:22Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-development.md
+- 2026-06-22T13:14:46Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-test.md
+- 2026-06-22T13:23:43Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-development-fix-visible-path.md
+- 2026-06-22T13:32:03Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-test-regression-visible-path.md
+- 2026-06-22T13:32:03Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-test-regression-visible-path.md feishu
+- 2026-06-22T13:32:03Z created task kt-v2-colleague-runner-test-regression-visible-path assigned=agent.company.test
+- 2026-06-22T13:32:03Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-test-regression-visible-path.md
+- 2026-06-22T13:34:04Z started context context.20260622T133403972457Z for project=company-knowledge-core agent=agent.company.test
+- 2026-06-22T13:38:26Z finished AgentRun run.20260622T133826176481Z
+- 2026-06-22T13:39:46Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-final-acceptance.md
+- 2026-06-22T13:39:46Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-final-acceptance.md feishu
+- 2026-06-22T13:39:46Z created task kt-v2-colleague-runner-product-final-acceptance assigned=agent.company.product-manager
+- 2026-06-22T13:39:46Z audit task.updateStatus projects/company-knowledge-core/tasks/kt-v2-colleague-runner-product-final-acceptance.md
+- 2026-06-22T13:42:48Z started context context.20260622T134248494827Z for project=company-knowledge-core agent=agent.company.product-manager
+- 2026-06-22T13:48:18Z finished AgentRun run.20260622T134818878564Z
+- 2026-06-22T13:50:14Z audit task.create projects/company-knowledge-core/tasks/kt-v2-colleague-runner-real-dual-host-acceptance.md
+- 2026-06-22T13:50:14Z audit task.notification.record projects/company-knowledge-core/tasks/kt-v2-colleague-runner-real-dual-host-acceptance.md feishu
+- 2026-06-22T13:50:14Z created task kt-v2-colleague-runner-real-dual-host-acceptance assigned=agent.company.test
+- 2026-06-23T03:24:43Z audit agent.role_operating_check role-reviews/role-review-architecture.20260623T032443187934Z.md role_operating_spec
+- 2026-06-23T03:24:43Z role operating check architecture status=ready gaps=0
+- 2026-06-23T03:29:25Z audit agent.role_operating_check role-reviews/role-review-architecture.20260623T032925806450Z.md role_operating_spec
+- 2026-06-23T03:29:25Z role operating check architecture status=ready gaps=0
+- 2026-06-23T03:30:56Z audit tool.architecture_toolkit.upsert tools/tool.architecture-engineering-toolkit.md testing_toolasset_registered
+- 2026-06-23T03:31:04Z audit agent.role_operating_check role-reviews/role-review-architecture.20260623T033104062847Z.md role_operating_spec
+- 2026-06-23T03:31:04Z role operating check architecture status=ready gaps=0
+- 2026-06-23T05:46:46Z audit runtime.postgres_local_port_mapping.update deploy/lighthouse/docker-compose.yml environment_validation_fix
+- 2026-06-23T06:14:11Z registered Project pm-lease-api-e2e-20260623141411
+- 2026-06-23T06:14:11Z audit pm_control_lease.denied task:E2E-MISSING-ed096ff2 pm_control_lease_missing
+- 2026-06-23T06:14:11Z audit pm_control_lease.acquired projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061411906651z.md pm_control_lease
+- 2026-06-23T06:14:11Z audit task.create projects/pm-lease-api-e2e-20260623141411/tasks/e2e-ok-4b3bc733.md
+- 2026-06-23T06:14:11Z audit task.notification.record projects/pm-lease-api-e2e-20260623141411/tasks/e2e-ok-4b3bc733.md feishu
+- 2026-06-23T06:14:11Z created task E2E-OK-4b3bc733 assigned=agent.company.development
+- 2026-06-23T06:14:11Z audit pm_control_lease.renewed projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061411906651z.md pm_control_lease
+- 2026-06-23T06:14:11Z audit pm_control_lease.denied task:E2E-COLLAB-3fcb0043 pm_control_lease_not_primary
+- 2026-06-23T06:14:12Z audit pm_control_lease.denied task:E2E-STANDBY-6c4f84f1 pm_control_lease_not_primary
+- 2026-06-23T06:14:12Z registered Project pm-lease-api-e2e-20260623141411-other
+- 2026-06-23T06:14:12Z audit pm_control_lease.denied task:E2E-MISMATCH-8d77ace5 pm_control_lease_project_mismatch
+- 2026-06-23T06:14:12Z audit pm_control_lease.denied task:E2E-STALE-399ef1d6 pm_control_lease_stale_fencing_token
+- 2026-06-23T06:14:12Z audit pm_control_lease.takeover_denied projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061411906651z.md healthy_primary_requires_confirmation
+- 2026-06-23T06:14:12Z audit pm_control_lease.acquired projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061412164109z.md pm_control_lease
+- 2026-06-23T06:14:12Z audit pm_control_lease.taken_over projects/pm-lease-api-e2e-20260623141411/pm-takeovers/pmtakeover.pm-lease-api-e2e-20260623141411.20260623t061412165043z.md pm_control_lease
+- 2026-06-23T06:14:12Z audit pm_control_lease.denied task:E2E-OLD-98a681f9 pm_control_lease_expired
+- 2026-06-23T06:14:12Z audit pm_control_lease.released projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061412164109z.md pm_control_lease
+- 2026-06-23T06:14:12Z audit pm_control_lease.acquired projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061412230952z.md pm_control_lease
+- 2026-06-23T06:14:14Z audit pm_control_lease.expired projects/pm-lease-api-e2e-20260623141411/pm-control-leases/pmlease.pm-lease-api-e2e-20260623141411.20260623t061412230952z.md pm_control_lease
+- 2026-06-23T06:14:14Z audit pm_control_lease.denied task:E2E-EXPIRED-dcccba74 pm_control_lease_expired
+- 2026-06-23T06:55:19Z audit architecture.operating_focus.update agents/agent.company.architecture.md role_focus_hardened
+- 2026-06-23T06:55:27Z audit agent.role_operating_check role-reviews/role-review-architecture.20260623T065527851575Z.md role_operating_spec
+- 2026-06-23T06:55:27Z role operating check architecture status=ready gaps=0
+- 2026-06-23T07:28:07Z audit defect.create projects/company-knowledge-core/defects/def-tsrr-maintenance-traceability-001.md recorded
+- 2026-06-23T07:28:07Z created defect DEF-TSRR-MAINTENANCE-TRACEABILITY-001 project=company-knowledge-core
+- 2026-06-23T07:28:07Z audit task.create projects/company-knowledge-core/tasks/kt-20260623-001.md
+- 2026-06-23T07:28:07Z audit task.notification.record projects/company-knowledge-core/tasks/kt-20260623-001.md feishu
+- 2026-06-23T07:28:07Z created task KT-20260623-001 assigned=agent.company.development
+- 2026-06-23T07:28:07Z audit defect.fix_task.create projects/company-knowledge-core/tasks/kt-20260623-001.md recorded
+- 2026-06-23T07:30:07Z audit receiver_review.create projects/company-knowledge-core/receiver-reviews/receiver-review.task-source-receiver-review.test.md accepted_for_work
+- 2026-06-23T07:30:07Z created receiver review receiver-review.task-source-receiver-review.test decision=accepted_for_work
+- 2026-06-23T07:30:37Z audit task_source_receiver_review.test_validation.failed projects/company-knowledge-core/test-reports/task-source-receiver-review-test-report.md recorded
+- 2026-06-23T07:39:16Z audit product_requirement.task_execution_productization.create docs/product/ai-native-os/task-execution-productization-prd.md; projects/company-knowledge-core/tasks/kt-ai-native-os-task-execution-productization-requirement.md task_result_productization_requirement
+- 2026-06-23T07:43:59Z audit defect.create projects/company-knowledge-core/defects/def-tsrr-role-rule-binding-001.md recorded
+- 2026-06-23T07:43:59Z created defect DEF-TSRR-ROLE-RULE-BINDING-001 project=company-knowledge-core
+- 2026-06-23T07:44:05Z audit task.create projects/company-knowledge-core/tasks/kt-20260623-002.md
+- 2026-06-23T07:44:05Z audit task.notification.record projects/company-knowledge-core/tasks/kt-20260623-002.md feishu
+- 2026-06-23T07:44:05Z created task KT-20260623-002 assigned=agent.company.development
+- 2026-06-23T07:44:05Z audit defect.fix_task.create projects/company-knowledge-core/tasks/kt-20260623-002.md recorded
+- 2026-06-23T07:44:19Z audit requirement_id.assign ANOS-REQ-160 requirement_traceability
+- 2026-06-23T07:45:13Z audit requirement_tree.node_defer ANOS-REQ-160 keep_repository_valid
+- 2026-06-23T08:09:43Z started context context.20260623T080943908805Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-23T08:10:03Z audit agent.role_operating_check role-reviews/role-review-architecture.20260623T081003174336Z.md role_operating_spec
+- 2026-06-23T08:10:03Z role operating check architecture status=ready gaps=0
+- 2026-06-23T08:12:45Z audit agent.role_operating_check role-reviews/role-review-architecture.20260623T081245537098Z.md role_operating_spec
+- 2026-06-23T08:12:45Z role operating check architecture status=ready gaps=0
+- 2026-06-23T08:14:53Z audit task.finish projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md
+- 2026-06-23T08:14:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md feishu
+- 2026-06-23T08:14:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md feishu
+- 2026-06-23T08:14:53Z audit task.notification.record projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md feishu
+- 2026-06-23T08:14:53Z finished task kt-anos-req-160-v0-task-fact-view-development status=done
+- 2026-06-23T08:17:59Z audit task.finish projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md
+- 2026-06-23T08:17:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md feishu
+- 2026-06-23T08:17:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md feishu
+- 2026-06-23T08:17:59Z audit task.notification.record projects/company-knowledge-core/tasks/kt-anos-req-160-v0-task-fact-view-development.md feishu
+- 2026-06-23T08:17:59Z finished task kt-anos-req-160-v0-task-fact-view-development status=done
+- 2026-06-23T08:25:13Z audit requirement_scope.integrate_worker_learning_loop ANOS-REQ-160 integrated_product_requirement
+- 2026-06-23T08:37:29Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260623T083729252131Z.md role_operating_spec
+- 2026-06-23T08:37:29Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260623T083729376201Z.md pm_agent_operating_check
+- 2026-06-23T08:37:29Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-23T08:37:29Z role operating check project-manager status=ready gaps=0
+- 2026-06-23T09:04:38Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260623T090438857148Z.md role_operating_spec
+- 2026-06-23T09:04:38Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260623T090438953951Z.md pm_agent_operating_check
+- 2026-06-23T09:04:38Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-23T09:04:38Z role operating check project-manager status=ready gaps=0
+- 2026-06-23T09:04:53Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T090453080654Z.md pm_action_runtime
+- 2026-06-23T09:04:53Z pm action pm-action.20260623T090453080654Z dispatch exit=waiting_acceptance
+- 2026-06-23T09:20:39Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260623T092039440691Z.md role_operating_spec
+- 2026-06-23T09:20:39Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260623T092039561738Z.md pm_agent_operating_check
+- 2026-06-23T09:20:39Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T09:20:39Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T09:20:39Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-23T09:20:39Z role operating check project-manager status=ready gaps=0
+- 2026-06-23T09:22:09Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T092209116942Z.md pm_action_runtime
+- 2026-06-23T09:22:09Z pm action pm-action.20260623T092209116942Z route_rework_to_product_manager exit=waiting_product_rework
+- 2026-06-23T09:26:53Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260623T092653715298Z.md role_operating_spec
+- 2026-06-23T09:26:53Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260623T092653855910Z.md pm_agent_operating_check
+- 2026-06-23T09:26:53Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T09:26:53Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T09:26:53Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-23T09:26:53Z role operating check project-manager status=ready gaps=0
+- 2026-06-23T09:28:36Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T092836803554Z.md pm_action_runtime
+- 2026-06-23T09:28:36Z pm action pm-action.20260623T092836803554Z dispatch exit=dispatched
+- 2026-06-23T09:35:48Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T093548315882Z.md pm_action_runtime
+- 2026-06-23T09:35:48Z pm action pm-action.20260623T093548315882Z dispatch exit=dispatched
+- 2026-06-23T09:40:53Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T094053229986Z.md pm_action_runtime
+- 2026-06-23T09:40:53Z pm action pm-action.20260623T094053229986Z dispatch exit=dispatched
+- 2026-06-23T09:47:14Z audit development_quality_gate.install agent.company.development; tool.development-engineering-quality-toolkit; skills/development-engineering-quality-gate engineering_quality_guardrail
+- 2026-06-23T09:49:20Z audit agent.role_operating_check role-reviews/role-review-development.20260623T094920673094Z.md role_operating_spec
+- 2026-06-23T09:49:20Z role operating check development status=ready gaps=0
+- 2026-06-23T09:52:16Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T095216901275Z.md pm_action_runtime
+- 2026-06-23T09:52:16Z pm action pm-action.20260623T095216901275Z acceptance_route exit=waiting_acceptance
+- 2026-06-23T09:53:32Z audit agent.role_operating_check role-reviews/role-review-development.20260623T095332861090Z.md role_operating_spec
+- 2026-06-23T09:53:32Z role operating check development status=ready gaps=0
+- 2026-06-23T10:01:04Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T100104809888Z.md pm_action_runtime
+- 2026-06-23T10:01:04Z pm action pm-action.20260623T100104809888Z blocker_record exit=blocked_with_owner
+- 2026-06-23T10:03:08Z audit defect.create projects/company-knowledge-core/defects/def-agtgtf-quality-gate-001.md recorded
+- 2026-06-23T10:03:08Z created defect DEF-AGTGTF-QUALITY-GATE-001 project=company-knowledge-core
+- 2026-06-23T10:05:05Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T100505769157Z.md pm_action_runtime
+- 2026-06-23T10:05:05Z pm action pm-action.20260623T100505769157Z task_decomposition exit=dispatched
+- 2026-06-23T10:13:00Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T101300372624Z.md pm_action_runtime
+- 2026-06-23T10:13:00Z pm action pm-action.20260623T101300372624Z dispatch exit=dispatched
+- 2026-06-23T10:14:57Z started context context.20260623T101457721438Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-23T10:24:21Z finished AgentRun run.20260623T102421078025Z
+- 2026-06-23T10:26:54Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T102654915644Z.md pm_action_runtime
+- 2026-06-23T10:26:54Z pm action pm-action.20260623T102654915644Z dispatch exit=dispatched
+- 2026-06-23T10:28:24Z started context context.20260623T102824725890Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-23T10:35:18Z finished AgentRun run.20260623T103518575860Z
+- 2026-06-23T10:36:15Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T103615997614Z.md pm_action_runtime
+- 2026-06-23T10:36:15Z pm action pm-action.20260623T103615997614Z dispatch exit=dispatched
+- 2026-06-23T10:37:44Z started context context.20260623T103744109267Z for project=company-knowledge-core agent=agent.company.development
+- 2026-06-23T10:40:16Z finished AgentRun run.20260623T104016262325Z
+- 2026-06-23T10:44:39Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T104439157207Z.md pm_action_runtime
+- 2026-06-23T10:44:39Z pm action pm-action.20260623T104439157207Z dispatch exit=dispatched
+- 2026-06-23T10:53:25Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T105325515324Z.md pm_action_runtime
+- 2026-06-23T10:53:25Z pm action pm-action.20260623T105325515324Z acceptance_route exit=waiting_acceptance
+- 2026-06-23T10:59:01Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T105901436039Z.md pm_action_runtime
+- 2026-06-23T10:59:01Z pm action pm-action.20260623T105901436039Z closeout exit=closed_with_gate_passed
+- 2026-06-23T10:59:19Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260623T105919527147Z.md role_operating_spec
+- 2026-06-23T10:59:19Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260623T105919641536Z.md pm_agent_operating_check
+- 2026-06-23T10:59:19Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T10:59:19Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T10:59:19Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-23T10:59:19Z role operating check project-manager status=ready gaps=0
+- 2026-06-23T11:19:45Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260623T111945036548Z.md role_operating_spec
+- 2026-06-23T11:19:45Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260623T111945154676Z.md pm_agent_operating_check
+- 2026-06-23T11:19:45Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T11:19:45Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-23T11:19:45Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-23T11:19:45Z role operating check project-manager status=ready gaps=0
+- 2026-06-23T11:20:15Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T112015493347Z.md pm_action_runtime
+- 2026-06-23T11:20:15Z pm action pm-action.20260623T112015493347Z closeout exit=closed_with_gate_passed

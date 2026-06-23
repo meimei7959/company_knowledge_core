@@ -1,0 +1,50 @@
+{
+  "nodeId": "PREQ-006",
+  "type": "RequirementNode",
+  "nodeKind": "product",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Product bridge for UREQ-006",
+  "statement": "Product must map each functional requirement to test cases and acceptance gates.",
+  "whyItMatters": "Cannot test vague success statements.",
+  "successSignal": "Product must map each functional requirement to test cases and acceptance gates.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-006:product-requirement",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "UREQ-006"
+  ],
+  "childRefs": [
+    "ANOS-REQ-023",
+    "ANOS-REQ-110",
+    "ANOS-REQ-111",
+    "ANOS-REQ-112",
+    "ANOS-REQ-113",
+    "ANOS-REQ-114"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-TEST-001",
+    "GATE-AC-TEST-002",
+    "GATE-AC-TEST-003",
+    "GATE-AC-TEST-004",
+    "GATE-AC-TEST-005",
+    "GATE-AC-OPS-004"
+  ],
+  "testCaseRefs": [
+    "TC-MET-001",
+    "TC-MET-002",
+    "TC-MET-003",
+    "TC-MET-004",
+    "TC-MET-005",
+    "TC-PRD-004",
+    "TC-E2E-001"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

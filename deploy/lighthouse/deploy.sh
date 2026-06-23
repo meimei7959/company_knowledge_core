@@ -68,7 +68,14 @@ rsync -az --delete -e "${RSYNC_SSH}" \
   --exclude ".zhenzhi/" \
   --exclude ".codegraph/" \
   --exclude "backups/" \
+  --exclude "deploy/lighthouse/.env" \
   "${ROOT}/" "${SSH_TARGET}:${REMOTE_REPO}/"
+
+rsync -az -e "${RSYNC_SSH}" \
+  "${ENV_LOCAL}" "${SSH_TARGET}:${REMOTE_REPO}/deploy/lighthouse/.env"
+
+rsync -az -e "${RSYNC_SSH}" \
+  "${ROOT}/.zhenzhi/config.json" "${SSH_TARGET}:${REMOTE_REPO}/.zhenzhi/config.json"
 
 echo "==> env synced"
 
@@ -129,7 +136,41 @@ sudo systemctl reload nginx || sudo systemctl restart nginx
 REMOTE
 
 echo "==> health"
-ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" "curl -fsS http://127.0.0.1:8765/health"
-ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" "curl -fsS http://127.0.0.1/knowledge-api/health"
+ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" bash -s <<'REMOTE'
+set -euo pipefail
+wait_health() {
+  url="$1"
+  label="$2"
+  for attempt in $(seq 1 30); do
+    if curl -fsS "$url"; then
+      echo ""
+      echo "${label} healthy"
+      return 0
+    fi
+    sleep 2
+  done
+  echo "${label} health check failed after waiting" >&2
+  exit 1
+}
+wait_health "http://127.0.0.1:8765/health" "api"
+wait_health "http://127.0.0.1/knowledge-api/health" "nginx route"
+REMOTE
+
+echo "==> publish knowledge indexes"
+ssh "${SSH_OPTS[@]}" "${SSH_TARGET}" bash -s <<'REMOTE'
+set -euo pipefail
+cd /opt/projects/company_knowledge_core/repo/deploy/lighthouse
+TOKEN="$(grep '^ZHENZHI_KNOWLEDGE_API_TOKEN=' .env | head -n 1 | cut -d= -f2-)"
+if [ -z "${TOKEN}" ] || [ "${TOKEN}" = "CHANGE_ME" ]; then
+  echo "missing ZHENZHI_KNOWLEDGE_API_TOKEN in remote .env" >&2
+  exit 1
+fi
+curl -fsS \
+  -H "Authorization: Bearer ${TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{"actor":"deploy.lighthouse","reason":"deploy-script-post-health"}' \
+  http://127.0.0.1:8765/v0/publish/rebuild
+echo ""
+REMOTE
 echo ""
 echo "deployed: http://${HOST}/knowledge-api"

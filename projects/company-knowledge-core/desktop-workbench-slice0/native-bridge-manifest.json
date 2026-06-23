@@ -1,0 +1,97 @@
+{
+  "manifestVersion": "desktop-workbench-bridge.slice0.v1",
+  "projectId": "company-knowledge-core",
+  "taskId": "kt-ai-native-os-impl-desktop-workbench-slice0",
+  "recommendedShell": "tauri-v2",
+  "fallbackShell": "electron",
+  "shellIndependentFrontend": true,
+  "centralApiIsSourceOfTruth": true,
+  "bridgePrinciples": [
+    "All durable writes go through the central API.",
+    "Native bridge exposes explicit permission-gated commands only.",
+    "Desktop can hand off central API-issued runner pairing proof after user confirmation.",
+    "Desktop cannot mutate task leases, TaskResult, AgentRun, or private runner state.",
+    "Local diagnostics must redact tokens, credentials, raw source body text, and file contents."
+  ],
+  "commands": [
+    {
+      "name": "selectSourceFileReference",
+      "permission": "file.pick.reference",
+      "purpose": "Use OS picker to register a file reference and metadata.",
+      "writes": ["SourceMaterial reference through central API only"],
+      "forbiddenWrites": ["raw file content cache", "secret value storage"]
+    },
+    {
+      "name": "requestNotificationPermission",
+      "permission": "notification.permission.request",
+      "purpose": "Ask OS notification permission only after first user-visible need.",
+      "writes": ["permission audit event through central API when available"],
+      "forbiddenWrites": ["silent notification subscription"]
+    },
+    {
+      "name": "showNotification",
+      "permission": "notification.show",
+      "purpose": "Display user-facing notification for a central NotificationRecord.",
+      "writes": ["delivery attempt through central API"],
+      "forbiddenWrites": ["local-only notification truth"]
+    },
+    {
+      "name": "resolveDeepLink",
+      "permission": "deeplink.resolve",
+      "purpose": "Resolve object links and runner pairing callbacks.",
+      "writes": ["no durable local write"],
+      "forbiddenWrites": ["permission bypass", "direct lease mutation"]
+    },
+    {
+      "name": "readLocalSetting",
+      "permission": "settings.read",
+      "purpose": "Read non-secret display settings and channel metadata.",
+      "writes": [],
+      "forbiddenWrites": ["raw token read"]
+    },
+    {
+      "name": "writeLocalSetting",
+      "permission": "settings.write",
+      "purpose": "Write non-secret display settings and channel metadata.",
+      "writes": ["non-secret local setting"],
+      "forbiddenWrites": ["secret value", "raw source material"]
+    },
+    {
+      "name": "storeCredentialReference",
+      "permission": "credential.reference.store",
+      "purpose": "Store OS secure-storage reference or encrypted access handle, never raw secret values.",
+      "writes": ["credential reference"],
+      "forbiddenWrites": ["token", "password", "api_key", "secret"]
+    },
+    {
+      "name": "getRunnerPairingDiagnostics",
+      "permission": "runner.pairing.diagnostics",
+      "purpose": "Detect local runner presence and heartbeat diagnostics.",
+      "writes": ["redacted diagnostics only"],
+      "forbiddenWrites": ["claim task", "mutate lease", "write TaskResult", "write AgentRun"]
+    },
+    {
+      "name": "handoffRunnerPairingProof",
+      "permission": "runner.pairing.handoff",
+      "purpose": "Pass a central API-issued scoped pairing proof to a local runner after user confirmation.",
+      "writes": ["local handoff attempt", "central audit event"],
+      "forbiddenWrites": ["desktop-issued pairing proof", "direct task lease update", "write TaskResult", "write AgentRun", "private runner state"]
+    },
+    {
+      "name": "collectRedactedDiagnostics",
+      "permission": "diagnostics.redacted.collect",
+      "purpose": "Collect release, bridge, network, and permission diagnostics with redaction.",
+      "writes": ["redacted diagnostic bundle"],
+      "forbiddenWrites": ["raw token", "raw file contents", "raw sensitive source body"]
+    }
+  ],
+  "forbiddenLocalRunnerMutations": [
+    "claimTaskLease",
+    "mutateTaskLease",
+    "writeTaskResult",
+    "writeAgentRun",
+    "executeUnregisteredTool",
+    "storeRawCredential"
+  ],
+  "fallbackDecisionTrigger": "If Tauri fails any launch-blocking Slice 0 proof and no in-slice fix is viable, produce an Electron fallback decision request before broad desktop UI implementation."
+}

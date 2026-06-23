@@ -1,0 +1,49 @@
+{
+  "nodeId": "UREQ-004",
+  "type": "RequirementNode",
+  "nodeKind": "user",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "Convert product package into executable task queue with owners and blockers.",
+  "statement": "Convert product package into executable task queue with owners and blockers.",
+  "problem": "Needs to coordinate many Agents without losing traceability.",
+  "acceptanceSignal": "Product must link requirements to ProjectTasks, Agent roles, dependencies, and launch gates.",
+  "ownerRole": "Project Manager Agent",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#user-scenarios-and-requirements:UREQ-004",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [
+    "BR-001",
+    "BR-005"
+  ],
+  "childRefs": [
+    "PREQ-004"
+  ],
+  "acceptanceGateRefs": [
+    "GATE-AC-EXE-001",
+    "GATE-AC-EXE-002",
+    "GATE-AC-PROD-003",
+    "GATE-AC-UI-002"
+  ],
+  "testCaseRefs": [
+    "TC-PROJ-001",
+    "TC-PROJ-002",
+    "TC-PROJ-003",
+    "TC-PROJ-004",
+    "TC-PROJ-005",
+    "TC-SCH-001",
+    "TC-SCH-002",
+    "TC-SCH-003",
+    "TC-SCH-004",
+    "TC-SCH-005",
+    "TC-SCH-006",
+    "TC-SCH-007"
+  ],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}

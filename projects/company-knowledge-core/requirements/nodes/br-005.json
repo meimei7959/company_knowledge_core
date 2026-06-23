@@ -1,0 +1,31 @@
+{
+  "nodeId": "BR-005",
+  "type": "RequirementNode",
+  "nodeKind": "business",
+  "treeRef": "rt.company-knowledge-core.ai-native-os.v20260621113000",
+  "title": "BR-005",
+  "statement": "The company needs product, engineering, test, design, operations, and governance Agents to collaborate as a team.",
+  "whyItMatters": "A single generic Agent cannot reliably own all roles and quality boundaries.",
+  "successSignal": "Eight business Agents and governance Agents have distinct contracts, handoffs, and health checks.",
+  "ownerRole": "agent.company.product-manager",
+  "sourceRefs": [
+    "docs/product/ai-native-os/requirement-tree.md",
+    "projects/company-knowledge-core/coordination/ai-native-os-requirement-tree-coverage-matrix.md"
+  ],
+  "sourceLocation": "docs/product/ai-native-os/requirement-tree.md#business-requirements:BR-005",
+  "status": "draft",
+  "sensitivity": "internal",
+  "parentRefs": [],
+  "childRefs": [
+    "UREQ-004",
+    "UREQ-007",
+    "UREQ-012",
+    "UREQ-013"
+  ],
+  "acceptanceGateRefs": [],
+  "testCaseRefs": [],
+  "taskRefs": [],
+  "resultRefs": [],
+  "decisionRefs": [],
+  "auditRefs": []
+}
