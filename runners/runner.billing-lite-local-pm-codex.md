@@ -8,7 +8,7 @@ machineId: runner.billing-lite-local-pm-codex
 owner: ""
 ringVersion: local-codex-v1
 hostType: local_mac
-status: idle
+status: busy
 mode: online
 agents:
   - agent.company.project-manager
@@ -40,9 +40,11 @@ lastHeartbeatAt: "2026-06-23T12:33:33Z"
 currentLeases: []
 staleLeases: []
 failedLeases: []
-taskHistory: []
+taskHistory:
+  - {"taskId":"kt-billing-lite-product-requirement-acceptance","taskRef":"projects/billing-lite/tasks/kt-billing-lite-product-requirement-acceptance.md","event":"finished:done","at":"2026-06-23T12:46:56Z"}
 lastFailure: ""
 manualHandoff: false
+updatedAt: "2026-06-23T12:46:56Z"
 ---
 
 ## Purpose

@@ -1,10 +1,19 @@
-# 新电脑 Agent 接入新项目操作规程
+# 新电脑 Agent 接入与新项目初始化操作规程
 
 这份文档给正在接入的新电脑上的 Agent 读取。
 
-本文里的“你”“本机”“这台电脑”，都指当前正在阅读本文、准备接入桢知体系的这台新电脑，不是项目负责人电脑。读完后，你应该能把当前电脑接入桢知 Agent 团队，并在一个新的业务项目上使用这套体系。
+本文里的“你”“本机”“这台电脑”，都指当前正在阅读本文、准备接入桢知体系的这台新电脑，不是项目负责人电脑。
 
-## 0. 当前是否可以接入
+本文分两部分：
+
+1. 第一部分：接入电脑成功。只把当前电脑注册成可用本机设备 / Runner，不需要任何新项目字段。
+2. 第二部分：新项目成功。只有真的要在这台电脑上启动新项目时，才需要项目 ID、项目中文名、项目 owner、项目目标、业务仓库路径和 PRD。
+
+如果当前任务只是“接入电脑”，不要向用户索要新项目 ID、项目中文名、owner、项目目标、本地业务仓库路径或 PRD 路径。
+
+## 第一部分：接入电脑成功
+
+### 0. 当前是否可以接入
 
 可以接入，但必须满足三个条件：
 
@@ -22,7 +31,7 @@ http://124.221.138.151/knowledge-api
 
 不要把 token 写入文档、Git、聊天记录、截图、任务描述或审计正文。
 
-## 0.1 为什么已经部署了服务器，还需要本地工具包
+### 0.1 为什么已经部署了服务器，还需要本地工具包
 
 服务器已经部署，说明线上中枢 API 可以访问。它负责保存项目、任务、Runner、TaskResult、审计和知识索引。
 
@@ -41,9 +50,9 @@ Skill 包
 
 如果当前电脑不能访问 GitHub，或者现场网络不允许访问 GitHub，可以让项目负责人从已部署版本打一个只读工具包发给当前电脑。这样当前电脑不需要访问 GitHub，也能接入线上中枢。
 
-## 0.2 项目负责人必须先给你的接入信息
+### 0.2 项目负责人必须先给你的接入信息
 
-只接入电脑时，项目负责人必须通过安全渠道给当前电脑的使用者这些信息：
+第一阶段只接入电脑时，项目负责人必须通过安全渠道给当前电脑的使用者这些信息：
 
 ```txt
 本地 Agent 工具包获取方式: 默认从公开 GitHub 仓库 clone
@@ -56,7 +65,18 @@ Runner 名称: <给人看的电脑名称，例如 李四 Mac Codex Runner>
 
 不要猜这些值。缺任何一个，都先停下来向项目负责人要，不要自己编。
 
-以后真的要在这台电脑上启动新项目时，再向项目负责人要新项目信息包：
+第一阶段禁止要求这些新项目字段：
+
+```txt
+新项目 ID
+新项目中文名
+项目 owner
+项目目标
+本地业务项目仓库绝对路径
+source-file / PRD 路径
+```
+
+第二阶段真的要在这台电脑上启动新项目时，再向项目负责人要新项目信息包：
 
 ```txt
 新项目 ID: <小写英文数字短横线，例如 customer-service-bot>
@@ -67,7 +87,7 @@ Runner 名称: <给人看的电脑名称，例如 李四 Mac Codex Runner>
 可选 source-file/PRD 路径: <例如 /Users/lisi/Downloads/prd.md>
 ```
 
-## 0.3 如果无法从 GitHub clone
+### 0.3 如果无法从 GitHub clone
 
 当前仓库已经是公开仓库，正常情况下不需要 GitHub 账号权限，直接 clone 即可：
 
@@ -253,6 +273,8 @@ python3 -m zhenzhi_knowledge.cli runner register \
   --ring-version single-machine-v1
 ```
 
+## 第二部分：新项目成功
+
 ## 4. 在新项目上使用这套 Agent 团队
 
 新业务项目应该有自己的项目目录或代码仓库，不要把业务代码直接放进 `company_knowledge_core`。
@@ -320,7 +342,8 @@ python3 scripts/init_project.py \
 - `projects/<project-id>/project.md` 记录已确认的 `workspaceRef`，或明确记录 `workspaceRef: pending_confirmation`。
 - 原始 PRD、截图、文档等本地资料复制或登记到实体工作目录的 `00_原始资料` 或等价目录。
 - `SourceMaterial.storageRef` 指向实体工作目录里的存储副本；`sourceRef` 可以保留原始来源。
-- TaskResult 的 `outputRefs` / `evidenceRefs` 同时覆盖实体工作目录和中枢记录。
+- TaskResult 只写摘要、结论、风险、检查结果和证据引用；长日志、截图、PRD 全文、测试原始输出、研发产物不能写入中枢正文。
+- TaskResult 的 `outputRefs` / `evidenceRefs` 同时覆盖实体工作目录或外部存储引用，以及中枢记录。
 - 给人的回复先说实体工作目录，再说中枢记录路径。
 
 项目 ID 使用小写英文、数字和短横线，例如：
@@ -515,22 +538,47 @@ openRisk / blocker / nextAction / improvementRefs / evalCaseRefs
 
 目的不是抱怨，而是让 Agent 团队沉淀经验，后续能自动改进。
 
-## 8. 什么时候能算接入成功
+## 8. 第一阶段：什么时候算电脑接入成功
 
 同时满足这些条件，才算这台电脑接入成功：
 
 - `status` 可以访问线上 API。
+- `setup-teammate.sh` 已完成，本地生成 `.zhenzhi/agent-entrypoint.md`。
 - `runner register` 生成了 Runner 记录。
 - `runner heartbeat` 能把本机状态写回中枢。
-- 新项目已通过 `python3 scripts/init_project.py ...` 初始化，并且 `Project.workspaceRef` 是已确认路径、Git URL、`workspace://`、相对路径或明确的 `pending_confirmation`。
-- 项目经理 Agent 已用 `pm-action` 接管初始化。
-- 至少一个任务能从 `start` 到 `finish` 写回 TaskResult。
+- `runner list` 能看到这台 Runner。
 - `python3 -m zhenzhi_knowledge.cli validate` 通过。
 - 没有 token 或 secret 出现在 Git diff 中。
 
-## 9. 给本机 Agent 的启动提示
+第一阶段不要求：
 
-把下面这段作为新项目工作开始提示：
+```txt
+新项目 ID
+项目中文名
+项目 owner
+项目目标
+业务仓库路径
+PRD / source-file
+项目任务 start / finish
+```
+
+## 9. 第二阶段：什么时候算新项目成功
+
+有明确新项目后，同时满足这些条件，才算新项目初始化成功：
+
+- 新项目已通过 `python3 scripts/init_project.py ...` 初始化。
+- `Project.workspaceRef` 是已确认路径、Git URL、`workspace://`、相对路径，或明确的 `pending_confirmation`。
+- 如果有 PRD、截图、文档等原始资料，已登记为 `SourceMaterial`。
+- 项目初始化任务已生成。
+- 项目经理 Agent 已用 `pm-action` 接管初始化。
+- 项目经理 Agent 已按项目实际情况动态决定是否需要产品、设计、架构、研发、测试 Agent。
+- 至少一个正式任务能从 `start` 到 `finish` 写回 TaskResult。
+- `python3 -m zhenzhi_knowledge.cli validate` 通过。
+- 没有 token 或 secret 出现在 Git diff 中。
+
+## 10. 给本机 Agent 的启动提示
+
+把下面这段作为当前电脑上的本机 Agent 启动提示：
 
 ```txt
 你是接入桢知 Agent 团队的本机 Agent。
@@ -542,9 +590,20 @@ openRisk / blocker / nextAction / improvementRefs / evalCaseRefs
 4. docs/agent-team/agent-task-runtime-contract.md
 5. docs/agent-team/role-operating-specs.json
 
-本次项目是一个新项目，不是在 company_knowledge_core 里直接写业务代码。
-你必须先确认 projectId、本机 runnerId、本机业务代码仓库路径。
-新项目必须先用 python3 scripts/init_project.py 初始化；没有确认 workspaceRef 时只能显式 pending_confirmation，不能声称实体工作目录已完成。
+先判断当前任务模式：
+
+A. 如果只是接入电脑：
+- 只确认 token、同事 ID、AI 工具、runnerId、Runner 名称。
+- 注册 Runner 并发送 heartbeat。
+- 不要要求 projectId、项目中文名、项目 owner、项目目标、业务仓库路径或 PRD。
+- 电脑接入成功后写清：这台电脑已可作为 Runner 使用，后续有新项目再进入项目初始化。
+
+B. 如果是启动新项目：
+- 再确认 projectId、项目中文名、项目 owner、项目目标、业务仓库路径、可选 PRD / source-file。
+- 新项目不在 company_knowledge_core 里直接写业务代码。
+- 新项目必须先用 python3 scripts/init_project.py 初始化。
+- 没有确认 workspaceRef 时只能显式 pending_confirmation，不能声称实体工作目录已完成。
+
 正式 PM 动作必须走 project pm-action。
 下游 Agent 接收上游交付前必须写 ReceiverReview。
 完成任务必须写 TaskResult、证据和测试/检查。

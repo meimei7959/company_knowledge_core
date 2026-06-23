@@ -2558,6 +2558,84 @@ Demo.
             self.assertEqual(project["workspaceConfirmation"], "confirmed")
             self.assertFalse(validate_bundle(Bundle(root)))
 
+    def test_central_record_size_guard_blocks_bulky_project_records(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            project_dir = root / "projects" / "demo"
+            project_dir.mkdir(parents=True)
+            (project_dir / "project.md").write_text(
+                """---
+type: Project
+title: Demo
+projectId: demo
+owner: meimei
+status: draft
+workspaceRef: /tmp/demo
+---
+
+## Goal
+
+Demo.
+""",
+                encoding="utf-8",
+            )
+            big_result = project_dir / "task-results" / "tr-big.md"
+            big_result.parent.mkdir(parents=True)
+            big_result.write_text(
+                """---
+type: TaskResult
+title: Big result
+taskId: BIG
+projectId: demo
+runner: local
+leaseProof: ""
+executorAgent: agent.company.development
+status: submitted
+blockers: []
+nextAction: done
+checks: []
+approvalRequest: {}
+qualityEvaluation: {"decision":"close"}
+acceptancePolicy: {"acceptanceStatus":"accepted"}
+---
+
+"""
+                + ("x" * (70 * 1024)),
+                encoding="utf-8",
+            )
+            problems = validate_bundle(Bundle(root))
+            self.assertTrue(any("central record is" in problem and "storageRef" in problem for problem in problems))
+
+    def test_source_material_bulky_types_require_storage_ref(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            source_dir = root / "sources"
+            source = source_dir / "prd.md"
+            source.write_text(
+                """---
+type: SourceMaterial
+title: PRD
+sourceId: source-prd
+status: draft
+materialType: docx
+sourceRef: /tmp/prd.docx
+storageRef: ""
+---
+
+## Original Text
+
+metadata only.
+""",
+                encoding="utf-8",
+            )
+            problems = validate_bundle(Bundle(root))
+            self.assertIn(
+                "sources/prd.md: bulky SourceMaterial type docx requires storageRef; central record must not store raw artifact data",
+                problems,
+            )
+
     def test_init_project_script_requires_confirmed_or_pending_workspace(self) -> None:
         spec = importlib.util.spec_from_file_location("init_project_script", REPO_ROOT / "scripts" / "init_project.py")
         self.assertIsNotNone(spec)

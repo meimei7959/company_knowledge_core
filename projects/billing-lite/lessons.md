@@ -47,3 +47,21 @@ Correct flow:
 5. Project Manager Agent dispatches Product Manager Agent to the requirement acceptance task.
 
 Product Manager requirement acceptance is the first business task, not the owner of project startup.
+
+## 2026-06-23 - Central Records Must Stay Thin
+
+### Risk
+
+If every new project writes raw PRDs, long logs, screenshots, test output, generated docs, and working drafts into the central repository, the online server and Git sync will grow without bound.
+
+### Rule
+
+The central repository stores compact control-plane records only:
+
+- Project metadata.
+- Task queue and status.
+- SourceMaterial metadata and `storageRef`.
+- TaskResult summary, decision, risk, checks, and evidence refs.
+- AuditLog and PM action records.
+
+Raw project artifacts stay in the entity workspace or external storage. Central validation now blocks oversized non-core project records and requires bulky SourceMaterial types to provide `storageRef`.

@@ -248,7 +248,8 @@ CRITICAL_NOTIFICATION_TYPES = {
 }
 
 SECRET_KEYS = ("token", "secret", "password", "passwd", "credential", "api_key", "apikey", "key")
-MATERIAL_RAW_TEXT_MAX_CHARS = 200_000
+MATERIAL_RAW_TEXT_MAX_CHARS = 20_000
+CENTRAL_RECORD_MAX_BYTES = 64 * 1024
 COLLECTION_NAMES = {"index.md", "log.md", "decisions.md", "lessons.md", "agents.md", "tools.md"}
 OBJECT_ROOT_NAMES = ["projects", "agents", "tools", "knowledge", "runs", "tasks", "sources", "task-results", "runners", "runner-invitations", "tool-registration-requests", "credential-requests", "notifications", "graph", "discussions", "pm-reviews", "pm-actions", "role-reviews", "rule-issues", "actors", "requirements", "prd", "decisions", "reviews", "defects", "receiver-reviews"]
 SAFE_SECRET_METADATA_KEYS = {
@@ -12880,6 +12881,26 @@ def validate_project_workspace_ref(rel_path: str, project: dict[str, Any]) -> li
     return [f"{rel_path}: Project workspaceRef must be absolute, workspace://, git/http URL, relative path, or pending_confirmation"]
 
 
+def validate_central_record_size(path: Path, rel_path: str, fm: dict[str, Any]) -> list[str]:
+    try:
+        size = path.stat().st_size
+    except OSError:
+        return []
+    if size <= CENTRAL_RECORD_MAX_BYTES:
+        return []
+    parts = path.parts
+    if "projects" in parts:
+        idx = parts.index("projects")
+        project_id = parts[idx + 1] if idx + 1 < len(parts) else ""
+        if project_id == "company-knowledge-core":
+            return []
+    if fm.get("type") in {"TaskResult", "SourceMaterial", "ProjectTask", "KnowledgeTask", "ProjectManagerAction", "ProjectManagerReview"} or rel_path.startswith(("projects/", "task-results/", "sources/")):
+        return [
+            f"{rel_path}: central record is {size} bytes; keep central records under {CENTRAL_RECORD_MAX_BYTES} bytes and store bulky artifacts in workspaceRef/storageRef"
+        ]
+    return []
+
+
 def normalize_handoff_contract(
     task: dict[str, Any],
     status: str,
@@ -16830,6 +16851,7 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.append(f"{rel_path}: missing type")
         elif fm["type"] not in TYPE_VALUES:
             problems.append(f"{rel_path}: unknown type {fm['type']}")
+        problems.extend(validate_central_record_size(path, rel_path, fm))
         if "status" in fm and fm["status"] not in STATUS_VALUES:
             problems.append(f"{rel_path}: unknown status {fm['status']}")
         if fm.get("type") == "Project":
@@ -16902,6 +16924,10 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                 problems.append(
                     f"{rel_path}: product verdict TaskResult must be executed by agent.company.product-manager, not {executor_agent or 'unknown'}"
                 )
+        if fm.get("type") == "SourceMaterial":
+            material_kind = str(fm.get("materialType") or fm.get("sourceType") or "")
+            if material_kind in {"document", "pdf", "docx", "image", "video", "audio", "package", "binary", "model", "dataset"} and not str(fm.get("storageRef") or "").strip():
+                problems.append(f"{rel_path}: bulky SourceMaterial type {material_kind} requires storageRef; central record must not store raw artifact data")
         if fm.get("type") == "Requirement":
             for field in ["requirementId", "projectRef", "title", "submitter", "status", "sensitivity", "requirementStateRef"]:
                 if not fm.get(field):

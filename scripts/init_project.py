@@ -108,7 +108,7 @@ def write_workspace_entrypoint(workspace_ref: str, project_id: str, project_name
             f"- `projects/{project_id}/tasks/index.md`",
             f"- `projects/{project_id}/AGENTS.md`",
             "",
-            "The user may keep working from this entity workspace. The Project Manager Agent coordinates role handoff. Agent project records, task flow, TaskResult, and AuditLog are written back to the central repository.",
+            "The user may keep working from this entity workspace. The Project Manager Agent coordinates role handoff. Only compact project records, task flow, TaskResult summaries, evidence refs, and AuditLog are written back to the central repository. Raw artifacts, long logs, screenshots, and PRD files stay in this workspace or external storage and are referenced through storageRef.",
             "",
         ]
     )
@@ -128,7 +128,7 @@ def write_workspace_entrypoint(workspace_ref: str, project_id: str, project_name
             f"{root}/projects/{project_id}/",
             "```",
             "",
-            "项目经理 Agent 先确认 workspace、SourceMaterial、任务队列和阻塞，再调度第一个业务角色。实体材料留在本目录；项目管理记录、任务流、审计和 TaskResult 写回中枢。",
+            "项目经理 Agent 先确认 workspace、SourceMaterial、任务队列和阻塞，再调度第一个业务角色。实体材料、长日志、截图、PRD 原文留在本目录或外部存储；中枢只写精简项目记录、任务流、TaskResult 摘要、证据引用和审计。",
             "",
         ]
     )

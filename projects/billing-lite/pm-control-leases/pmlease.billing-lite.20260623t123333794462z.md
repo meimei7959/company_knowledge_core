@@ -12,15 +12,15 @@ status: active
 leaseProofHash: 7dd44ceed60cf60de15c72d604d02b29e636432e26e0b1eaade0751df88b08ec
 leaseGeneration: 1
 acquiredAt: "2026-06-23T12:33:33Z"
-lastHeartbeatAt: "2026-06-23T12:41:51Z"
-expiresAt: "2026-06-23T14:41:51Z"
+lastHeartbeatAt: "2026-06-23T12:49:13Z"
+expiresAt: "2026-06-23T14:49:13Z"
 takeoverPolicy: expired_or_confirmed_healthy_takeover
 previousLeaseId: ""
 auditRefs:
   - knowledge/audit/audit.20260623T123333795103Z.md
 deduplicationRef: billing-lite-pm-takeover-20260623
 sourceChannel: cli
-updatedAt: "2026-06-23T12:41:51Z"
+updatedAt: "2026-06-23T12:49:13Z"
 ---
 
 ## Lease Boundary
