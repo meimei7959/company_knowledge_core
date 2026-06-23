@@ -16,6 +16,8 @@ It is not an MVP plan and does not split scope into P0/P1. It defines the comple
 - [Acceptance Checklist](acceptance-checklist.md)
 - [ANOS-REQ-160 Task Execution Productization PRD](task-execution-productization-prd.md)
 - [ANOS-REQ-160 V0 Acceptance Matrix](task-execution-productization-acceptance-matrix.md)
+- [ANOS-REQ-161 Execution Telemetry Retention PRD](execution-telemetry-retention-prd.md)
+- [ANOS-REQ-161 Acceptance Matrix](execution-telemetry-retention-acceptance-matrix.md)
 
 ## Product Goal
 

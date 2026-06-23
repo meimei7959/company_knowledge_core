@@ -2120,3 +2120,4 @@
 - 2026-06-23T11:19:45Z role operating check project-manager status=ready gaps=0
 - 2026-06-23T11:20:15Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260623T112015493347Z.md pm_action_runtime
 - 2026-06-23T11:20:15Z pm action pm-action.20260623T112015493347Z closeout exit=closed_with_gate_passed
+- 2026-06-23T11:30:18Z audit product_requirement.execution_telemetry_retention.create ANOS-REQ-161 telemetry_retention_requirement
