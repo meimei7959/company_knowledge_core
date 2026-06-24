@@ -18,3 +18,4 @@ Each project should have:
 - [PM Lease API E2E](pm-lease-api-e2e-20260623141411/project.md)
 - [Other Project](pm-lease-api-e2e-20260623141411-other/project.md)
 - [PicPeek](picpeek/project.md)
+- [蜡笔投屏](labi-touping/project.md)
