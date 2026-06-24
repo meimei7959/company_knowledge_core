@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.test_agent_feedback import init_git_repo
 from tests.test_cli import REPO_ROOT, write_minimal_bundle
 from zhenzhi_knowledge.core import Bundle, load_object, make_project, validate_bundle
 
@@ -26,6 +27,7 @@ class ReportSkillGapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             write_minimal_bundle(root)
+            init_git_repo(root, "feedback/report-skill-gap")
             make_project(Bundle(root), "company-knowledge-core", "Company Knowledge Core", "meimei")
             old_argv = sys.argv
             try:
@@ -69,6 +71,7 @@ class ReportSkillGapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             write_minimal_bundle(root)
+            init_git_repo(root, "feedback/report-skill-gap-no-review")
             make_project(Bundle(root), "company-knowledge-core", "Company Knowledge Core", "meimei")
             old_argv = sys.argv
             try:
@@ -95,6 +98,39 @@ class ReportSkillGapTests(unittest.TestCase):
                 skill = load_object(root / lines[0])
                 self.assertEqual(skill["type"], "SkillAsset")
                 self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
+
+    def test_legacy_wrapper_blocks_no_review_task_on_main_before_writing(self) -> None:
+        module = load_skill_gap_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            init_git_repo(root, "main")
+            make_project(Bundle(root), "company-knowledge-core", "Company Knowledge Core", "meimei")
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "report_skill_gap.py",
+                    "--central-root",
+                    str(root),
+                    "--source-project",
+                    "billing-lite",
+                    "--skill-id",
+                    "main-wrapper-gap",
+                    "--name",
+                    "本地缺口 Skill",
+                    "--purpose",
+                    "验证旧脚本 main 分支阻断。",
+                    "--gap",
+                    "旧脚本也必须先过分支治理。",
+                    "--no-review-task",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()) as out, contextlib.redirect_stderr(io.StringIO()) as err:
+                    self.assertEqual(module.main(), 1)
+                self.assertEqual(out.getvalue(), "")
+                self.assertIn("branch 'main' is not allowed", err.getvalue())
+                self.assertFalse((root / "skills" / "main-wrapper-gap.md").exists())
             finally:
                 sys.argv = old_argv
 

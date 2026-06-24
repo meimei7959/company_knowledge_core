@@ -121,6 +121,12 @@ Agent Ring integration:
 - Scheduler tasks are matched to Agent Ring runners, not to human owners.
 - Protocol docs: [Agent Ring Communication Protocol](docs/protocols/agent-ring-communication-protocol.md).
 
+Agent feedback Git governance:
+
+- `scripts/agent_feedback.py system-issue` may write on `main` because it only records Defect intake and PM triage work state.
+- `scripts/agent_feedback.py skill-gap` and `scripts/report_skill_gap.py` must run against the `--central-root` Git repository on `feedback/*` or `codex/*`.
+- `skill-gap` is blocked on `main`, detached HEAD, non-Git roots, and other branch prefixes before any SkillAsset or review task file is written.
+
 Online API used by the bootstrap script:
 
 ```txt

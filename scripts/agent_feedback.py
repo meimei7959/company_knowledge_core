@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 import sys
 from pathlib import Path
 
@@ -21,6 +22,8 @@ from zhenzhi_knowledge.core import (  # noqa: E402
     skill_storage_dir,
     slug,
 )
+
+SKILL_GAP_BRANCH_PREFIXES = ("feedback/", "codex/")
 
 
 class AgentFeedbackParser(argparse.ArgumentParser):
@@ -137,9 +140,55 @@ def report_system_issue(args: argparse.Namespace) -> int:
         return 1
 
 
+def current_git_branch(root: Path) -> str:
+    if not root.exists() or not root.is_dir():
+        raise KnowledgeError(
+            "skill-gap is blocked before writing files: --central-root must point to the company_knowledge_core Git directory. "
+            "Check the path, switch to feedback/<topic> or codex/<topic>, then retry."
+        )
+    inside = subprocess.run(
+        ["git", "rev-parse", "--is-inside-work-tree"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if inside.returncode != 0 or inside.stdout.strip() != "true":
+        raise KnowledgeError(
+            "skill-gap is blocked before writing files: --central-root is not inside a Git repository. "
+            "Run this from the company_knowledge_core Git checkout and retry on a feedback/* or codex/* branch."
+        )
+    branch = subprocess.run(
+        ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if branch.returncode != 0 or not branch.stdout.strip():
+        raise KnowledgeError(
+            "skill-gap is blocked before writing files: the central repository is in detached HEAD. "
+            "Switch to an allowed branch such as feedback/<topic> or codex/<topic>, then retry."
+        )
+    return branch.stdout.strip()
+
+
+def require_skill_gap_feedback_branch(bundle: Bundle) -> None:
+    branch = current_git_branch(bundle.root)
+    if branch.startswith(SKILL_GAP_BRANCH_PREFIXES):
+        return
+    allowed = " or ".join(f"{prefix}<topic>" for prefix in SKILL_GAP_BRANCH_PREFIXES)
+    raise KnowledgeError(
+        f"skill-gap is blocked before writing files: central repository branch '{branch}' is not allowed. "
+        f"Create or switch to {allowed}, then retry. "
+        "Use system-issue on main only for Defect intake and PM triage."
+    )
+
+
 def report_skill_gap(args: argparse.Namespace) -> int:
     bundle = Bundle(Path(args.central_root).expanduser().resolve())
     try:
+        require_skill_gap_feedback_branch(bundle)
         skill_id = slug(args.skill_id)
         skill_path = skill_storage_dir(bundle) / f"{skill_id}.md"
         if skill_path.exists():

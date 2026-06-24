@@ -26,3 +26,5 @@
 - [PM action accept: 项目经理验收项目初始化三项优化：自动源码镜像、按类型生成首批任务、PM自然语言入口已实现；专项测试、CLI回归、bundle校验、研发质量门、diff chec](pm-action.20260624T024729847538Z.md)
 - [PM action dispatch: 项目经理调度统一 Agent 反馈入口：先由架构师评审，再由研发 Agent 实现 agent_feedback.py，测试 Agent 验证后再上线；修正此前](pm-action.20260624T033246298945Z.md)
 - [PM action acceptance_route: 项目经理复核统一 Agent 反馈入口：架构复审有条件通过，研发完成 agent_feedback.py 与兼容 wrapper，测试 Agent 验收通过，主](pm-action.20260624T035435030510Z.md)
+- [PM action dispatch: 项目经理调度 Git 分支治理：未审核 Skill/工作流反馈不得直接写入 main，需在 feedback/codex 分支完成架构、知识工程、测试、PM 审](pm-action.20260624T040043607612Z.md)
+- [PM action acceptance: 项目经理验收 Agent 反馈 Git 分支治理：架构已审核、研发 Agent 已实现、测试 Agent 已独立验收；skill-gap 在 main/deta](pm-action.20260624T041753655937Z.md)
