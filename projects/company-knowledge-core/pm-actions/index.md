@@ -30,3 +30,5 @@
 - [PM action acceptance: 项目经理验收 Agent 反馈 Git 分支治理：架构已审核、研发 Agent 已实现、测试 Agent 已独立验收；skill-gap 在 main/deta](pm-action.20260624T041753655937Z.md)
 - [PM action dispatch: 项目经理调度补齐 Agent 反馈分支治理的使用分发层：业务项目 AGENTS/START_HERE、同事接入指南和初始化测试必须说明 skill-gap 先切](pm-action.20260624T044900085317Z.md)
 - [PM action acceptance_route: 项目经理验收 Agent 反馈分支治理使用分发层：业务项目 AGENTS/START_HERE、同事接入指南和生成入口测试已覆盖 skill-gap 先切 fe](pm-action.20260624T045847930316Z.md)
+- [PM action dispatch: 项目经理调度批量刷新进行中项目入口：在现有 refresh_project_entrypoint 单项目脚本基础上新增批量刷新所有已确认 workspaceRe](pm-action.20260624T050652091534Z.md)
+- [PM action acceptance_route: 项目经理验收批量刷新进行中项目入口：研发实现 --all/--dry-run，测试发现中枢根目录误刷新风险后已返工修复；最终验证批量 dry-run 会刷新 p](pm-action.20260624T052820222913Z.md)

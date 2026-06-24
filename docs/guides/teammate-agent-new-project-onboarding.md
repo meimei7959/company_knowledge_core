@@ -376,6 +376,20 @@ python3 scripts/init_project.py \
 
 这种情况下项目只能停在待确认状态，`workspaceRef` 会写成 `pending_confirmation`。后续初始化任务必须补齐真实路径；项目进入激活或完成状态前，不能还停在 `pending_confirmation`。
 
+中枢 Agent 规则升级后，PM 推荐用一条命令刷新所有已经登记实体工作区的进行中项目入口：
+
+```bash
+python3 scripts/refresh_project_entrypoint.py --all
+```
+
+预检查使用：
+
+```bash
+python3 scripts/refresh_project_entrypoint.py --all --dry-run
+```
+
+脚本会遍历 `projects/*/project.md`，只刷新已确认且本机路径存在的 `workspaceRef`，自动跳过 `pending_confirmation` 或缺失路径的项目，并在摘要中列出 refreshed / skipped / failed。
+
 项目初始化完成前必须检查：
 
 - `projects/<project-id>/project.md` 记录已确认的 `workspaceRef`，或明确记录 `workspaceRef: pending_confirmation`。
