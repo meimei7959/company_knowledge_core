@@ -33,3 +33,7 @@ Knowledge Engineering Agent is the umbrella owner. The linked steward, review, a
 - [研发 Agent](agent.company.development.md)
 - [测试 Agent](agent.company.test.md)
 - [运营 Agent](agent.company.operations.md)
+- [PicPeek 项目经理 Agent](agent.picpeek.project-manager.md)
+- [PicPeek 知识工程 Agent](agent.picpeek.knowledge-engineering.md)
+- [PicPeek 执行 Agent](agent.picpeek.executor.md)
+- [PicPeek 产品经理 Agent](agent.picpeek.product-manager.md)

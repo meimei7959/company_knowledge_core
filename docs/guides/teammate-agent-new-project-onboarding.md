@@ -286,14 +286,16 @@ python3 -m zhenzhi_knowledge.cli runner register \
 ~/Documents/company_knowledge_core
 ```
 
-`company_knowledge_core` 是中枢和 Agent 团队规则仓库；新项目代码仓库是业务交付仓库。
+`company_knowledge_core` 是中枢和 Agent 团队规则仓库；新项目工作区是用户日常进入工作的目录。代码仓库不一定等于项目工作区：做软著、运营、素材、说明书时，代码只是参考源，必须放进工作区的源码镜像目录，和材料目录分开。
 
 #### 新项目初始化脚本
 
 创建新项目时，必须先分清两个目录，不能只创建中枢记录：
 
 - 实体工作目录：用户能在 Finder 或本地文件系统里看到的真实项目目录。它是当前电脑自己的路径，不能从负责人电脑或其他 Runner 电脑复制。
+- 源码镜像目录：当代码只是参考源时，Git 仓库放在实体工作目录下的源码镜像目录，后续 `git pull` 只影响源码镜像，不影响软著、运营、截图、说明书等材料。
 - 中枢记录目录：知识中枢里的项目管理记录，例如 `projects/<project-id>/`。
+- 禁止把实体工作目录建在 `company_knowledge_core` 里面。`company_knowledge_core` 只放中枢、Agent 规则、脚本、任务记录和审计，不放业务项目产物。
 
 路径确认规则：
 
@@ -310,8 +312,43 @@ python3 scripts/init_project.py \
   --name "<新项目中文名>" \
   --owner <负责人ID或姓名> \
   --goal "<项目目标>" \
+  --workspace-profile development \
   --workspace-ref "<用户确认后的本机绝对路径>" \
   --source-file "<可选：PRD/原始资料路径>"
+```
+
+`--workspace-profile` 决定实体工作目录结构：
+
+```txt
+development 新开发项目：产品、设计、架构、研发工程、services、skills、测试、发布目录
+delivery    普通交付项目：产品、架构、研发、测试、上线目录
+operations 运营/素材/内容项目：资料来源、运营素材、内容生产、发布、复盘目录
+copyright  软著/材料项目：源码镜像、软著材料、运营素材、过程记录、交付归档目录
+```
+
+项目经理 Agent 必须先判断项目类型：
+
+```txt
+用户要开始开发一个新产品/服务/工具 -> development
+用户要围绕已有产品做运营、素材、官网、发布说明 -> operations
+用户要基于已有代码做软著、说明书、截图、源代码整理 -> copyright
+用户要做普通阶段性交付，但不是长期代码工程 -> delivery
+用户只是接入电脑，还没有项目 -> 不初始化项目，只注册 Runner
+```
+
+如果是软著、运营素材、说明书这类项目，代码只是参考源，必须使用源码镜像参数：
+
+```bash
+python3 scripts/init_project.py \
+  --project-id <新项目ID> \
+  --name "<新项目中文名>" \
+  --owner <负责人ID或姓名> \
+  --goal "<项目目标>" \
+  --workspace-profile copyright \
+  --workspace-ref "<用户确认后的项目工作区>" \
+  --source-repo-url "<Git 地址>" \
+  --source-repo-path "<项目工作区里的源码镜像路径>" \
+  --source-file "<可选：PRD/软著说明/原始资料路径>"
 ```
 
 这个脚本会一次性完成：
@@ -320,6 +357,8 @@ python3 scripts/init_project.py \
 创建实体项目目录和标准子目录
 创建中枢 Project 记录
 写入 workspaceRef
+写入 workspaceProfile
+登记 sourceRepoUrl/sourceRepoRef
 登记 SourceMaterial
 生成项目初始化任务
 运行 bundle 校验
@@ -340,7 +379,10 @@ python3 scripts/init_project.py \
 项目初始化完成前必须检查：
 
 - `projects/<project-id>/project.md` 记录已确认的 `workspaceRef`，或明确记录 `workspaceRef: pending_confirmation`。
-- 原始 PRD、截图、文档等本地资料复制或登记到实体工作目录的 `00_原始资料` 或等价目录。
+- 原始 PRD、截图、文档等本地资料复制或登记到实体工作目录的资料目录；不同 `workspaceProfile` 会使用不同目录。
+- 如果项目使用源码镜像，源码镜像只允许读取和按需 `git pull`，不得写入软著、运营、截图、说明书或过程材料。
+- 如果项目是新开发工程，`services`、`skills`、`apps`、`packages` 等只是本项目工作区的工程目录。它们不会从中枢自动复制；中枢只提供 Agent 规则、PM 调度、任务和证据写回能力。
+- 项目工作区通过 `AGENTS.md` 和 `START_HERE.md` 接入桢知体系；本地 Agent 读取这两个入口后，再回到 `company_knowledge_core/projects/<project-id>/` 获取项目经理调度和任务上下文。
 - `SourceMaterial.storageRef` 指向实体工作目录里的存储副本；`sourceRef` 可以保留原始来源。
 - TaskResult 只写摘要、结论、风险、检查结果和证据引用；长日志、截图、PRD 全文、测试原始输出、研发产物不能写入中枢正文。
 - TaskResult 的 `outputRefs` / `evidenceRefs` 同时覆盖实体工作目录或外部存储引用，以及中枢记录。

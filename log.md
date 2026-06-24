@@ -2143,3 +2143,34 @@
 - 2026-06-23T12:47:44Z pm action pm-action.20260623T124744243787Z acceptance_route exit=closed_with_gate_passed
 - 2026-06-23T12:48:12Z created receiver review receiver-review.20260623T124812969593Z decision=accepted_with_assumptions
 - 2026-06-23T12:48:28Z pm action pm-action.20260623T124828824545Z dispatch exit=dispatched
+- 2026-06-24T01:40:37Z registered Project picpeek
+- 2026-06-24T01:40:37Z registered Agent agent.picpeek.project-manager
+- 2026-06-24T01:40:37Z audit agent.attachProject projects/picpeek/project.md draft
+- 2026-06-24T01:40:37Z registered Agent agent.picpeek.knowledge-engineering
+- 2026-06-24T01:40:37Z audit agent.attachProject projects/picpeek/project.md draft
+- 2026-06-24T01:40:37Z registered Agent agent.picpeek.executor
+- 2026-06-24T01:40:37Z audit agent.attachProject projects/picpeek/project.md draft
+- 2026-06-24T01:40:37Z registered Agent agent.picpeek.product-manager
+- 2026-06-24T01:40:37Z audit agent.attachProject projects/picpeek/project.md draft
+- 2026-06-24T01:40:37Z audit task.create projects/picpeek/tasks/project-init-picpeek.md
+- 2026-06-24T01:40:37Z audit task.notification.record projects/picpeek/tasks/project-init-picpeek.md feishu
+- 2026-06-24T01:40:37Z created task project-init-picpeek assigned=agent.picpeek.project-manager
+- 2026-06-24T01:40:37Z audit project.intake projects/picpeek/project.md draft_created
+- 2026-06-24T01:40:56Z audit pm.action.record projects/picpeek/pm-actions/pm-action.20260624T014056067773Z.md pm_action_runtime
+- 2026-06-24T01:40:56Z pm action pm-action.20260624T014056067773Z dispatch exit=dispatched
+- 2026-06-24T01:42:32Z audit task.create projects/picpeek/tasks/kt-picpeek-product-copyright-scope.md
+- 2026-06-24T01:42:32Z audit task.notification.record projects/picpeek/tasks/kt-picpeek-product-copyright-scope.md feishu
+- 2026-06-24T01:42:32Z created task kt-picpeek-product-copyright-scope assigned=agent.company.product-manager
+- 2026-06-24T01:42:32Z audit task.create projects/picpeek/tasks/kt-picpeek-development-code-structure-review.md
+- 2026-06-24T01:42:32Z audit task.notification.record projects/picpeek/tasks/kt-picpeek-development-code-structure-review.md feishu
+- 2026-06-24T01:42:32Z created task kt-picpeek-development-code-structure-review assigned=agent.company.development
+- 2026-06-24T01:42:32Z audit task.create projects/picpeek/tasks/kt-picpeek-test-evidence-checklist.md
+- 2026-06-24T01:42:32Z audit task.notification.record projects/picpeek/tasks/kt-picpeek-test-evidence-checklist.md feishu
+- 2026-06-24T01:42:32Z created task kt-picpeek-test-evidence-checklist assigned=agent.company.test
+- 2026-06-24T01:43:31Z audit pm.action.record projects/picpeek/pm-actions/pm-action.20260624T014331539137Z.md pm_action_runtime
+- 2026-06-24T01:43:31Z pm action pm-action.20260624T014331539137Z dispatch exit=backlog_created
+- 2026-06-24T01:44:48Z audit runner.register runners/runner.meimei-mac-picpeek-codex.md agent_ring
+- 2026-06-24T01:44:48Z registered runner runner.meimei-mac-picpeek-codex
+- 2026-06-24T01:45:02Z audit runner.heartbeat runners/runner.meimei-mac-picpeek-codex.md agent_ring
+- 2026-06-24T01:49:14Z audit pm.action.record projects/picpeek/pm-actions/pm-action.20260624T014914285939Z.md pm_action_runtime
+- 2026-06-24T01:49:14Z pm action pm-action.20260624T014914285939Z dispatch exit=dispatched
