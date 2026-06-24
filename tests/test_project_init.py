@@ -4,6 +4,7 @@ import contextlib
 import importlib.util
 import io
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -15,6 +16,14 @@ from zhenzhi_knowledge.core import Bundle, load_object, validate_bundle
 
 def load_script_module():
     spec = importlib.util.spec_from_file_location("init_project_script", REPO_ROOT / "scripts" / "init_project.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def load_pm_script_module():
+    spec = importlib.util.spec_from_file_location("pm_init_project_script", REPO_ROOT / "scripts" / "pm_init_project.py")
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -83,6 +92,68 @@ class ProjectInitRuntimeTests(unittest.TestCase):
                 pm_action = load_object(pm_actions[0])
                 self.assertEqual(pm_action["actor"], "agent.company.project-manager")
                 self.assertEqual(pm_action["exitState"], "dispatched")
+                task_refs = pm_action.get("recordsWritten", [])
+                self.assertTrue(any(ref.endswith("project-init-demo-product-scope.md") for ref in task_refs))
+                self.assertTrue((root / "projects" / "demo" / "tasks" / "project-init-demo-product-scope.md").is_file())
+                self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
+                if workspace.exists():
+                    shutil.rmtree(workspace)
+
+    def test_pm_intake_missing_fields_does_not_create_project(self) -> None:
+        module = load_pm_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "pm_init_project.py",
+                    "--root",
+                    str(root),
+                    "--request",
+                    "帮我初始化一个软著项目",
+                ]
+                with contextlib.redirect_stderr(io.StringIO()) as err:
+                    self.assertEqual(module.main(), 2)
+                self.assertIn("--name", err.getvalue())
+                self.assertIn("--owner", err.getvalue())
+                self.assertIn("--workspace-ref", err.getvalue())
+                self.assertFalse((root / "projects" / "project" / "project.md").exists())
+            finally:
+                sys.argv = old_argv
+
+    def test_pm_intake_infers_copyright_profile_and_creates_project(self) -> None:
+        module = load_pm_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            workspace = external_workspace(root, "pm-copyright-workspace")
+            write_minimal_bundle(root)
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "pm_init_project.py",
+                    "--root",
+                    str(root),
+                    "--request",
+                    "帮我初始化一个软著项目，源码只是参考",
+                    "--name",
+                    "PicPeek",
+                    "--owner",
+                    "meimei",
+                    "--workspace-ref",
+                    str(workspace),
+                    "--source-repo-url",
+                    "https://github.com/shenyingjun5/picpeek",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(module.main(), 0)
+                project = load_object(root / "projects" / "picpeek" / "project.md")
+                self.assertEqual(project["workspaceProfile"], "copyright")
+                self.assertTrue((workspace / "01_源码镜像").is_dir())
+                self.assertTrue((workspace / "02_软著材料" / "01_产品说明").is_dir())
+                self.assertTrue((root / "projects" / "picpeek" / "tasks" / "project-init-picpeek-copyright-scope.md").is_file())
                 self.assertFalse(validate_bundle(Bundle(root)))
             finally:
                 sys.argv = old_argv
@@ -175,7 +246,59 @@ class ProjectInitProfileTests(unittest.TestCase):
                 self.assertTrue((workspace / "02_软著材料" / "01_产品说明" / "picpeek-prd.md").is_file())
                 self.assertFalse((source_repo / "AGENTS.md").exists())
                 self.assertTrue((workspace / "AGENTS.md").is_file())
+                self.assertTrue((root / "projects" / "picpeek" / "tasks" / "project-init-picpeek-copyright-scope.md").is_file())
+                self.assertTrue((root / "projects" / "picpeek" / "tasks" / "project-init-picpeek-code-structure-review.md").is_file())
+                self.assertTrue((root / "projects" / "picpeek" / "tasks" / "project-init-picpeek-screenshot-evidence-plan.md").is_file())
                 self.assertGreaterEqual(len(project.get("sourceMaterialRefs", [])), 2)
+                self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
+                if workspace.exists():
+                    shutil.rmtree(workspace)
+
+
+class ProjectInitCloneTests(unittest.TestCase):
+    def test_clone_source_repo_uses_profile_source_mirror(self) -> None:
+        module = load_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "central"
+            upstream = Path(tmp) / "upstream"
+            workspace = Path(tmp) / "copyright-workspace"
+            write_minimal_bundle(root)
+            upstream.mkdir()
+            subprocess.run(["git", "init"], cwd=upstream, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=upstream, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=upstream, check=True)
+            (upstream / "README.md").write_text("# Upstream\n", encoding="utf-8")
+            subprocess.run(["git", "add", "README.md"], cwd=upstream, check=True)
+            subprocess.run(["git", "commit", "-m", "init"], cwd=upstream, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "init_project.py",
+                    "--root",
+                    str(root),
+                    "--project-id",
+                    "clone-demo",
+                    "--name",
+                    "Clone Demo",
+                    "--owner",
+                    "meimei",
+                    "--workspace-ref",
+                    str(workspace),
+                    "--workspace-profile",
+                    "copyright",
+                    "--source-repo-url",
+                    str(upstream),
+                    "--clone-source-repo",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(module.main(), 0)
+                source_mirror = workspace / "01_源码镜像" / "upstream"
+                self.assertTrue((source_mirror / ".git").is_dir())
+                self.assertFalse((source_mirror / "AGENTS.md").exists())
+                project = load_object(root / "projects" / "clone-demo" / "project.md")
+                self.assertEqual(project["sourceRepoRef"], str(source_mirror.resolve()))
                 self.assertFalse(validate_bundle(Bundle(root)))
             finally:
                 sys.argv = old_argv

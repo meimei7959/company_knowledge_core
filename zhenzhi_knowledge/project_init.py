@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -11,74 +12,26 @@ from zhenzhi_knowledge.core import (
     PENDING_WORKSPACE_REF,
     create_project_launch,
     create_project_manager_action,
+    create_project_task,
     create_source_material,
     load_object,
+    rel,
     update_frontmatter_file,
     validate_bundle,
+)
+from zhenzhi_knowledge.project_init_profiles import (
+    PROFILE_INITIAL_TASKS,
+    WORKSPACE_DIRS,
+    WORKSPACE_PROFILES,
+    default_project_id,
+    infer_workspace_profile,
+    material_dir_for_profile,
+    repo_name_from_url,
+    source_mirror_dir_for_profile,
 )
 
 
 ROOT = Path(__file__).resolve().parents[1]
-
-WORKSPACE_DIRS = [
-    "00_原始资料",
-    "01_产品需求",
-    "02_架构方案",
-    "03_研发实现",
-    "04_测试验收",
-    "05_运营上线",
-    "99_项目管理",
-]
-
-WORKSPACE_PROFILES = {
-    "delivery": WORKSPACE_DIRS,
-    "development": [
-        "00_项目管理",
-        "01_产品需求",
-        "02_设计交互",
-        "03_架构方案",
-        "04_研发工程/apps",
-        "04_研发工程/services",
-        "04_研发工程/skills",
-        "04_研发工程/packages",
-        "05_测试验收",
-        "06_发布运维",
-        "07_运营素材",
-        "08_交付归档",
-    ],
-    "operations": [
-        "00_项目管理",
-        "01_资料来源",
-        "02_运营素材/01_产品介绍",
-        "02_运营素材/02_官网素材",
-        "02_运营素材/03_发布说明",
-        "03_内容生产",
-        "04_投放发布",
-        "05_数据复盘",
-        "06_交付归档",
-    ],
-    "copyright": [
-        "00_项目管理",
-        "01_源码镜像",
-        "02_软著材料/01_产品说明",
-        "02_软著材料/02_技术说明",
-        "02_软著材料/03_源代码整理",
-        "02_软著材料/04_截图证据",
-        "02_软著材料/05_申请提交包",
-        "03_运营素材/01_产品介绍",
-        "03_运营素材/02_官网素材",
-        "03_运营素材/03_发布说明",
-        "04_过程记录",
-        "05_交付归档",
-    ],
-}
-
-RAW_MATERIAL_DIR_BY_PROFILE = {
-    "delivery": "00_原始资料",
-    "development": "01_产品需求",
-    "operations": "01_资料来源",
-    "copyright": "02_软著材料/01_产品说明",
-}
 
 
 def parse_args() -> argparse.Namespace:
@@ -98,6 +51,17 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--source-repo-url", default="", help="Git URL for source code used as reference.")
     parser.add_argument("--source-repo-path", default="", help="Local source mirror path. Keep it separate from material outputs.")
+    parser.add_argument(
+        "--clone-source-repo",
+        action="store_true",
+        help="Clone --source-repo-url into the profile source mirror when --source-repo-path is not provided.",
+    )
+    parser.add_argument(
+        "--source-repo-dest",
+        default="",
+        help="Optional clone destination. Must stay outside company_knowledge_core and outside material output folders.",
+    )
+    parser.add_argument("--skip-initial-tasks", action="store_true", help="Do not generate the profile-based first task queue.")
     parser.add_argument("--allow-pending-workspace", action="store_true")
     parser.add_argument("--no-create-workspace", action="store_true")
     parser.add_argument("--source-file", action="append", default=[])
@@ -106,8 +70,15 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def material_dir_for_profile(profile: str) -> str:
-    return RAW_MATERIAL_DIR_BY_PROFILE.get(profile, RAW_MATERIAL_DIR_BY_PROFILE["delivery"])
+def pm_intake_missing_fields(args: argparse.Namespace) -> list[str]:
+    missing: list[str] = []
+    if not args.name.strip():
+        missing.append("--name")
+    if not args.owner.strip():
+        missing.append("--owner")
+    if not args.workspace_ref.strip() and not args.allow_pending_workspace:
+        missing.append("--workspace-ref")
+    return missing
 
 
 def prepare_workspace(workspace_ref: str, source_files: list[str], create_workspace: bool, profile: str) -> list[Path]:
@@ -160,6 +131,69 @@ def validate_workspace_boundary(workspace_ref: str, root: Path) -> None:
         )
 
 
+def git_remote_origin(path: Path) -> str:
+    result = subprocess.run(
+        ["git", "-C", str(path), "config", "--get", "remote.origin.url"],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    return result.stdout.strip()
+
+
+def clone_source_repo_if_requested(
+    *,
+    workspace_ref: str,
+    profile: str,
+    project_id: str,
+    source_repo_url: str,
+    source_repo_path: str,
+    source_repo_dest: str,
+    clone_source_repo: bool,
+    root: Path,
+) -> str:
+    if source_repo_path:
+        return source_repo_path
+    if not clone_source_repo:
+        return ""
+    if not source_repo_url:
+        raise KnowledgeError("--clone-source-repo requires --source-repo-url")
+    if workspace_ref == PENDING_WORKSPACE_REF:
+        raise KnowledgeError("--clone-source-repo requires a confirmed --workspace-ref")
+    workspace = Path(workspace_ref).expanduser()
+    if source_repo_dest.strip():
+        target = Path(source_repo_dest).expanduser()
+    else:
+        target = workspace / source_mirror_dir_for_profile(profile) / repo_name_from_url(source_repo_url, project_id)
+    validate_workspace_boundary(str(target), root)
+    target = target.resolve()
+    if target.exists():
+        if not target.is_dir():
+            raise KnowledgeError(f"source repo clone target exists but is not a directory: {target}")
+        if any(target.iterdir()):
+            remote = git_remote_origin(target)
+            if not remote:
+                raise KnowledgeError(f"source repo clone target exists but is not a git repository: {target}")
+            if remote != source_repo_url:
+                raise KnowledgeError(
+                    f"source repo clone target remote mismatch: {target} has {remote}, expected {source_repo_url}"
+                )
+            return str(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        ["git", "clone", source_repo_url, str(target)],
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip().splitlines()[-1:] or ["unknown git clone error"]
+        raise KnowledgeError(f"source repo clone failed: {detail[0]}")
+    return str(target)
+
+
 def register_source_repo(
     bundle: Bundle,
     project_id: str,
@@ -202,6 +236,39 @@ def register_source_repo(
         extraction_status="registered",
     )
     return [material["sourceRef"]]
+
+
+def create_initial_task_queue(
+    bundle: Bundle,
+    project_id: str,
+    requester: str,
+    workspace_profile: str,
+    source_refs: list[str],
+) -> list[str]:
+    task_refs: list[str] = []
+    for suffix, title, assignee, task_type, expected_output in PROFILE_INITIAL_TASKS.get(
+        workspace_profile, PROFILE_INITIAL_TASKS["delivery"]
+    ):
+        task_path = create_project_task(
+            bundle,
+            title=title,
+            project_id=project_id,
+            requester=requester,
+            assignee=assignee,
+            task_type=task_type,
+            task_id=f"project-init-{project_id}-{suffix}",
+            priority="normal",
+            source_material_refs=source_refs,
+            expected_output=[expected_output],
+            work_source_type="project_setup",
+            requirement_refs=["PROJECT-INIT"],
+            source_reason=(
+                f"Project Manager generated a profile-based first task queue for workspaceProfile={workspace_profile}. "
+                "This is a PM-confirmation queue; downstream agents must produce receiver review before formal execution."
+            ),
+        )
+        task_refs.append(rel(task_path, bundle.root))
+    return task_refs
 
 
 def register_source_files(bundle: Bundle, project_id: str, submitter: str, stored_files: list[Path]) -> list[str]:
@@ -254,6 +321,7 @@ def record_project_manager_initialization(
     project_name: str,
     result: dict[str, str],
     source_refs: list[str],
+    initial_task_refs: list[str],
     workspace_profile: str,
     source_repo_path: str,
     source_repo_url: str,
@@ -274,9 +342,9 @@ def record_project_manager_initialization(
         summary=summary,
         task_id=f"project-init-{project_id}",
         requirement_refs=["PROJECT-INIT"],
-        records_written=[result["projectRef"], result["launchRef"], result["initTaskRef"]],
+        records_written=[result["projectRef"], result["launchRef"], result["initTaskRef"], *initial_task_refs],
         evidence_refs=source_refs,
-        next_action="Project Manager Agent confirms workspace boundary, source refs, first task queue, and whether product/design/architecture/development/test agents are needed.",
+        next_action="Project Manager Agent confirms workspace boundary, source refs, and the profile-based first task queue before assigning downstream execution.",
     )
 
 
@@ -402,6 +470,16 @@ def initialize_project(args: argparse.Namespace) -> int:
     try:
         validate_workspace_boundary(workspace_ref, bundle.root)
         stored_files = prepare_workspace(workspace_ref, args.source_file, not args.no_create_workspace, args.workspace_profile)
+        source_repo_path = clone_source_repo_if_requested(
+            workspace_ref=workspace_ref,
+            profile=args.workspace_profile,
+            project_id=args.project_id,
+            source_repo_url=source_repo_url,
+            source_repo_path=source_repo_path,
+            source_repo_dest=args.source_repo_dest,
+            clone_source_repo=args.clone_source_repo,
+            root=bundle.root,
+        )
         result = create_project_launch(
             bundle,
             project_name=args.name,
@@ -416,7 +494,20 @@ def initialize_project(args: argparse.Namespace) -> int:
         source_refs = register_source_repo(bundle, args.project_id, args.name, submitter, source_repo_url, source_repo_path)
         source_refs.extend(register_source_files(bundle, args.project_id, submitter, stored_files))
         update_project_workspace_metadata(bundle, result["projectRef"], source_refs, args.workspace_profile, source_repo_url, source_repo_path)
-        record_project_manager_initialization(bundle, args.project_id, args.name, result, source_refs, args.workspace_profile, source_repo_path, source_repo_url)
+        initial_task_refs: list[str] = []
+        if not args.skip_initial_tasks:
+            initial_task_refs = create_initial_task_queue(bundle, args.project_id, submitter, args.workspace_profile, source_refs)
+        record_project_manager_initialization(
+            bundle,
+            args.project_id,
+            args.name,
+            result,
+            source_refs,
+            initial_task_refs,
+            args.workspace_profile,
+            source_repo_path,
+            source_repo_url,
+        )
         write_workspace_entrypoint(
             workspace_ref,
             args.project_id,
@@ -438,6 +529,8 @@ def initialize_project(args: argparse.Namespace) -> int:
             print(workspace_ref)
         for source_ref in source_refs:
             print(source_ref)
+        for task_ref in initial_task_refs:
+            print(task_ref)
         return 0
     except KnowledgeError as exc:
         print(str(exc), file=sys.stderr)

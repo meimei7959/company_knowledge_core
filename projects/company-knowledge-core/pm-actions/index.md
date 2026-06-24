@@ -22,3 +22,5 @@
 - [PM action dispatch: PM reviewed Development TaskResult and quality gate evidence for ANOS-REQ-161, t](pm-action.20260623T121155758197Z.md)
 - [PM action acceptance_route: PM reviewed Test Agent pass evidence for ANOS-REQ-161 and routed final product a](pm-action.20260623T122151594058Z.md)
 - [PM action closeout: PM closed ANOS-REQ-161 V0 after Product final acceptance accepted all 001-008 cr](pm-action.20260623T122906934171Z.md)
+- [PM action dispatch: 项目经理编排项目初始化三项优化：自动源码镜像、按类型生成首批任务、PM自然语言入口；先由架构师审核合理性，再研发实现和测试验证。](pm-action.20260624T023435006512Z.md)
+- [PM action accept: 项目经理验收项目初始化三项优化：自动源码镜像、按类型生成首批任务、PM自然语言入口已实现；专项测试、CLI回归、bundle校验、研发质量门、diff chec](pm-action.20260624T024729847538Z.md)
