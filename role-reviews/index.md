@@ -41,3 +41,4 @@
 - [Role operating review: 研发 Agent](role-review-development.20260623T095332861090Z.md)
 - [Role operating review: 项目经理 Agent](role-review-project-manager.20260623T105919527147Z.md)
 - [Role operating review: 项目经理 Agent](role-review-project-manager.20260623T111945036548Z.md)
+- [Role operating review: 项目经理 Agent](role-review-project-manager.20260624T033246058241Z.md)

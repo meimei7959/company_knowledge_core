@@ -64,6 +64,40 @@ class ReportSkillGapTests(unittest.TestCase):
             finally:
                 sys.argv = old_argv
 
+    def test_legacy_wrapper_preserves_no_review_task(self) -> None:
+        module = load_skill_gap_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            make_project(Bundle(root), "company-knowledge-core", "Company Knowledge Core", "meimei")
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "report_skill_gap.py",
+                    "--central-root",
+                    str(root),
+                    "--source-project",
+                    "billing-lite",
+                    "--skill-id",
+                    "local-gap-only",
+                    "--name",
+                    "本地缺口 Skill",
+                    "--purpose",
+                    "验证旧脚本 no-review-task 兼容。",
+                    "--gap",
+                    "旧脚本需要继续只输出 SkillAsset。",
+                    "--no-review-task",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()) as out:
+                    self.assertEqual(module.main(), 0)
+                lines = [line.strip() for line in out.getvalue().splitlines() if line.strip()]
+                self.assertEqual(len(lines), 1)
+                skill = load_object(root / lines[0])
+                self.assertEqual(skill["type"], "SkillAsset")
+                self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
+
 
 if __name__ == "__main__":
     unittest.main()

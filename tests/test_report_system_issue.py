@@ -59,6 +59,36 @@ class ReportSystemIssueTests(unittest.TestCase):
             finally:
                 sys.argv = old_argv
 
+    def test_legacy_wrapper_preserves_no_fix_task(self) -> None:
+        module = load_report_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            make_project(Bundle(root), "company-knowledge-core", "Company Knowledge Core", "meimei")
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "report_system_issue.py",
+                    "--central-root",
+                    str(root),
+                    "--source-project",
+                    "billing-lite",
+                    "--title",
+                    "只登记缺陷",
+                    "--actual",
+                    "旧脚本需要保留 no-fix-task。",
+                    "--no-fix-task",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()) as out:
+                    self.assertEqual(module.main(), 0)
+                lines = [line.strip() for line in out.getvalue().splitlines() if line.strip()]
+                self.assertEqual(len(lines), 1)
+                defect = load_object(root / lines[0])
+                self.assertEqual(defect["type"], "Defect")
+                self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
+
 
 if __name__ == "__main__":
     unittest.main()

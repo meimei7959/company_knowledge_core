@@ -180,3 +180,4 @@ Testing and access control:
 - [阶段二：真实同事电脑双 host 验收](kt-v2-colleague-runner-real-dual-host-acceptance.md)
 - [修复 maintenance 任务来源追溯校验缺失](kt-20260623-001.md)
 - [修复岗位 Agent 规则对任务来源与 ReceiverReview 机制的直接绑定](kt-20260623-002.md)
+- [知识工程评审并沉淀可复用 Skill：软著材料执行与提交包生成](kt-20260624-001.md)

@@ -584,7 +584,7 @@ python3 -m zhenzhi_knowledge.cli defect create-fix-task --help
 
 ```bash
 cd <company_knowledge_core 本机目录>
-python3 scripts/report_system_issue.py \
+python3 scripts/agent_feedback.py system-issue \
   --source-project <当前业务项目ID> \
   --title "<问题标题>" \
   --actual "<实际发生了什么>" \
@@ -617,7 +617,7 @@ python3 scripts/report_system_issue.py \
 
 ```bash
 cd <company_knowledge_core 本机目录>
-python3 scripts/report_skill_gap.py \
+python3 scripts/agent_feedback.py skill-gap \
   --source-project <当前业务项目ID> \
   --skill-id "<稳定英文ID，例如 softcopyright-submission-pack>" \
   --name "<Skill 中文名>" \
@@ -637,6 +637,8 @@ python3 scripts/report_skill_gap.py \
 - `scope=project`：只给当前项目用。
 - `scope=company`：进入公司级复用候选，但必须评审和测试通过后再推广。
 - 没有中枢 `SkillAsset`、没有评审任务、没有测试证据的 Skill，不算可复用 Skill。
+
+兼容说明：旧脚本 `scripts/report_system_issue.py` 和 `scripts/report_skill_gap.py` 仍可运行，但只是统一入口的兼容 wrapper。新项目、新文档和 Agent 教学都应使用 `scripts/agent_feedback.py`。
 
 ## 验收标准
 

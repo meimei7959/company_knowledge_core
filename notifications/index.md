@@ -803,3 +803,6 @@
 - [task_created kt-picpeek-product-copyright-scope](notification.20260624T014232376410Z.md)
 - [task_created kt-picpeek-development-code-structure-review](notification.20260624T014232382576Z.md)
 - [task_created kt-picpeek-test-evidence-checklist](notification.20260624T014232454765Z.md)
+- [project_manager_health_blocked agent-runtime-rules-layering](notification.20260624T033246178250Z.md)
+- [project_manager_human_decision_required agent-runtime-rules-layering](notification.20260624T033246179567Z.md)
+- [task_created KT-20260624-001](notification.20260624T033713404709Z.md)

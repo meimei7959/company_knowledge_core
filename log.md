@@ -2180,3 +2180,18 @@
 - 2026-06-24T02:47:29Z pm action pm-action.20260624T024729847538Z accept exit=closed_with_gate_passed
 - 2026-06-24T03:12:54Z audit pm.action.record projects/picpeek/pm-actions/pm-action.20260624T031254095017Z.md pm_action_runtime
 - 2026-06-24T03:12:54Z pm action pm-action.20260624T031254095017Z status_query exit=waiting_acceptance
+- 2026-06-24T03:32:46Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260624T033246058241Z.md role_operating_spec
+- 2026-06-24T03:32:46Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260624T033246176974Z.md pm_agent_operating_check
+- 2026-06-24T03:32:46Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-24T03:32:46Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-24T03:32:46Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-24T03:32:46Z role operating check project-manager status=ready gaps=0
+- 2026-06-24T03:32:46Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260624T033246298945Z.md pm_action_runtime
+- 2026-06-24T03:32:46Z pm action pm-action.20260624T033246298945Z dispatch exit=dispatched
+- 2026-06-24T03:37:13Z audit skill.register skills/soft-copyright-material-execution.md company
+- 2026-06-24T03:37:13Z registered SkillAsset soft-copyright-material-execution
+- 2026-06-24T03:37:13Z audit task.create projects/company-knowledge-core/tasks/kt-20260624-001.md
+- 2026-06-24T03:37:13Z audit task.notification.record projects/company-knowledge-core/tasks/kt-20260624-001.md feishu
+- 2026-06-24T03:37:13Z created task KT-20260624-001 assigned=agent.company.knowledge-engineering
+- 2026-06-24T03:54:35Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260624T035435030510Z.md pm_action_runtime
+- 2026-06-24T03:54:35Z pm action pm-action.20260624T035435030510Z acceptance_route exit=waiting_acceptance
