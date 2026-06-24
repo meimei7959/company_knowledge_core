@@ -20,6 +20,15 @@ def load_refresh_script_module():
     return module
 
 
+def assert_feedback_governance_text(testcase: unittest.TestCase, agents: str, start_here: str) -> None:
+    testcase.assertIn("Do not write skill-gap feedback directly on `main`.", agents)
+    testcase.assertIn("Push the feedback branch", agents)
+    testcase.assertIn("Knowledge Engineering / PM to review it", agents)
+    testcase.assertIn("不要直接写 `main`", start_here)
+    testcase.assertIn("推送这个分支", start_here)
+    testcase.assertIn("知识工程/PM 评审", start_here)
+
+
 class RefreshProjectEntrypointTests(unittest.TestCase):
     def test_existing_project_entrypoint_gets_skill_gap_rules(self) -> None:
         module = load_refresh_script_module()
@@ -49,9 +58,15 @@ class RefreshProjectEntrypointTests(unittest.TestCase):
                 agents = (workspace / "AGENTS.md").read_text(encoding="utf-8")
                 start_here = (workspace / "START_HERE.md").read_text(encoding="utf-8")
                 project = load_object(root / "projects" / "picpeek" / "project.md")
+                self.assertIn("git switch -c feedback/", agents)
+                self.assertIn("git switch -c feedback/", start_here)
                 self.assertIn("scripts/agent_feedback.py skill-gap", agents)
+                self.assertIn("scripts/agent_feedback.py skill-gap", start_here)
                 self.assertIn("scripts/agent_feedback.py system-issue", start_here)
+                assert_feedback_governance_text(self, agents, start_here)
                 self.assertNotIn("scripts/report_skill_gap.py", agents)
+                self.assertNotIn("scripts/report_skill_gap.py", start_here)
+                self.assertNotIn("scripts/report_system_issue.py", agents)
                 self.assertNotIn("scripts/report_system_issue.py", start_here)
                 self.assertEqual(project["workspaceProfile"], "copyright")
                 self.assertEqual(project["sourceRepoUrl"], "https://github.com/shenyingjun5/picpeek")

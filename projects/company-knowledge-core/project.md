@@ -26,8 +26,8 @@ relatedAgents:
   - agent.company.operations
 relatedTools:
   - tool.zhenzhi-knowledge
-updatedAt: "2026-06-24T04:00:43Z"
-lastProjectManagerReviewRef: projects/company-knowledge-core/pm-reviews/pm-review.20260624T040043508857Z.md
+updatedAt: "2026-06-24T04:48:59Z"
+lastProjectManagerReviewRef: projects/company-knowledge-core/pm-reviews/pm-review.20260624T044859978174Z.md
 health: blocked
 ---
 

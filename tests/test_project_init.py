@@ -34,6 +34,15 @@ def external_workspace(root: Path, suffix: str) -> Path:
     return root.parent / f"{root.name}-{suffix}"
 
 
+def assert_feedback_governance_text(testcase: unittest.TestCase, agents: str, start_here: str) -> None:
+    testcase.assertIn("Do not write skill-gap feedback directly on `main`.", agents)
+    testcase.assertIn("Push the feedback branch", agents)
+    testcase.assertIn("Knowledge Engineering / PM to review it", agents)
+    testcase.assertIn("不要直接写 `main`", start_here)
+    testcase.assertIn("推送这个分支", start_here)
+    testcase.assertIn("知识工程/PM 评审", start_here)
+
+
 class ProjectInitBoundaryTests(unittest.TestCase):
     def test_workspace_inside_central_root_is_rejected(self) -> None:
         module = load_script_module()
@@ -248,9 +257,15 @@ class ProjectInitProfileTests(unittest.TestCase):
                 self.assertTrue((workspace / "AGENTS.md").is_file())
                 agents = (workspace / "AGENTS.md").read_text(encoding="utf-8")
                 start_here = (workspace / "START_HERE.md").read_text(encoding="utf-8")
+                self.assertIn("git switch -c feedback/", agents)
+                self.assertIn("git switch -c feedback/", start_here)
                 self.assertIn("scripts/agent_feedback.py skill-gap", agents)
+                self.assertIn("scripts/agent_feedback.py skill-gap", start_here)
                 self.assertIn("scripts/agent_feedback.py system-issue", start_here)
+                assert_feedback_governance_text(self, agents, start_here)
                 self.assertNotIn("scripts/report_skill_gap.py", agents)
+                self.assertNotIn("scripts/report_skill_gap.py", start_here)
+                self.assertNotIn("scripts/report_system_issue.py", agents)
                 self.assertNotIn("scripts/report_system_issue.py", start_here)
                 self.assertTrue((root / "projects" / "picpeek" / "tasks" / "project-init-picpeek-copyright-scope.md").is_file())
                 self.assertTrue((root / "projects" / "picpeek" / "tasks" / "project-init-picpeek-code-structure-review.md").is_file())

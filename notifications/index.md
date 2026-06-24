@@ -808,3 +808,5 @@
 - [task_created KT-20260624-001](notification.20260624T033713404709Z.md)
 - [project_manager_health_blocked agent-runtime-rules-layering](notification.20260624T040043514669Z.md)
 - [project_manager_human_decision_required agent-runtime-rules-layering](notification.20260624T040043516148Z.md)
+- [project_manager_health_blocked agent-runtime-rules-layering](notification.20260624T044859979369Z.md)
+- [project_manager_human_decision_required agent-runtime-rules-layering](notification.20260624T044859980694Z.md)

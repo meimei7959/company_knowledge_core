@@ -612,11 +612,13 @@ python3 scripts/agent_feedback.py system-issue \
 - 当前项目可以先用临时方案完成交付。
 - 临时方案只能服务当前项目，不能自动变成所有项目可复用能力。
 - 想让其他项目复用，必须同步到中枢 Skill 注册表。
+- `skill-gap` 必须在中枢仓库的 `feedback/*` 或 `codex/*` 分支写入，不能直接写 `main`。
 
 执行：
 
 ```bash
 cd <company_knowledge_core 本机目录>
+git switch -c feedback/<当前业务项目ID>-<稳定英文ID>
 python3 scripts/agent_feedback.py skill-gap \
   --source-project <当前业务项目ID> \
   --skill-id "<稳定英文ID，例如 softcopyright-submission-pack>" \
@@ -626,6 +628,8 @@ python3 scripts/agent_feedback.py skill-gap \
   --proposed-use "<未来哪些项目/岗位会复用>" \
   --source-ref "<可选：截图路径、任务ID、对话摘要或文件路径>"
 ```
+
+如果已经在合适的 `feedback/*` 或 `codex/*` 分支上，可以沿用现有分支，不必重复创建。写完后推送该分支，请知识工程/PM 评审；不要把 skill-gap 直接提交到 `main`。
 
 这条命令会在中枢创建：
 

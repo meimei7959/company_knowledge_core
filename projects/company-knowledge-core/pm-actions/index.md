@@ -28,3 +28,5 @@
 - [PM action acceptance_route: 项目经理复核统一 Agent 反馈入口：架构复审有条件通过，研发完成 agent_feedback.py 与兼容 wrapper，测试 Agent 验收通过，主](pm-action.20260624T035435030510Z.md)
 - [PM action dispatch: 项目经理调度 Git 分支治理：未审核 Skill/工作流反馈不得直接写入 main，需在 feedback/codex 分支完成架构、知识工程、测试、PM 审](pm-action.20260624T040043607612Z.md)
 - [PM action acceptance: 项目经理验收 Agent 反馈 Git 分支治理：架构已审核、研发 Agent 已实现、测试 Agent 已独立验收；skill-gap 在 main/deta](pm-action.20260624T041753655937Z.md)
+- [PM action dispatch: 项目经理调度补齐 Agent 反馈分支治理的使用分发层：业务项目 AGENTS/START_HERE、同事接入指南和初始化测试必须说明 skill-gap 先切](pm-action.20260624T044900085317Z.md)
+- [PM action acceptance_route: 项目经理验收 Agent 反馈分支治理使用分发层：业务项目 AGENTS/START_HERE、同事接入指南和生成入口测试已覆盖 skill-gap 先切 fe](pm-action.20260624T045847930316Z.md)
