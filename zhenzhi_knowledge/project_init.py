@@ -357,6 +357,76 @@ def workspace_source_rule(source_repo_note: str) -> str:
     )
 
 
+def workspace_agent_feedback_rules(root: Path, project_id: str) -> list[str]:
+    return [
+        "## Report System Issues Back To Central",
+        "",
+        "When the user says this project exposed a problem in the Agent system, do not ask what `sync to central` means. Run the central issue reporter:",
+        "",
+        "```bash",
+        f"cd {root}",
+        "python3 scripts/report_system_issue.py \\",
+        f"  --source-project {project_id} \\",
+        "  --title \"<short issue title>\" \\",
+        "  --actual \"<what happened>\" \\",
+        "  --expected \"<what should happen>\" \\",
+        "  --evidence-ref \"<optional local note, screenshot path, task ref, or conversation summary>\"",
+        "```",
+        "",
+        "This creates a central Defect plus a Project Manager triage task in `company-knowledge-core`. Continue the business project after the issue is reported; do not fix central-system behavior inside this business workspace.",
+        "",
+        "When a role Agent needs a new reusable skill during this project, it may use a temporary local approach for the current task, but reusable capability must be reported to the central skill registry:",
+        "",
+        "```bash",
+        f"cd {root}",
+        "python3 scripts/report_skill_gap.py \\",
+        f"  --source-project {project_id} \\",
+        "  --skill-id \"<stable-skill-id>\" \\",
+        "  --name \"<skill name>\" \\",
+        "  --purpose \"<what reusable capability is needed>\" \\",
+        "  --gap \"<what the current skill cannot handle>\" \\",
+        "  --proposed-use \"<how future projects will reuse it>\" \\",
+        "  --source-ref \"<optional local note, task ref, or evidence>\"",
+        "```",
+        "",
+        "This creates a draft central SkillAsset and a Knowledge Engineering review task. Do not treat a project-local skill as company-wide reusable until the central review/evaluation promotes it.",
+        "",
+    ]
+
+
+def workspace_start_feedback_rules(root: Path, project_id: str) -> list[str]:
+    return [
+        "如果在本项目里发现 Agent 体系本身的问题，例如项目经理不知道怎么同步问题、任务流转不清楚、工具入口不好用，对 Codex 说：",
+        "",
+        "```txt",
+        "把这个体系问题上报到中枢，标题是……，实际发生了……，期望应该是……",
+        "```",
+        "",
+        "项目经理 Agent 应执行：",
+        "",
+        "```bash",
+        f"cd {root}",
+        f"python3 scripts/report_system_issue.py --source-project {project_id} --title \"<问题标题>\" --actual \"<实际发生>\" --expected \"<期望行为>\"",
+        "```",
+        "",
+        "如果是某个岗位 Agent 发现 Skill 不够用，比如知识工程 Agent 做软著时缺少软著材料整理能力，对 Codex 说：",
+        "",
+        "```txt",
+        "把这个 Skill 缺口上报到中枢复用。来源项目是 <项目ID>，Skill ID 是 <稳定英文ID>，名称是 <中文名>，用途是 <用途>，当前缺口是 <缺口>，未来项目复用方式是 <复用方式>。",
+        "```",
+        "",
+        "项目经理 Agent 或发现缺口的岗位 Agent 应执行：",
+        "",
+        "```bash",
+        f"cd {root}",
+        f"python3 scripts/report_skill_gap.py --source-project {project_id} --skill-id \"<skill-id>\" --name \"<Skill 名称>\" --purpose \"<用途>\" --gap \"<当前缺口>\" --proposed-use \"<复用方式>\"",
+        "```",
+        "",
+        "当前项目可以先用临时方案完成交付，但要复用给其他项目，必须进入中枢 `SkillAsset`，先作为 draft，经知识工程评审和测试后再推广。",
+        "",
+    ]
+
+
 def write_workspace_entrypoint(
     workspace_ref: str,
     project_id: str,
@@ -414,6 +484,7 @@ def write_workspace_entrypoint(
             "",
             "The user may keep working from this entity workspace. The Project Manager Agent coordinates role handoff. Only compact project records, task flow, TaskResult summaries, evidence refs, and AuditLog are written back to the central repository. Raw artifacts, long logs, screenshots, and PRD files stay in this workspace or external storage and are referenced through storageRef.",
             "",
+            *workspace_agent_feedback_rules(root, project_id),
         ]
     )
     start_here = "\n".join(
@@ -439,6 +510,7 @@ def write_workspace_entrypoint(
             "",
             "不要把软著、运营、截图、说明书或过程材料写入源码镜像。源码镜像只用于读取和按需更新。",
             "",
+            *workspace_start_feedback_rules(root, project_id),
         ]
     )
     (workspace / "AGENTS.md").write_text(agent_entry, encoding="utf-8")

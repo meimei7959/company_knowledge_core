@@ -572,13 +572,71 @@ python3 -m zhenzhi_knowledge.cli defect create --help
 python3 -m zhenzhi_knowledge.cli defect create-fix-task --help
 ```
 
-如果发现流程、Skill、上下文、权限、工具、调度不顺，必须在 TaskResult 中写：
+如果发现的是 Agent 体系本身的问题，比如：
 
-```txt
-openRisk / blocker / nextAction / improvementRefs / evalCaseRefs
+- 项目经理 Agent 不知道“同步到中枢”是什么意思。
+- 项目初始化目录不清楚。
+- 源码镜像和材料目录边界不清楚。
+- Skill、上下文、权限、工具、调度、任务流转不顺。
+- 用户在业务项目里发现了会影响其他项目复用的问题。
+
+不要只写在当前业务项目的聊天里。项目经理 Agent 必须执行“上报体系问题”：
+
+```bash
+cd <company_knowledge_core 本机目录>
+python3 scripts/report_system_issue.py \
+  --source-project <当前业务项目ID> \
+  --title "<问题标题>" \
+  --actual "<实际发生了什么>" \
+  --expected "<期望应该怎么工作>" \
+  --evidence-ref "<可选：截图路径、任务ID、对话摘要或文件路径>"
 ```
 
-目的不是抱怨，而是让 Agent 团队沉淀经验，后续能自动改进。
+这条命令会在中枢 `company-knowledge-core` 项目下创建：
+
+- `Defect`：记录体系问题。
+- PM 分诊任务：让中枢项目经理决定是改流程、改 Skill、改脚本、改工作台，还是交给研发修。
+
+用户可以直接对业务项目里的 Codex 说：
+
+```txt
+把这个体系问题上报到中枢。来源项目是 <项目ID>，标题是 <问题标题>，实际发生了 <实际情况>，期望应该是 <期望行为>。
+```
+
+项目经理 Agent 不需要理解中枢内部目录，只需要执行上面的命令。目的不是抱怨，而是让 Agent 团队沉淀经验，后续能自动改进。
+
+### Skill 不够用时怎么沉淀复用
+
+如果某个岗位 Agent 在业务项目里发现原 Skill 不够用，例如知识工程 Agent 做软著时缺少“软著材料整理/源码清单/截图证据”能力：
+
+- 当前项目可以先用临时方案完成交付。
+- 临时方案只能服务当前项目，不能自动变成所有项目可复用能力。
+- 想让其他项目复用，必须同步到中枢 Skill 注册表。
+
+执行：
+
+```bash
+cd <company_knowledge_core 本机目录>
+python3 scripts/report_skill_gap.py \
+  --source-project <当前业务项目ID> \
+  --skill-id "<稳定英文ID，例如 softcopyright-submission-pack>" \
+  --name "<Skill 中文名>" \
+  --purpose "<这个 Skill 要解决什么复用能力>" \
+  --gap "<当前 Skill 缺什么>" \
+  --proposed-use "<未来哪些项目/岗位会复用>" \
+  --source-ref "<可选：截图路径、任务ID、对话摘要或文件路径>"
+```
+
+这条命令会在中枢创建：
+
+- `SkillAsset`：状态是 `draft`，不是立即全公司默认启用。
+- 知识工程评审任务：补输入输出契约、案例、测试、适用范围和推广策略。
+
+推广规则：
+
+- `scope=project`：只给当前项目用。
+- `scope=company`：进入公司级复用候选，但必须评审和测试通过后再推广。
+- 没有中枢 `SkillAsset`、没有评审任务、没有测试证据的 Skill，不算可复用 Skill。
 
 ## 验收标准
 

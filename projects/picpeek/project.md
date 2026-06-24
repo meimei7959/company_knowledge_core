@@ -34,6 +34,9 @@ suggestedAgents:
 createGroup: confirm
 requiresRunner: true
 updatedAt: "2026-06-24T01:40:37Z"
+workspaceProfile: copyright
+sourceRepoUrl: "https://github.com/shenyingjun5/picpeek"
+sourceRepoRef: /Users/meimei/Documents/picpeek/01_源码镜像/picpeek
 ---
 
 ## Goal
