@@ -357,6 +357,25 @@ def workspace_source_rule(source_repo_note: str) -> str:
     )
 
 
+def workspace_delivery_thinking_rules(root: Path, project_id: str) -> list[str]:
+    return [
+        "## Delivery Thinking",
+        "",
+        "Before producing role output, use the central Agent Delivery Thinking Framework:",
+        "",
+        f"- `{root}/docs/agent-team/agent-delivery-thinking-framework.md`",
+        "",
+        "Do not just fill templates. Think like the role owner: target, receiver, current state, path, exceptions, dependencies, evidence, gates, and next action. Choose the clearest delivery form for the downstream receiver.",
+        "",
+        "Before downstream work starts, the receiving Agent must create ReceiverReview. ReceiverReview checks whether the upstream output can be used, whether role boundaries are respected, and whether evidence is ready enough to continue. It is not final acceptance.",
+        "",
+        "Every TaskResult should make the framework self-check visible in `commonRulesEvaluation` or `qualityEvaluation`, without forcing a fixed table.",
+        "",
+        f"Central project rules for this workspace remain `projects/{project_id}/AGENTS.md`.",
+        "",
+    ]
+
+
 def workspace_agent_feedback_rules(root: Path, project_id: str) -> list[str]:
     return [
         "## Report System Issues Back To Central",
@@ -433,6 +452,23 @@ def workspace_start_feedback_rules(root: Path, project_id: str) -> list[str]:
     ]
 
 
+def workspace_start_delivery_thinking_rules(root: Path) -> list[str]:
+    return [
+        "## 交付思考",
+        "",
+        "正式开工前，先读取中枢思考框架：",
+        "",
+        "```txt",
+        f"{root}/docs/agent-team/agent-delivery-thinking-framework.md",
+        "```",
+        "",
+        "不要只填模板。每个岗位 Agent 先判断目标、对象、状态、路径、异常、依赖、证据、门禁和下一步，再自主选择最清楚的表达方式。",
+        "",
+        "交给下游前，下游接收 Agent 必须做 ReceiverReview：能接就继续，带假设就写清假设，不能接就退回或交 PM/人类决策。ReceiverReview 不是最终验收。",
+        "",
+    ]
+
+
 def write_workspace_entrypoint(
     workspace_ref: str,
     project_id: str,
@@ -490,6 +526,7 @@ def write_workspace_entrypoint(
             "",
             "The user may keep working from this entity workspace. The Project Manager Agent coordinates role handoff. Only compact project records, task flow, TaskResult summaries, evidence refs, and AuditLog are written back to the central repository. Raw artifacts, long logs, screenshots, and PRD files stay in this workspace or external storage and are referenced through storageRef.",
             "",
+            *workspace_delivery_thinking_rules(root, project_id),
             *workspace_agent_feedback_rules(root, project_id),
         ]
     )
@@ -516,6 +553,7 @@ def write_workspace_entrypoint(
             "",
             "不要把软著、运营、截图、说明书或过程材料写入源码镜像。源码镜像只用于读取和按需更新。",
             "",
+            *workspace_start_delivery_thinking_rules(root),
             *workspace_start_feedback_rules(root, project_id),
         ]
     )

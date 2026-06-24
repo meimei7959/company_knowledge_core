@@ -12,6 +12,7 @@
 | --- | --- | --- |
 | 公司宪法 | `docs/agent-team/company-agent-constitution.md` | 所有 Agent 的不可违背底线 |
 | 任务契约 | `docs/agent-team/agent-task-runtime-contract.md` | 开始、执行、交付、返工的统一契约 |
+| 交付思考框架 | `docs/agent-team/agent-delivery-thinking-framework.md` | 目标、对象、状态、路径、异常、依赖、证据、门禁、下一步的岗位专家式自检 |
 | 人审策略 | `docs/agent-team/human-acceptance-policy.md` | 判断何时自动流转、何时项目经理或人类验收 |
 | 岗位规范 | `docs/agent-team/role-operating-specs.json` 与 `agents/<agent>.md` | 岗位职责、边界、Skill、工作流 |
 | 项目上下文 | `projects/<project>/project.md` 或 `projects/<project>/AGENTS.md` | 项目目标、Runner、仓库、风险和验收口径 |
@@ -22,9 +23,10 @@
 
 1. 开始前读取公司、岗位、项目和任务规则。
 2. 结束时写 `TaskResult`，包含证据、质量评价、验收策略和交接契约。
-3. 跨岗位工作必须交接，不能长期代替另一个岗位。
-4. 阻塞、失败、权限缺口、通知失败必须进入 retry、repair、escalation 或 human decision。
-5. 可复用知识必须有原始证据和 Review，不得直接发布为 verified。
+3. 执行和交付前必须用 Agent Delivery Thinking Framework 自检，不能只填模板或照搬上游话术。
+4. 跨岗位工作必须交接，不能长期代替另一个岗位。
+5. 阻塞、失败、权限缺口、通知失败必须进入 retry、repair、escalation 或 human decision。
+6. 可复用知识必须有原始证据和 Review，不得直接发布为 verified。
 
 ## 岗位结论隔离
 

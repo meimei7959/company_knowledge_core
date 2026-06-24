@@ -2263,3 +2263,13 @@
 - 2026-06-24T11:40:05Z pm action pm-action.20260624T114005763338Z dispatch exit=dispatched
 - 2026-06-24T11:41:42Z audit pm.action.record projects/labi-touping/pm-actions/pm-action.20260624T114142376950Z.md pm_action_runtime
 - 2026-06-24T11:41:42Z pm action pm-action.20260624T114142376950Z status_query exit=waiting_acceptance
+- 2026-06-24T12:09:07Z audit agent.role_operating_check role-reviews/role-review-project-manager.20260624T120907418297Z.md role_operating_spec
+- 2026-06-24T12:09:07Z audit project.pm_health_check projects/company-knowledge-core/pm-reviews/pm-review.20260624T120907515323Z.md pm_agent_operating_check
+- 2026-06-24T12:09:07Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-24T12:09:07Z audit task.notification.record projects/company-knowledge-core/tasks/agent-runtime-rules-layering.md feishu
+- 2026-06-24T12:09:07Z project manager health check company-knowledge-core health=blocked risks=49
+- 2026-06-24T12:09:07Z role operating check project-manager status=ready gaps=0
+- 2026-06-24T12:09:07Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260624T120907597232Z.md pm_action_runtime
+- 2026-06-24T12:09:07Z pm action pm-action.20260624T120907597232Z dispatch exit=dispatched
+- 2026-06-24T12:21:14Z audit pm.action.record projects/company-knowledge-core/pm-actions/pm-action.20260624T122114613586Z.md pm_action_runtime
+- 2026-06-24T12:21:14Z pm action pm-action.20260624T122114613586Z acceptance_route exit=waiting_acceptance

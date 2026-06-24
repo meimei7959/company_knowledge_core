@@ -2,6 +2,7 @@
   "version": "agent-role-operating-specs.v1",
   "guideRef": "docs/agent-team/company-agent-team-operating-guide.md",
   "commonRulesRef": "docs/agent-team/common-agent-operating-rules.md",
+  "thinkingFrameworkRef": "docs/agent-team/agent-delivery-thinking-framework.md",
   "receiverReviewPolicy": {
     "objectType": "ReceiverReview",
     "requiredBeforeDownstreamWork": [
@@ -22,6 +23,7 @@
     ],
     "rules": [
       "下游 Agent 接收上游交付物前必须创建 ReceiverReview。",
+      "ReceiverReview 必须检查上游交付是否说清目标、对象、状态、路径、异常、依赖、证据、门禁和下一步；不要求上游填写固定模板。",
       "accepted_with_assumptions 必须写 assumptions 并在 TaskResult 中保留影响。",
       "needs_rework 必须回派上游 owner 返工。",
       "human_decision_required 必须交项目经理 Agent 路由人类决策。",
@@ -56,6 +58,7 @@
       "primaryOwner": "agent.company.project-manager",
       "guideRef": "docs/agent-team/company-agent-team-operating-guide.md",
       "commonRulesRef": "docs/agent-team/common-agent-operating-rules.md",
+      "thinkingFrameworkRef": "docs/agent-team/agent-delivery-thinking-framework.md",
       "receiverReviewGate": {
         "requiredFields": [
           "workSourceType",
@@ -74,6 +77,7 @@
         "rules": [
           "Project Manager must create or route ProjectTask with workSourceType.",
           "Feature work must preserve requirementRefs; bugfix/rework must preserve defectRefs.",
+          "Project routing must expose target, receiver, current state, dependencies, evidence readiness, gate requirements, and next action before downstream work starts.",
           "Downstream work must not start until the receiving Agent records ReceiverReview."
         ]
       },
@@ -206,6 +210,7 @@
       "primaryOwner": "agent.company.product-manager",
       "guideRef": "docs/agent-team/company-agent-team-operating-guide.md",
       "commonRulesRef": "docs/agent-team/common-agent-operating-rules.md",
+      "thinkingFrameworkRef": "docs/agent-team/agent-delivery-thinking-framework.md",
       "receiverReviewGate": {
         "requiredFields": [
           "workSourceType",
@@ -222,6 +227,7 @@
         ],
         "rules": [
           "Product feature work must declare workSourceType and requirementRefs.",
+          "Product handoff must make user, problem, value, scope, assumptions, evidence readiness, acceptance gates, and next decision visible without forcing a fixed template.",
           "Product handoff must wait for ReceiverReview before downstream work.",
           "needs_rework and human_decision_required stop product flow."
         ]
@@ -346,6 +352,7 @@
       "primaryOwner": "agent.company.design",
       "guideRef": "docs/agent-team/company-agent-team-operating-guide.md",
       "commonRulesRef": "docs/agent-team/common-agent-operating-rules.md",
+      "thinkingFrameworkRef": "docs/agent-team/agent-delivery-thinking-framework.md",
       "receiverReviewGate": {
         "requiredFields": [
           "ReceiverReview"
@@ -360,6 +367,7 @@
         ],
         "rules": [
           "Design work starts only after ReceiverReview accepts upstream input.",
+          "Design handoff must make target user, interaction state, primary path, exception states, implementation dependencies, evidence readiness, and testable gates visible.",
           "needs_rework returns to the upstream owner.",
           "human_decision_required routes to PM or human owner."
         ]
@@ -593,6 +601,7 @@
       "primaryOwner": "agent.company.development",
       "guideRef": "docs/agent-team/company-agent-team-operating-guide.md",
       "commonRulesRef": "docs/agent-team/common-agent-operating-rules.md",
+      "thinkingFrameworkRef": "docs/agent-team/agent-delivery-thinking-framework.md",
       "receiverReviewGate": {
         "requiredFields": [
           "ReceiverReview",
@@ -608,6 +617,7 @@
         ],
         "rules": [
           "Development work starts only after ReceiverReview accepts upstream input.",
+          "Development must reason from root cause and system boundary before implementation, then expose changed path, dependencies, evidence readiness, risks, gates, rollback, and next test handoff.",
           "Bugfix implementation must preserve defectRefs and Defect evidence.",
           "needs_rework and human_decision_required stop implementation flow."
         ]
@@ -722,6 +732,7 @@
       "primaryOwner": "agent.company.test",
       "guideRef": "docs/agent-team/company-agent-team-operating-guide.md",
       "commonRulesRef": "docs/agent-team/common-agent-operating-rules.md",
+      "thinkingFrameworkRef": "docs/agent-team/agent-delivery-thinking-framework.md",
       "receiverReviewGate": {
         "requiredFields": [
           "ReceiverReview",
@@ -739,6 +750,7 @@
         ],
         "rules": [
           "Test work starts only after ReceiverReview accepts implementation input.",
+          "Test planning and reports must expose acceptance target, tested object, observed state, coverage path, exceptions, dependencies, evidence readiness, release gates, and next route.",
           "Implementation failures must create or update Defect and defectRefs.",
           "Regression completion must record regressionEvidenceRefs."
         ]

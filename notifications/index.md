@@ -819,3 +819,5 @@
 - [task_created project-init-labi-touping-architecture-solution](notification.20260624T114005760666Z.md)
 - [task_created project-init-labi-touping-development-plan](notification.20260624T114005761801Z.md)
 - [task_created project-init-labi-touping-test-strategy](notification.20260624T114005762731Z.md)
+- [project_manager_health_blocked agent-runtime-rules-layering](notification.20260624T120907516492Z.md)
+- [project_manager_human_decision_required agent-runtime-rules-layering](notification.20260624T120907517859Z.md)

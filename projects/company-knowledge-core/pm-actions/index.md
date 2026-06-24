@@ -32,3 +32,5 @@
 - [PM action acceptance_route: 项目经理验收 Agent 反馈分支治理使用分发层：业务项目 AGENTS/START_HERE、同事接入指南和生成入口测试已覆盖 skill-gap 先切 fe](pm-action.20260624T045847930316Z.md)
 - [PM action dispatch: 项目经理调度批量刷新进行中项目入口：在现有 refresh_project_entrypoint 单项目脚本基础上新增批量刷新所有已确认 workspaceRe](pm-action.20260624T050652091534Z.md)
 - [PM action acceptance_route: 项目经理验收批量刷新进行中项目入口：研发实现 --all/--dry-run，测试发现中枢根目录误刷新风险后已返工修复；最终验证批量 dry-run 会刷新 p](pm-action.20260624T052820222913Z.md)
+- [PM action dispatch: 项目经理调度 Agent 能力提升：放弃大量业务模板思路，沉淀通用 Agent Delivery Thinking Framework、ReceiverRevi](pm-action.20260624T120907597232Z.md)
+- [PM action acceptance_route: 项目经理验收 Agent Delivery Thinking Framework：研发已把能力提升从业务模板收敛为通用岗位专家式思考框架，测试确认非模板化、PM](pm-action.20260624T122114613586Z.md)

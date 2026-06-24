@@ -43,6 +43,16 @@ def assert_feedback_governance_text(testcase: unittest.TestCase, agents: str, st
     testcase.assertIn("知识工程/PM 评审", start_here)
 
 
+def assert_delivery_thinking_text(testcase: unittest.TestCase, agents: str, start_here: str) -> None:
+    testcase.assertIn("Agent Delivery Thinking Framework", agents)
+    testcase.assertIn("docs/agent-team/agent-delivery-thinking-framework.md", agents)
+    testcase.assertIn("Do not just fill templates", agents)
+    testcase.assertIn("ReceiverReview checks whether the upstream output can be used", agents)
+    testcase.assertIn("不要只填模板", start_here)
+    testcase.assertIn("目标、对象、状态、路径、异常、依赖、证据、门禁和下一步", start_here)
+    testcase.assertIn("下游接收 Agent 必须做 ReceiverReview", start_here)
+
+
 class ProjectInitBoundaryTests(unittest.TestCase):
     def test_workspace_inside_central_root_is_rejected(self) -> None:
         module = load_script_module()
@@ -263,6 +273,7 @@ class ProjectInitProfileTests(unittest.TestCase):
                 self.assertIn("scripts/agent_feedback.py skill-gap", start_here)
                 self.assertIn("scripts/agent_feedback.py system-issue", start_here)
                 assert_feedback_governance_text(self, agents, start_here)
+                assert_delivery_thinking_text(self, agents, start_here)
                 self.assertNotIn("scripts/report_skill_gap.py", agents)
                 self.assertNotIn("scripts/report_skill_gap.py", start_here)
                 self.assertNotIn("scripts/report_system_issue.py", agents)

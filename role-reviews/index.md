@@ -45,3 +45,4 @@
 - [Role operating review: 项目经理 Agent](role-review-project-manager.20260624T040043358323Z.md)
 - [Role operating review: 项目经理 Agent](role-review-project-manager.20260624T044859829734Z.md)
 - [Role operating review: 项目经理 Agent](role-review-project-manager.20260624T050634959678Z.md)
+- [Role operating review: 项目经理 Agent](role-review-project-manager.20260624T120907418297Z.md)
