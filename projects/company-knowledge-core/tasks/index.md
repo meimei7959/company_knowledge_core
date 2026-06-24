@@ -181,3 +181,4 @@ Testing and access control:
 - [修复 maintenance 任务来源追溯校验缺失](kt-20260623-001.md)
 - [修复岗位 Agent 规则对任务来源与 ReceiverReview 机制的直接绑定](kt-20260623-002.md)
 - [知识工程评审并沉淀可复用 Skill：软著材料执行与提交包生成](kt-20260624-001.md)
+- [项目经理分诊体系问题：billing-lite project entry references missing central project path](kt-20260624-002.md)

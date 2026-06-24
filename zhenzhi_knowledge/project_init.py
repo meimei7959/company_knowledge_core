@@ -15,9 +15,11 @@ from zhenzhi_knowledge.core import (
     create_project_task,
     create_source_material,
     load_object,
+    read_text,
     rel,
     update_frontmatter_file,
     validate_bundle,
+    write_text,
 )
 from zhenzhi_knowledge.project_init_profiles import (
     PROFILE_INITIAL_TASKS,
@@ -315,6 +317,67 @@ def update_project_workspace_metadata(
     update_frontmatter_file(project_path, updates)
 
 
+def localize_project_initialization_labels(bundle: Bundle, project_id: str, project_name: str) -> None:
+    """Keep human-facing initialization labels on the project display name.
+
+    `project_id` stays in paths, task ids, and machine refs. People should see
+    the project name first.
+    """
+    pid = project_id.strip()
+    old_task_title = f"Initialize project: {project_name}"
+    new_task_title = f"{project_name} 项目初始化"
+    old_expected = [
+        "Confirm project scope, milestones, Agent team, Runner, repo, project group, and first tasks.",
+        "Write TaskResult with handoff, blockers, and first executable backlog.",
+    ]
+    new_expected = [
+        "确认项目范围、里程碑、Agent 团队、Runner、仓库、项目群和首批任务。",
+        "写回 TaskResult，说明交接、阻塞和第一批可执行任务队列。",
+    ]
+
+    task_path = bundle.root / "projects" / pid / "tasks" / f"project-init-{pid}.md"
+    if task_path.exists():
+        update_frontmatter_file(task_path, {"title": new_task_title, "expectedOutput": new_expected})
+        text = read_text(task_path)
+        text = text.replace(old_task_title, new_task_title)
+        for old, new in zip(old_expected, new_expected):
+            text = text.replace(old, new)
+        write_text(task_path, text)
+
+    task_index_path = bundle.root / "projects" / pid / "tasks" / "index.md"
+    if task_index_path.exists():
+        text = read_text(task_index_path).replace(
+            f"- [{old_task_title}](project-init-{pid}.md)",
+            f"- [{new_task_title}](project-init-{pid}.md)",
+        )
+        write_text(task_index_path, text)
+
+    launch_path = bundle.root / "projects" / pid / "launch.md"
+    if launch_path.exists():
+        text = read_text(launch_path)
+        replacements = {
+            "## Project Intake": "## 项目接入信息",
+            "## Suggested Agent Team": "## 建议 Agent 团队",
+            "## Initialization Checklist": "## 初始化检查清单",
+            "- Confirm scope, milestone, Agent team, Runner, repo, project group, approval state.": "- 确认范围、里程碑、Agent 团队、Runner、仓库、项目群和审批状态。",
+            "- Confirm entity workspace path; if not confirmed, keep workspaceRef=pending_confirmation.": "- 确认实体项目目录；未确认时保持 workspaceRef=pending_confirmation。",
+            "- Existing repo: inspect README/AGENTS/directory/review rules before changes.": "- 已有仓库项目：变更前先读取 README、AGENTS、目录结构和评审规则。",
+            "- New repo: create repo request from project name; do not ask user to provide repository name.": "- 新开发项目：按项目名称创建工程请求，不让用户反复提供仓库名。",
+            "- Operations project: create operating cadence and feedback loop instead of forcing a code repo.": "- 运营类项目：建立运营节奏和反馈闭环，不强行套代码仓库流程。",
+        }
+        for old, new in replacements.items():
+            text = text.replace(old, new)
+        write_text(launch_path, text)
+
+    for log_path in [bundle.root / "log.md", bundle.root / "projects" / pid / "log.md"]:
+        if log_path.exists():
+            text = read_text(log_path).replace(
+                f"registered Project {pid}",
+                f"registered project {project_name} ({pid})",
+            )
+            write_text(log_path, text)
+
+
 def record_project_manager_initialization(
     bundle: Bundle,
     project_id: str,
@@ -497,11 +560,11 @@ def write_workspace_entrypoint(
             *(f"sourceMaterialRef: {item}" for item in source_refs[:1]),
             "---",
             "",
-            f"# {project_name} Agent Entry",
+            f"# {project_name} 项目入口",
             "",
             "You are working in the entity project workspace, not the central knowledge repository.",
             "",
-            "## Start",
+            "## 开始方式",
             "",
             "When the user asks to start or continue this project, the Project Manager Agent must take control first. Do not jump directly to product, architecture, development, or testing.",
             "",
@@ -518,7 +581,7 @@ def write_workspace_entrypoint(
             f"- `projects/{project_id}/tasks/index.md`",
             f"- `projects/{project_id}/AGENTS.md`",
             "",
-            "## Workspace Boundary",
+            "## 工作区边界",
             "",
             f"- workspaceProfile: `{profile}`",
             f"- sourceRepoRef: `{source_repo_note}`",
@@ -607,6 +670,7 @@ def initialize_project(args: argparse.Namespace) -> int:
             project_id=args.project_id,
             workspace_ref=workspace_ref,
         )
+        localize_project_initialization_labels(bundle, args.project_id, args.name)
         source_refs = register_source_repo(bundle, args.project_id, args.name, submitter, source_repo_url, source_repo_path)
         source_refs.extend(register_source_files(bundle, args.project_id, submitter, stored_files))
         update_project_workspace_metadata(bundle, result["projectRef"], source_refs, args.workspace_profile, source_repo_url, source_repo_path)

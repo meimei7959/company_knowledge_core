@@ -114,6 +114,16 @@ class ProjectInitRuntimeTests(unittest.TestCase):
                 task_refs = pm_action.get("recordsWritten", [])
                 self.assertTrue(any(ref.endswith("project-init-demo-product-scope.md") for ref in task_refs))
                 self.assertTrue((root / "projects" / "demo" / "tasks" / "project-init-demo-product-scope.md").is_file())
+                init_task = load_object(root / "projects" / "demo" / "tasks" / "project-init-demo.md")
+                self.assertEqual(init_task["title"], "Demo 项目初始化")
+                task_index = (root / "projects" / "demo" / "tasks" / "index.md").read_text(encoding="utf-8")
+                self.assertIn("[Demo 项目初始化](project-init-demo.md)", task_index)
+                self.assertNotIn("Initialize project: Demo", task_index)
+                project_log = (root / "projects" / "demo" / "log.md").read_text(encoding="utf-8")
+                self.assertIn("registered project Demo (demo)", project_log)
+                launch = (root / "projects" / "demo" / "launch.md").read_text(encoding="utf-8")
+                self.assertIn("## 项目接入信息", launch)
+                self.assertIn("## 初始化检查清单", launch)
                 self.assertFalse(validate_bundle(Bundle(root)))
             finally:
                 sys.argv = old_argv

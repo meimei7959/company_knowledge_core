@@ -19,3 +19,4 @@ Each project should have:
 - [Other Project](pm-lease-api-e2e-20260623141411-other/project.md)
 - [PicPeek](picpeek/project.md)
 - [蜡笔投屏](labi-touping/project.md)
+- [统一付费轻服务](billing-lite/project.md)

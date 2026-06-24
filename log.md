@@ -2277,3 +2277,39 @@
 - 2026-06-24T12:24:44Z pm action pm-action.20260624T122444168824Z status_query exit=waiting_acceptance
 - 2026-06-24T12:24:44Z audit pm.action.record projects/picpeek/pm-actions/pm-action.20260624T122444170798Z.md pm_action_runtime
 - 2026-06-24T12:24:44Z pm action pm-action.20260624T122444170798Z status_query exit=waiting_acceptance
+- 2026-06-24T12:33:38Z audit defect.create projects/company-knowledge-core/defects/defect.20260624t123338408097z.md recorded
+- 2026-06-24T12:33:38Z created defect defect.20260624T123338408097Z project=company-knowledge-core
+- 2026-06-24T12:33:38Z audit task.create projects/company-knowledge-core/tasks/kt-20260624-002.md
+- 2026-06-24T12:33:38Z audit task.notification.record projects/company-knowledge-core/tasks/kt-20260624-002.md feishu
+- 2026-06-24T12:33:38Z created task KT-20260624-002 assigned=agent.company.project-manager
+- 2026-06-24T12:33:38Z audit defect.fix_task.create projects/company-knowledge-core/tasks/kt-20260624-002.md recorded
+- 2026-06-24T12:37:34Z registered Project billing-lite
+- 2026-06-24T12:37:34Z registered Agent agent.billing-lite.project-manager
+- 2026-06-24T12:37:34Z audit agent.attachProject projects/billing-lite/project.md draft
+- 2026-06-24T12:37:34Z registered Agent agent.billing-lite.knowledge-engineering
+- 2026-06-24T12:37:34Z audit agent.attachProject projects/billing-lite/project.md draft
+- 2026-06-24T12:37:34Z registered Agent agent.billing-lite.executor
+- 2026-06-24T12:37:34Z audit agent.attachProject projects/billing-lite/project.md draft
+- 2026-06-24T12:37:34Z registered Agent agent.billing-lite.product-manager
+- 2026-06-24T12:37:34Z audit agent.attachProject projects/billing-lite/project.md draft
+- 2026-06-24T12:37:34Z audit task.create projects/billing-lite/tasks/project-init-billing-lite.md
+- 2026-06-24T12:37:34Z audit task.notification.record projects/billing-lite/tasks/project-init-billing-lite.md feishu
+- 2026-06-24T12:37:34Z created task project-init-billing-lite assigned=agent.billing-lite.project-manager
+- 2026-06-24T12:37:34Z audit task.updateStatus projects/billing-lite/tasks/project-init-billing-lite.md
+- 2026-06-24T12:37:34Z audit task.notification.record projects/billing-lite/tasks/project-init-billing-lite.md feishu
+- 2026-06-24T12:37:34Z audit project.intake projects/billing-lite/project.md draft_created
+- 2026-06-24T12:37:34Z audit material.ingest projects/billing-lite/sources/source.20260624T123734337892Z.md review_required
+- 2026-06-24T12:37:34Z ingested SourceMaterial source.20260624T123734337892Z project=billing-lite
+- 2026-06-24T12:37:34Z audit task.create projects/billing-lite/tasks/project-init-billing-lite-product-scope.md
+- 2026-06-24T12:37:34Z audit task.notification.record projects/billing-lite/tasks/project-init-billing-lite-product-scope.md feishu
+- 2026-06-24T12:37:34Z created task project-init-billing-lite-product-scope assigned=agent.company.product-manager
+- 2026-06-24T12:37:34Z audit task.create projects/billing-lite/tasks/project-init-billing-lite-architecture-route.md
+- 2026-06-24T12:37:34Z audit task.notification.record projects/billing-lite/tasks/project-init-billing-lite-architecture-route.md feishu
+- 2026-06-24T12:37:34Z created task project-init-billing-lite-architecture-route assigned=agent.company.architect
+- 2026-06-24T12:37:34Z audit task.create projects/billing-lite/tasks/project-init-billing-lite-test-checklist.md
+- 2026-06-24T12:37:34Z audit task.notification.record projects/billing-lite/tasks/project-init-billing-lite-test-checklist.md feishu
+- 2026-06-24T12:37:34Z created task project-init-billing-lite-test-checklist assigned=agent.company.test
+- 2026-06-24T12:37:34Z audit pm.action.record projects/billing-lite/pm-actions/pm-action.20260624T123734344215Z.md pm_action_runtime
+- 2026-06-24T12:37:34Z pm action pm-action.20260624T123734344215Z dispatch exit=dispatched
+- 2026-06-24T12:41:18Z audit pm.action.record projects/billing-lite/pm-actions/pm-action.20260624T124118060117Z.md pm_action_runtime
+- 2026-06-24T12:41:18Z pm action pm-action.20260624T124118060117Z status_query exit=waiting_acceptance

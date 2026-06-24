@@ -41,3 +41,7 @@ Knowledge Engineering Agent is the umbrella owner. The linked steward, review, a
 - [蜡笔投屏 知识工程 Agent](agent.labi-touping.knowledge-engineering.md)
 - [蜡笔投屏 执行 Agent](agent.labi-touping.executor.md)
 - [蜡笔投屏 产品经理 Agent](agent.labi-touping.product-manager.md)
+- [统一付费轻服务 项目经理 Agent](agent.billing-lite.project-manager.md)
+- [统一付费轻服务 知识工程 Agent](agent.billing-lite.knowledge-engineering.md)
+- [统一付费轻服务 执行 Agent](agent.billing-lite.executor.md)
+- [统一付费轻服务 产品经理 Agent](agent.billing-lite.product-manager.md)
