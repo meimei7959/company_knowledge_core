@@ -17,7 +17,7 @@ from pathlib import Path
 import zhenzhi_knowledge.feishu as feishu_module
 import zhenzhi_knowledge.core as core_module
 from zhenzhi_knowledge.cli import main
-from zhenzhi_knowledge.core import Bundle, KnowledgeError, accept_project_task_result, append_log, apply_knowledge_approval_result, apply_knowledge_review_result, claim_project_task, create_audit_log, create_bugfix_task, create_defect, create_discussion_session, create_operations_feedback, create_project_launch, create_project_manager_action, create_project_task, create_receiver_review, create_runner_invitation, create_task_notification, create_tool_registration_request, create_workbench_project, finalize_discussion_session, finish_project_task, heartbeat_agent_runner, list_notifications, list_review_queue, load_object, mark_notification_delivery, project_task_context_payload, publish_knowledge_bundle, pull_project_task, register_workbench_tool, schedule_project_tasks, search_index, search_retrieval, set_project_task_status, submit_discussion_turn, submit_runner_registration, update_frontmatter_file, validate_bundle, workbench_project_execution_read_model
+from zhenzhi_knowledge.core import Bundle, KnowledgeError, accept_project_task_result, append_log, apply_knowledge_approval_result, apply_knowledge_review_result, claim_project_task, create_audit_log, create_bugfix_task, create_defect, create_discussion_session, create_operations_feedback, create_outcome_slice, create_project_launch, create_project_manager_action, create_project_task, create_receiver_review, create_runner_invitation, create_task_notification, create_tool_registration_request, create_workbench_project, finalize_discussion_session, finish_project_task, heartbeat_agent_runner, list_notifications, list_review_queue, load_object, mark_notification_delivery, project_task_context_payload, publish_knowledge_bundle, pull_project_task, register_workbench_tool, schedule_project_tasks, search_index, search_retrieval, set_project_task_status, submit_discussion_turn, submit_runner_registration, update_frontmatter_file, validate_bundle, workbench_project_execution_read_model
 from zhenzhi_knowledge.feishu import save_approval_request
 from zhenzhi_knowledge.operational_store import backup_readiness, compact_error, ensure_operational_schema, live_readiness_report, operational_store_status, redact_url, rollback_operational_schema
 from zhenzhi_knowledge.server import KnowledgeHTTPServer
@@ -585,6 +585,38 @@ evidenceRefs:
             write_minimal_bundle(root)
             bundle = Bundle(root)
             self.assertEqual(main(["--root", str(root), "project", "register", "--project-id", "qa", "--name", "QA", "--owner", "meimei"]), 0)
+            self.assertEqual(
+                main(
+                    [
+                        "--root",
+                        str(root),
+                        "project",
+                        "outcome-slice",
+                        "--project",
+                        "qa",
+                        "--title",
+                        "QA implementation slice",
+                        "--stage-goal",
+                        "Move approved requirement into implementable development work.",
+                        "--main-deliverable",
+                        "Development Agent owned implementation TaskResult.",
+                        "--current-state",
+                        "clarified",
+                        "--target-state",
+                        "implementable",
+                        "--outcome-slice-id",
+                        "qa-implementation-slice",
+                        "--stop-condition",
+                        "Stop when development ownership or evidence is missing.",
+                        "--token-budget",
+                        "20000",
+                        "--wip-limit",
+                        "2",
+                    ]
+                ),
+                0,
+            )
+            outcome_ref = "projects/qa/outcome-slices/qa-implementation-slice.md"
             task_path = create_project_task(
                 bundle,
                 "Implement delegated feature",
@@ -595,6 +627,7 @@ evidenceRefs:
                 task_id="PM-ACTION-DEV",
                 work_source_type="feature",
                 requirement_refs=["REQ-PM-ACTION-001"],
+                outcome_slice_ref=outcome_ref,
             )
             self.assertEqual(
                 main(
@@ -632,6 +665,18 @@ evidenceRefs:
             action = load_object(actions[0])
             self.assertEqual(action["type"], "ProjectManagerAction")
             self.assertEqual(action["exitState"], "dispatched")
+            self.assertTrue(any("ProjectManagerAction intent dispatch requires outcomeSliceRef" in problem for problem in validate_bundle(bundle)))
+            update_frontmatter_file(
+                actions[0],
+                {
+                    "outcomeSliceRef": outcome_ref,
+                    "outcomeStateBefore": "clarified",
+                    "outcomeStateAfter": "implementable",
+                    "outcomeValueChange": "Development Agent can now accept concrete implementation work.",
+                    "guardrailDecision": "continue",
+                    "updatedAt": "2026-06-25T00:00:00Z",
+                },
+            )
             self.assertFalse([problem for problem in validate_bundle(bundle) if "ProjectManagerAction" in problem])
 
             blocked = create_project_manager_action(
@@ -660,6 +705,11 @@ evidenceRefs:
                 "PM cannot record code as written without owning Agent provenance.",
                 records_written=["src/unowned.py"],
                 next_action="Route to Development Agent.",
+                outcome_slice_ref=outcome_ref,
+                outcome_state_before="clarified",
+                outcome_state_after="implementable",
+                outcome_value_change="Unowned record should still fail provenance before the outcome can advance.",
+                guardrail_decision="continue",
             )
             problems = validate_bundle(bundle)
             self.assertTrue(any("ProjectManagerAction recordsWritten lacks owning Agent TaskResult provenance: src/unowned.py" in problem for problem in problems))

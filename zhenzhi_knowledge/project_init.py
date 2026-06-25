@@ -10,6 +10,7 @@ from zhenzhi_knowledge.core import (
     Bundle,
     KnowledgeError,
     PENDING_WORKSPACE_REF,
+    create_outcome_slice,
     create_project_launch,
     create_project_manager_action,
     create_project_task,
@@ -394,6 +395,27 @@ def record_project_manager_initialization(
         f"项目经理完成 {project_name} 项目初始化接管：workspaceProfile={workspace_profile}，"
         f"sourceRepoRef={source_note}；项目工作区承载交付/运营/软著材料，源码镜像只作为参考源。"
     )
+    outcome = create_outcome_slice(
+        bundle,
+        project_id=project_id,
+        title=f"{project_name} 项目初始化成果切片",
+        owner="agent.company.project-manager",
+        stage_goal="让项目从口头/外部材料进入可被 Agent 团队接管的初始化状态。",
+        main_deliverable="项目工作区、中枢项目记录、SourceMaterial、初始化任务队列和工作区入口规则。",
+        current_state="unknown",
+        target_state="clarified",
+        outcome_slice_id=f"project-init-{project_id}",
+        summary=summary,
+        evidence_refs=[result["projectRef"], result["launchRef"], result["initTaskRef"], *initial_task_refs, *source_refs],
+        stop_conditions=[
+            "缺少 workspaceRef 或工作区边界不清楚时停止继续派发。",
+            "源码镜像和交付材料目录冲突时停止继续派发。",
+            "初始化任务队列缺 owner、证据入口或下游接收方时停止继续派发。",
+        ],
+        acceptance_signal="项目经理能用一页事实说明项目边界、资料来源、第一批任务和下一步接收方。",
+        token_budget="initialization-only",
+        wip_limit=2,
+    )
     create_project_manager_action(
         bundle,
         project_id=project_id,
@@ -408,6 +430,12 @@ def record_project_manager_initialization(
         records_written=[result["projectRef"], result["launchRef"], result["initTaskRef"], *initial_task_refs],
         evidence_refs=source_refs,
         next_action="Project Manager Agent confirms workspace boundary, source refs, and the profile-based first task queue before assigning downstream execution.",
+        outcome_slice_ref=outcome["outcomeSliceRef"],
+        outcome_state_before="unknown",
+        outcome_state_after="clarified",
+        outcome_value_change="Project now has a confirmed workspace boundary, central records, source material refs, and first task queue.",
+        cost_summary="Initialization-only PM action; downstream work remains gated by OutcomeSlice and ReceiverReview.",
+        guardrail_decision="continue",
     )
 
 
@@ -437,6 +465,8 @@ def workspace_delivery_thinking_rules(root: Path, project_id: str) -> list[str]:
         f"- `{root}/docs/agent-team/agent-delivery-thinking-framework.md`",
         "",
         "Do not just fill templates. Think like the role owner: target, receiver, current state, path, exceptions, dependencies, evidence, gates, and next action. Choose the clearest delivery form for the downstream receiver.",
+        "",
+        "Project Manager Agent must define an OutcomeSlice before formal decomposition, dispatch, handoff, acceptance routing, or risk escalation. An OutcomeSlice states the stage goal, main deliverable, current state, target state, evidence, WIP/token/time guardrail, and stop conditions. Tasks are only a means to move that outcome state or reduce uncertainty.",
         "",
         "Before downstream work starts, the receiving Agent must create ReceiverReview. ReceiverReview checks whether the upstream output can be used, whether role boundaries are respected, and whether evidence is ready enough to continue. It is not final acceptance.",
         "",
@@ -534,6 +564,8 @@ def workspace_start_delivery_thinking_rules(root: Path) -> list[str]:
         "```",
         "",
         "不要只填模板。每个岗位 Agent 先判断目标、对象、状态、路径、异常、依赖、证据、门禁和下一步，再自主选择最清楚的表达方式。",
+        "",
+        "项目经理 Agent 正式拆分、派发、交接、验收路由或风险升级前，必须先创建 OutcomeSlice：阶段目标、主交付物、当前状态、目标状态、证据、WIP/token/time 护栏和停止条件。任务只是推动成果状态变化或降低关键不确定性的手段。",
         "",
         "交给下游前，下游接收 Agent 必须做 ReceiverReview：能接就继续，带假设就写清假设，不能接就退回或交 PM/人类决策。ReceiverReview 不是最终验收。",
         "",

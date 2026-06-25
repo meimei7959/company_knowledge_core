@@ -77,6 +77,7 @@ STATUS_VALUES = {
     "escalated",
     "delivered",
     "operating",
+    "stopped",
     "feedback_loop",
     "waiting_agent_turns",
     "summarized",
@@ -147,6 +148,7 @@ TYPE_VALUES = {
     "ActorFeedback",
     "ProjectManagerReview",
     "ProjectManagerAction",
+    "OutcomeSlice",
     "RoleOperatingReview",
     "KnowledgeGraphEdge",
     "GraphSnapshot",
@@ -251,7 +253,7 @@ SECRET_KEYS = ("token", "secret", "password", "passwd", "credential", "api_key",
 MATERIAL_RAW_TEXT_MAX_CHARS = 20_000
 CENTRAL_RECORD_MAX_BYTES = 64 * 1024
 COLLECTION_NAMES = {"index.md", "log.md", "decisions.md", "lessons.md", "agents.md", "tools.md"}
-OBJECT_ROOT_NAMES = ["projects", "agents", "tools", "knowledge", "runs", "tasks", "sources", "task-results", "runners", "runner-invitations", "tool-registration-requests", "credential-requests", "notifications", "graph", "discussions", "pm-reviews", "pm-actions", "role-reviews", "rule-issues", "actors", "requirements", "prd", "decisions", "reviews", "defects", "receiver-reviews"]
+OBJECT_ROOT_NAMES = ["projects", "agents", "tools", "knowledge", "runs", "tasks", "sources", "task-results", "runners", "runner-invitations", "tool-registration-requests", "credential-requests", "notifications", "graph", "discussions", "pm-reviews", "pm-actions", "outcome-slices", "role-reviews", "rule-issues", "actors", "requirements", "prd", "decisions", "reviews", "defects", "receiver-reviews"]
 SAFE_SECRET_METADATA_KEYS = {
     "actorkey",
     "secretref",
@@ -3708,6 +3710,13 @@ def receiver_review_storage_dir(bundle: Bundle, project_id: str) -> Path:
     return bundle.root / "receiver-reviews"
 
 
+def outcome_slice_storage_dir(bundle: Bundle, project_id: str) -> Path:
+    pid = slug(project_id)
+    if pid and (bundle.root / "projects" / pid / "project.md").exists():
+        return bundle.root / "projects" / pid / "outcome-slices"
+    return bundle.root / "outcome-slices"
+
+
 def notification_storage_dir(bundle: Bundle) -> Path:
     return bundle.root / "notifications"
 
@@ -6360,6 +6369,7 @@ def create_project_task(
     knowledge_task_refs: list[str] | None = None,
     research_question: str = "",
     source_reason: str = "",
+    outcome_slice_ref: str = "",
     pm_agent_id: str = "",
     pm_lease_id: str = "",
     pm_fencing_token: int | str = "",
@@ -6424,6 +6434,7 @@ def create_project_task(
         "knowledgeTaskRefs": knowledge_task_refs or [],
         "researchQuestion": research_question.strip(),
         "sourceReason": source_reason.strip(),
+        "outcomeSliceRef": outcome_slice_ref.strip(),
         "receiverReviewRefs": [],
         "requester": requester,
         "assignee": resolved_assignee,
@@ -6477,6 +6488,7 @@ def create_project_task(
             f"- defectRefs: {', '.join(defect_refs or []) or 'none'}",
             f"- sourceReason: {source_reason.strip() or 'none'}",
             f"- researchQuestion: {research_question.strip() or 'none'}",
+            f"- outcomeSliceRef: {outcome_slice_ref.strip() or 'none'}",
             "",
             "## Source Materials",
             "",
@@ -7495,6 +7507,171 @@ def project_manager_action_storage_dir(bundle: Bundle, project_id: str) -> Path:
     return bundle.root / "pm-actions"
 
 
+OUTCOME_SLICE_STATE_VALUES = {
+    "unknown",
+    "clarified",
+    "solution_ready",
+    "implementable",
+    "running",
+    "verifiable",
+    "deliverable",
+    "blocked",
+    "stopped",
+}
+OUTCOME_GUARDRAIL_DECISIONS = {"continue", "pause", "stop", "escalate"}
+PM_ACTION_OUTCOME_REQUIRED_INTENTS = {
+    "task_decomposition",
+    "dispatch",
+    "acceptance_route",
+    "risk_escalation",
+    "handoff",
+    "closeout",
+}
+
+
+def create_outcome_slice(
+    bundle: Bundle,
+    project_id: str,
+    title: str,
+    owner: str,
+    stage_goal: str,
+    main_deliverable: str,
+    current_state: str,
+    target_state: str,
+    outcome_slice_id: str = "",
+    status: str = "active",
+    summary: str = "",
+    evidence_refs: list[str] | None = None,
+    risk_refs: list[str] | None = None,
+    stop_conditions: list[str] | None = None,
+    acceptance_signal: str = "",
+    time_budget: str = "",
+    token_budget: str = "",
+    wip_limit: int = 3,
+) -> dict[str, Any]:
+    project_path = find_project(bundle, project_id)
+    project = load_object(project_path)
+    pid = str(project.get("projectId") or slug(project_id))
+    title = title.strip()
+    owner = owner.strip()
+    stage_goal = stage_goal.strip()
+    main_deliverable = main_deliverable.strip()
+    current_state = current_state.strip()
+    target_state = target_state.strip()
+    if not title:
+        raise KnowledgeError("outcome slice title is required")
+    if not owner:
+        raise KnowledgeError("outcome slice owner is required")
+    for field_name, value in [
+        ("stageGoal", stage_goal),
+        ("mainDeliverable", main_deliverable),
+        ("currentState", current_state),
+        ("targetState", target_state),
+    ]:
+        if not value:
+            raise KnowledgeError(f"outcome slice {field_name} is required")
+    if current_state not in OUTCOME_SLICE_STATE_VALUES:
+        raise KnowledgeError(f"currentState must be one of {sorted(OUTCOME_SLICE_STATE_VALUES)}")
+    if target_state not in OUTCOME_SLICE_STATE_VALUES:
+        raise KnowledgeError(f"targetState must be one of {sorted(OUTCOME_SLICE_STATE_VALUES)}")
+    if current_state == target_state and status not in {"blocked", "stopped"}:
+        raise KnowledgeError("outcome slice must declare a target state change")
+    if not stop_conditions:
+        raise KnowledgeError("outcome slice requires at least one stop condition")
+    if wip_limit < 1:
+        raise KnowledgeError("outcome slice wipLimit must be >= 1")
+    slice_id = outcome_slice_id.strip() or unique_time_id("outcome-slice")
+    out_dir = outcome_slice_storage_dir(bundle, pid)
+    ensure_dir(out_dir)
+    out_path = out_dir / f"{slug(slice_id)}.md"
+    if out_path.exists():
+        raise KnowledgeError(f"outcome slice already exists: {slice_id}")
+    budget = {
+        "timeBudget": time_budget.strip(),
+        "usageBudget": token_budget.strip(),
+        "wipLimit": wip_limit,
+    }
+    frontmatter = {
+        "type": "OutcomeSlice",
+        "title": title,
+        "description": "Project Manager outcome slice. Tasks are only valid when they move this outcome state or reduce uncertainty.",
+        "timestamp": utc_now(),
+        "outcomeSliceId": slice_id,
+        "projectId": pid,
+        "owner": owner,
+        "status": status,
+        "stageGoal": stage_goal,
+        "mainDeliverable": main_deliverable,
+        "currentState": current_state,
+        "targetState": target_state,
+        "summary": summary.strip(),
+        "acceptanceSignal": acceptance_signal.strip(),
+        "evidenceRefs": evidence_refs or [],
+        "riskRefs": risk_refs or [],
+        "stopConditions": stop_conditions or [],
+        "budget": budget,
+        "activeTaskRefs": [],
+        "completedTaskRefs": [],
+        "pmActionRefs": [],
+        "stateChangeEvidenceRefs": [],
+    }
+    body = "\n".join(
+        [
+            "## Outcome",
+            "",
+            summary.strip() or title,
+            "",
+            "## Stage Goal",
+            "",
+            stage_goal,
+            "",
+            "## Main Deliverable",
+            "",
+            main_deliverable,
+            "",
+            "## State Change",
+            "",
+            f"- currentState: {current_state}",
+            f"- targetState: {target_state}",
+            f"- acceptanceSignal: {acceptance_signal.strip() or 'none'}",
+            "",
+            "## Guardrail",
+            "",
+            f"- timeBudget: {budget['timeBudget'] or 'none'}",
+            f"- usageBudget: {budget['usageBudget'] or 'none'}",
+            f"- wipLimit: {wip_limit}",
+            "- stopConditions:",
+            *[f"  - {item}" for item in stop_conditions or []],
+            "",
+            "## Evidence",
+            "",
+            *([f"- {item}" for item in evidence_refs or []] or ["- none"]),
+        ]
+    )
+    write_text(out_path, render_doc(frontmatter, body))
+    update_index(out_dir / "index.md", title, out_path.name)
+    audit_path = create_audit_log(
+        bundle,
+        owner,
+        "outcome_slice.create",
+        rel(out_path, bundle.root),
+        before=current_state,
+        after=target_state,
+        policy_result="outcome_slice_guardrail",
+        details=f"projectId={pid}\nstageGoal={stage_goal}\nmainDeliverable={main_deliverable}",
+    )
+    append_log(bundle, f"outcome slice {slice_id} project={pid} target={target_state}")
+    return {
+        "apiVersion": "v0.1",
+        "kind": "OutcomeSlice",
+        "outcomeSliceId": slice_id,
+        "projectId": pid,
+        "outcomeSliceRef": rel(out_path, bundle.root),
+        "auditRef": rel(audit_path, bundle.root),
+        "targetState": target_state,
+    }
+
+
 PM_ACTION_INTENTS = {
     "status_query",
     "task_decomposition",
@@ -7531,6 +7708,14 @@ def create_project_manager_action(
     blocker: str = "",
     blocker_owner: str = "",
     terminal_decision: str = "",
+    outcome_slice_ref: str = "",
+    outcome_state_before: str = "",
+    outcome_state_after: str = "",
+    outcome_value_change: str = "",
+    cost_summary: str = "",
+    scope_change: str = "",
+    guardrail_decision: str = "",
+    guardrail_reason: str = "",
 ) -> dict[str, Any]:
     project_path = find_project(bundle, project_id)
     project = load_object(project_path)
@@ -7548,6 +7733,8 @@ def create_project_manager_action(
         "actionId": action_id,
         "projectId": pid,
         "taskId": task_id,
+        "pmActionRuntimeVersion": "v1",
+        "outcomeGuardrailVersion": "v1",
         "actor": actor,
         "intent": intent,
         "currentState": current_state,
@@ -7562,6 +7749,14 @@ def create_project_manager_action(
         "blocker": blocker,
         "blockerOwner": blocker_owner,
         "terminalDecision": terminal_decision,
+        "outcomeSliceRef": outcome_slice_ref.strip(),
+        "outcomeStateBefore": outcome_state_before.strip(),
+        "outcomeStateAfter": outcome_state_after.strip(),
+        "outcomeValueChange": outcome_value_change.strip(),
+        "costSummary": cost_summary.strip(),
+        "scopeChange": scope_change.strip(),
+        "guardrailDecision": guardrail_decision.strip(),
+        "guardrailReason": guardrail_reason.strip(),
         "pmDeliveryGate": {
             "enforce": exit_state == "closed_with_gate_passed",
             "requirementRefs": req_refs,
@@ -7580,6 +7775,9 @@ def create_project_manager_action(
             f"- currentState: {current_state}",
             f"- allowedTransition: {allowed_transition}",
             f"- exitState: {exit_state}",
+            f"- outcomeSliceRef: {outcome_slice_ref.strip() or 'none'}",
+            f"- outcomeStateBefore: {outcome_state_before.strip() or 'none'}",
+            f"- outcomeStateAfter: {outcome_state_after.strip() or 'none'}",
             "",
             "## Records Written",
             "",
@@ -7599,6 +7797,14 @@ def create_project_manager_action(
             f"- blocker: {blocker or 'none'}",
             f"- blockerOwner: {blocker_owner or 'none'}",
             f"- terminalDecision: {terminal_decision or 'none'}",
+            "",
+            "## Outcome Guardrail",
+            "",
+            f"- outcomeValueChange: {outcome_value_change.strip() or 'none'}",
+            f"- costSummary: {cost_summary.strip() or 'none'}",
+            f"- scopeChange: {scope_change.strip() or 'none'}",
+            f"- guardrailDecision: {guardrail_decision.strip() or 'none'}",
+            f"- guardrailReason: {guardrail_reason.strip() or 'none'}",
         ]
     )
     write_text(action_path, render_doc(frontmatter, body))
@@ -7620,6 +7826,7 @@ def create_project_manager_action(
         "actionId": action_id,
         "projectId": pid,
         "actionRef": rel(action_path, bundle.root),
+        "outcomeSliceRef": outcome_slice_ref.strip(),
         "auditRef": rel(audit_path, bundle.root),
         "exitState": exit_state,
         "recordsWritten": records_written or [],
@@ -11849,6 +12056,7 @@ def finish_project_task(
         "knowledgeTaskRefs": as_list(task_fm.get("knowledgeTaskRefs")),
         "researchQuestion": str(task_fm.get("researchQuestion") or ""),
         "sourceReason": str(task_fm.get("sourceReason") or ""),
+        "outcomeSliceRef": str(task_fm.get("outcomeSliceRef") or ""),
         "receiverReviewRefs": as_list(task_fm.get("receiverReviewRefs")),
         "currentStage": task_fm.get("currentStage", ""),
         "taskRuntime": task_fm.get("taskRuntime") or task_runtime_snapshot(str(task_fm.get("taskType") or "")),
@@ -11891,6 +12099,10 @@ def finish_project_task(
             "## Evidence",
             "",
             "\n".join(f"- {item}" for item in evidence_refs or source_refs) or "- none",
+            "",
+            "## Outcome Slice",
+            "",
+            f"- outcomeSliceRef: {str(task_fm.get('outcomeSliceRef') or '') or 'none'}",
             "",
             "## Outputs",
             "",
@@ -16536,11 +16748,16 @@ def validate_pm_role_boundaries(records: list[tuple[str, dict[str, Any]]]) -> li
 def validate_pm_action_runtime(records: list[tuple[str, dict[str, Any]]]) -> list[str]:
     problems: list[str] = []
     delegated_outputs = delegated_output_producers(records)
+    outcome_refs = {rel_path: record for rel_path, record in records if record.get("type") == "OutcomeSlice"}
     for rel_path, record in records:
         if record.get("type") != "ProjectManagerAction":
             continue
         intent = str(record.get("intent") or "")
         exit_state = str(record.get("exitState") or "")
+        runtime_version = str(record.get("pmActionRuntimeVersion") or "")
+        strict_runtime = runtime_version == "v1" or str(record.get("outcomeGuardrailVersion") or "") == "v1"
+        if not strict_runtime and intent not in PM_ACTION_INTENTS:
+            continue
         if intent not in PM_ACTION_INTENTS:
             problems.append(f"{rel_path}: ProjectManagerAction intent must be one of {sorted(PM_ACTION_INTENTS)}")
         if exit_state not in PM_ACTION_EXIT_STATES:
@@ -16555,8 +16772,31 @@ def validate_pm_action_runtime(records: list[tuple[str, dict[str, Any]]]) -> lis
         blocker = str(record.get("blocker") or "").strip()
         blocker_owner = str(record.get("blockerOwner") or "").strip()
         terminal_decision = str(record.get("terminalDecision") or "").strip()
+        outcome_slice_ref = str(record.get("outcomeSliceRef") or "").strip()
+        outcome_state_before = str(record.get("outcomeStateBefore") or "").strip()
+        outcome_state_after = str(record.get("outcomeStateAfter") or "").strip()
+        outcome_value_change = str(record.get("outcomeValueChange") or "").strip()
+        guardrail_decision = str(record.get("guardrailDecision") or "").strip()
+        guardrail_reason = str(record.get("guardrailReason") or "").strip()
         if not any([next_action, blocker, terminal_decision]):
             problems.append(f"{rel_path}: ProjectManagerAction exit requires nextAction, blocker, or terminalDecision")
+        if strict_runtime and intent in PM_ACTION_OUTCOME_REQUIRED_INTENTS:
+            if not outcome_slice_ref:
+                problems.append(f"{rel_path}: ProjectManagerAction intent {intent} requires outcomeSliceRef")
+            elif outcome_slice_ref not in outcome_refs:
+                problems.append(f"{rel_path}: ProjectManagerAction outcomeSliceRef does not exist or is not OutcomeSlice: {outcome_slice_ref}")
+        if strict_runtime and outcome_slice_ref:
+            if not (outcome_state_before and outcome_state_after):
+                problems.append(f"{rel_path}: ProjectManagerAction with outcomeSliceRef requires outcomeStateBefore and outcomeStateAfter")
+            elif outcome_state_before == outcome_state_after and guardrail_decision not in {"pause", "stop", "escalate"}:
+                problems.append(f"{rel_path}: ProjectManagerAction outcome state did not change; use guardrailDecision pause/stop/escalate or record a target state change")
+            if not outcome_value_change:
+                problems.append(f"{rel_path}: ProjectManagerAction with outcomeSliceRef requires outcomeValueChange")
+            if guardrail_decision:
+                if guardrail_decision not in OUTCOME_GUARDRAIL_DECISIONS:
+                    problems.append(f"{rel_path}: ProjectManagerAction guardrailDecision must be one of {sorted(OUTCOME_GUARDRAIL_DECISIONS)}")
+                if guardrail_decision in {"pause", "stop", "escalate"} and not guardrail_reason:
+                    problems.append(f"{rel_path}: ProjectManagerAction guardrailDecision {guardrail_decision} requires guardrailReason")
         if exit_state == "dispatched" and not (records_written or delegated_owners or next_action):
             problems.append(f"{rel_path}: dispatched PM action requires recordsWritten, delegatedOwners, or nextAction")
         if exit_state == "waiting_acceptance" and not (records_written or next_action):
@@ -16766,6 +17006,8 @@ def validate_pm_delivery_gates(records: list[tuple[str, dict[str, Any]]]) -> lis
     for rel_path, record in records:
         if not pm_delivery_gate_enabled(record):
             continue
+        if record.get("type") == "ProjectManagerAction" and str(record.get("exitState") or "") != "closed_with_gate_passed":
+            continue
         requirement_refs = pm_delivery_gate_requirement_refs(record)
         if not requirement_refs:
             problems.append(f"{rel_path}: pmDeliveryGate requires requirementRefs")
@@ -16888,6 +17130,15 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.append(f"{rel_path}: unknown task routing status {fm.get('status')}")
         if fm.get("type") in {"ProjectTask", "KnowledgeTask"}:
             problems.extend(validate_task_source_traceability(rel_path, fm, require_explicit=bool(fm.get("workSourceType"))))
+            outcome_ref = str(fm.get("outcomeSliceRef") or "").strip()
+            if outcome_ref:
+                outcome_path = bundle.root / outcome_ref
+                if not outcome_path.exists():
+                    problems.append(f"{rel_path}: outcomeSliceRef does not exist: {outcome_ref}")
+                else:
+                    outcome = load_object(outcome_path)
+                    if outcome.get("type") != "OutcomeSlice":
+                        problems.append(f"{rel_path}: outcomeSliceRef must point to OutcomeSlice: {outcome_ref}")
             for review_ref in as_list(fm.get("receiverReviewRefs")):
                 review_path = bundle.root / review_ref
                 if not review_path.exists():
@@ -16896,6 +17147,32 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                 review = load_object(review_path)
                 if review.get("type") != "ReceiverReview":
                     problems.append(f"{rel_path}: receiverReviewRefs must point to ReceiverReview: {review_ref}")
+        if fm.get("type") == "OutcomeSlice":
+            for field in ["outcomeSliceId", "projectId", "owner", "stageGoal", "mainDeliverable", "currentState", "targetState"]:
+                if is_empty_value(fm.get(field)):
+                    problems.append(f"{rel_path}: OutcomeSlice missing required field {field}")
+            current_state = str(fm.get("currentState") or "")
+            target_state = str(fm.get("targetState") or "")
+            if current_state and current_state not in OUTCOME_SLICE_STATE_VALUES:
+                problems.append(f"{rel_path}: unknown OutcomeSlice currentState {current_state}")
+            if target_state and target_state not in OUTCOME_SLICE_STATE_VALUES:
+                problems.append(f"{rel_path}: unknown OutcomeSlice targetState {target_state}")
+            if current_state and target_state and current_state == target_state and str(fm.get("status") or "") not in {"blocked", "stopped"}:
+                problems.append(f"{rel_path}: OutcomeSlice must declare a target state change")
+            budget = fm.get("budget")
+            if not isinstance(budget, dict):
+                problems.append(f"{rel_path}: OutcomeSlice requires budget")
+            else:
+                try:
+                    wip_limit = int(budget.get("wipLimit") or 0)
+                except (TypeError, ValueError):
+                    wip_limit = 0
+                if wip_limit < 1:
+                    problems.append(f"{rel_path}: OutcomeSlice budget.wipLimit must be >= 1")
+            if not as_list(fm.get("stopConditions")):
+                problems.append(f"{rel_path}: OutcomeSlice requires stopConditions")
+            if str(fm.get("status") or "") in {"done", "closed", "delivered"} and not as_list(fm.get("evidenceRefs")):
+                problems.append(f"{rel_path}: completed OutcomeSlice requires evidenceRefs")
         if fm.get("type") == "Defect":
             for field in ["defectId", "projectId", "reporter", "severity", "status"]:
                 if is_empty_value(fm.get(field)):

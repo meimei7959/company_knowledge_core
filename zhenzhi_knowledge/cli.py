@@ -44,6 +44,7 @@ from .core import (
     create_impact_review,
     create_ops_experiment,
     create_operating_rule_issue,
+    create_outcome_slice,
     create_backup,
     disable_governed_asset,
     diagnose_project_task,
@@ -388,6 +389,32 @@ def make_parser() -> argparse.ArgumentParser:
     p_project_pm_action.add_argument("--blocker", default="")
     p_project_pm_action.add_argument("--blocker-owner", default="")
     p_project_pm_action.add_argument("--terminal-decision", default="")
+    p_project_pm_action.add_argument("--outcome-slice-ref", default="")
+    p_project_pm_action.add_argument("--outcome-state-before", default="")
+    p_project_pm_action.add_argument("--outcome-state-after", default="")
+    p_project_pm_action.add_argument("--outcome-value-change", default="")
+    p_project_pm_action.add_argument("--cost-summary", default="")
+    p_project_pm_action.add_argument("--scope-change", default="")
+    p_project_pm_action.add_argument("--guardrail-decision", default="")
+    p_project_pm_action.add_argument("--guardrail-reason", default="")
+    p_project_outcome = p_project_sub.add_parser("outcome-slice")
+    p_project_outcome.add_argument("--project", required=True)
+    p_project_outcome.add_argument("--title", required=True)
+    p_project_outcome.add_argument("--owner", default="agent.company.project-manager")
+    p_project_outcome.add_argument("--stage-goal", required=True)
+    p_project_outcome.add_argument("--main-deliverable", required=True)
+    p_project_outcome.add_argument("--current-state", required=True)
+    p_project_outcome.add_argument("--target-state", required=True)
+    p_project_outcome.add_argument("--outcome-slice-id", default="")
+    p_project_outcome.add_argument("--status", default="active")
+    p_project_outcome.add_argument("--summary", default="")
+    p_project_outcome.add_argument("--evidence-ref", action="append", default=[])
+    p_project_outcome.add_argument("--risk-ref", action="append", default=[])
+    p_project_outcome.add_argument("--stop-condition", action="append", default=[])
+    p_project_outcome.add_argument("--acceptance-signal", default="")
+    p_project_outcome.add_argument("--time-budget", default="")
+    p_project_outcome.add_argument("--token-budget", default="")
+    p_project_outcome.add_argument("--wip-limit", type=int, default=3)
 
     p_task = sub.add_parser("task")
     p_task_sub = p_task.add_subparsers(dest="task_command", required=True)
@@ -413,6 +440,7 @@ def make_parser() -> argparse.ArgumentParser:
     p_task_create.add_argument("--knowledge-task-ref", action="append", default=[])
     p_task_create.add_argument("--research-question", default="")
     p_task_create.add_argument("--source-reason", default="")
+    p_task_create.add_argument("--outcome-slice-ref", default="")
     p_task_create.add_argument("--pm-agent", default="")
     p_task_create.add_argument("--pm-lease-id", default="")
     p_task_create.add_argument("--pm-lease-generation", dest="pm_fencing_token", default="")
@@ -1392,6 +1420,36 @@ def main(argv: list[str] | None = None) -> int:
                     blocker=args.blocker,
                     blocker_owner=args.blocker_owner,
                     terminal_decision=args.terminal_decision,
+                    outcome_slice_ref=args.outcome_slice_ref,
+                    outcome_state_before=args.outcome_state_before,
+                    outcome_state_after=args.outcome_state_after,
+                    outcome_value_change=args.outcome_value_change,
+                    cost_summary=args.cost_summary,
+                    scope_change=args.scope_change,
+                    guardrail_decision=args.guardrail_decision,
+                    guardrail_reason=args.guardrail_reason,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.project_command == "outcome-slice":
+                result = create_outcome_slice(
+                    bundle,
+                    args.project,
+                    args.title,
+                    args.owner,
+                    args.stage_goal,
+                    args.main_deliverable,
+                    args.current_state,
+                    args.target_state,
+                    outcome_slice_id=args.outcome_slice_id,
+                    status=args.status,
+                    summary=args.summary,
+                    evidence_refs=args.evidence_ref,
+                    risk_refs=args.risk_ref,
+                    stop_conditions=args.stop_condition,
+                    acceptance_signal=args.acceptance_signal,
+                    time_budget=args.time_budget,
+                    token_budget=args.token_budget,
+                    wip_limit=args.wip_limit,
                 )
                 print(json.dumps(result, indent=2, ensure_ascii=False))
         elif args.command == "task":
@@ -1419,6 +1477,7 @@ def main(argv: list[str] | None = None) -> int:
                     knowledge_task_refs=args.knowledge_task_ref,
                     research_question=args.research_question,
                     source_reason=args.source_reason,
+                    outcome_slice_ref=args.outcome_slice_ref,
                     pm_agent_id=args.pm_agent,
                     pm_lease_id=args.pm_lease_id,
                     pm_fencing_token=args.pm_fencing_token,

@@ -32,6 +32,8 @@
 
 主线程、Agent Hub、项目经理 Agent 可以组织调度、创建任务、释放依赖、验收路由和记录风险，但不能替其他岗位产出岗位结论。
 
+项目经理 Agent 的正式调度单位是 `OutcomeSlice`，不是零散任务。没有成果切片，不允许正式拆分、派发、交接、验收路由或风险升级；任务必须能说明它推动哪个成果状态变化，或降低哪个关键不确定性。只增加角色会话、文件数量或检查次数，不等于项目进展。
+
 - 产品结论、需求验收、产品范围判断必须由 `agent.company.product-manager` 或明确的人类产品 Owner 产出 TaskResult。
 - 研发实现和技术返修必须由 Development Agent 产出 TaskResult。
 - 测试通过、失败、回归结论必须由 Test Agent 产出 TaskResult。

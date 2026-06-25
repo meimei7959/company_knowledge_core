@@ -5,6 +5,7 @@
 Agent 开始任务前必须拿到：
 
 - 任务目标和完成标准；
+- 如果任务来自项目经理调度，必须拿到 `outcomeSliceRef`，并理解它的阶段目标、主交付物、当前状态、目标状态、证据和停止条件；
 - 输入资料和证据入口；
 - 公司宪法、公共制度、岗位规则、项目规则；
 - Agent Delivery Thinking Framework，用于先形成岗位判断，再选择表达形式；
@@ -18,6 +19,7 @@ Agent 开始任务前必须拿到：
 - 不跨岗位长期代工；
 - 不替其他岗位产出最终岗位结论；产品验收必须由产品经理 Agent，测试结论必须由测试 Agent，研发实现必须由研发 Agent 写入 TaskResult；
 - 先按 Agent Delivery Thinking Framework 思考目标、对象、状态、路径、异常、依赖、证据、门禁和下一步；输出形式由 Agent 自主选择，但必须让下游能接住；
+- 任务执行要服务于 `OutcomeSlice` 的状态变化或不确定性降低；如果发现任务无法推动成果，应写阻塞/返工/停止理由，而不是继续消耗。
 - 发现缺资料、缺权限、规则冲突时立刻记录阻塞原因；
 - 重要决策写入任务结果或决策记录。
 - 遇到上下文窗口或 token 预算达到上限、会话被压缩、子 Agent 暂停、工具等待恢复、或执行线程临时不可继续时，必须记录断点、当前任务、已完成证据、下一步动作和恢复条件；恢复后必须继续工作，不能把暂停当成完成、失败或无人接管。
@@ -52,6 +54,7 @@ Agent 开始任务前必须拿到：
 - `qualityEvaluation`
 - `acceptancePolicy`
 - `handoffContract` 或 `terminalReason`
+- 如果任务带 `outcomeSliceRef`，必须继承该字段，并在 summary、evidence 或 qualityEvaluation 中说明对成果切片的贡献、未贡献原因或停损建议。
 
 其中 `commonRulesEvaluation` 或 `qualityEvaluation` 必须能看出 Agent 已自检 Agent Delivery Thinking Framework。自检可以是自然语言，不要求逐项填表。
 
