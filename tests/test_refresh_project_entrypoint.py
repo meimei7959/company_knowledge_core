@@ -40,6 +40,7 @@ def assert_delivery_thinking_text(testcase: unittest.TestCase, agents: str, star
     testcase.assertIn("downstreamAgent means one next receiver only", agents)
     testcase.assertIn("do not write one arrow string", agents)
     testcase.assertIn("must use canonical Agent ids", agents)
+    testcase.assertIn("validate_workspace_outcome_slices.py", agents)
     testcase.assertIn("不要只填模板", start_here)
     testcase.assertIn("目标、对象、状态、路径、异常、依赖、证据、门禁和下一步", start_here)
     testcase.assertIn("不能等用户追问", start_here)
@@ -49,6 +50,7 @@ def assert_delivery_thinking_text(testcase: unittest.TestCase, agents: str, star
     testcase.assertIn("downstreamAgent 只表示一个下一棒主要接收方", start_here)
     testcase.assertIn("不要写成 agent.company.architecture -> agent.company.development", start_here)
     testcase.assertIn("必须写规范 Agent ID", start_here)
+    testcase.assertIn("validate_workspace_outcome_slices.py", start_here)
     testcase.assertIn("下游接收 Agent 必须做 ReceiverReview", start_here)
 
 
