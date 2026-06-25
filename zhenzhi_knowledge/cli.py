@@ -411,6 +411,11 @@ def make_parser() -> argparse.ArgumentParser:
     p_project_outcome.add_argument("--evidence-ref", action="append", default=[])
     p_project_outcome.add_argument("--risk-ref", action="append", default=[])
     p_project_outcome.add_argument("--stop-condition", action="append", default=[])
+    p_project_outcome.add_argument("--primary-agent", default="")
+    p_project_outcome.add_argument("--upstream-agent", default="")
+    p_project_outcome.add_argument("--downstream-agent", default="")
+    p_project_outcome.add_argument("--escalation-agent", action="append", default=[])
+    p_project_outcome.add_argument("--escalation-rule", action="append", default=[])
     p_project_outcome.add_argument("--acceptance-signal", default="")
     p_project_outcome.add_argument("--time-budget", default="")
     p_project_outcome.add_argument("--token-budget", default="")
@@ -1446,6 +1451,11 @@ def main(argv: list[str] | None = None) -> int:
                     evidence_refs=args.evidence_ref,
                     risk_refs=args.risk_ref,
                     stop_conditions=args.stop_condition,
+                    primary_agent=args.primary_agent,
+                    upstream_agent=args.upstream_agent,
+                    downstream_agent=args.downstream_agent,
+                    escalation_agents=args.escalation_agent,
+                    escalation_rules=args.escalation_rule,
                     acceptance_signal=args.acceptance_signal,
                     time_budget=args.time_budget,
                     token_budget=args.token_budget,

@@ -7544,6 +7544,11 @@ def create_outcome_slice(
     evidence_refs: list[str] | None = None,
     risk_refs: list[str] | None = None,
     stop_conditions: list[str] | None = None,
+    primary_agent: str = "",
+    upstream_agent: str = "",
+    downstream_agent: str = "",
+    escalation_agents: list[str] | None = None,
+    escalation_rules: list[str] | None = None,
     acceptance_signal: str = "",
     time_budget: str = "",
     token_budget: str = "",
@@ -7558,10 +7563,17 @@ def create_outcome_slice(
     main_deliverable = main_deliverable.strip()
     current_state = current_state.strip()
     target_state = target_state.strip()
+    primary_agent = primary_agent.strip() or owner
+    upstream_agent = upstream_agent.strip()
+    downstream_agent = downstream_agent.strip()
+    escalation_agents = [str(item).strip() for item in escalation_agents or [] if str(item).strip()]
+    escalation_rules = [str(item).strip() for item in escalation_rules or [] if str(item).strip()]
     if not title:
         raise KnowledgeError("outcome slice title is required")
     if not owner:
         raise KnowledgeError("outcome slice owner is required")
+    if not primary_agent:
+        raise KnowledgeError("outcome slice primaryAgent is required")
     for field_name, value in [
         ("stageGoal", stage_goal),
         ("mainDeliverable", main_deliverable),
@@ -7578,6 +7590,10 @@ def create_outcome_slice(
         raise KnowledgeError("outcome slice must declare a target state change")
     if not stop_conditions:
         raise KnowledgeError("outcome slice requires at least one stop condition")
+    if escalation_agents and not escalation_rules:
+        raise KnowledgeError("outcome slice escalationAgents require escalationRules")
+    if escalation_rules and not escalation_agents:
+        raise KnowledgeError("outcome slice escalationRules require escalationAgents")
     if wip_limit < 1:
         raise KnowledgeError("outcome slice wipLimit must be >= 1")
     slice_id = outcome_slice_id.strip() or unique_time_id("outcome-slice")
@@ -7599,6 +7615,12 @@ def create_outcome_slice(
         "outcomeSliceId": slice_id,
         "projectId": pid,
         "owner": owner,
+        "primaryAgent": primary_agent,
+        "upstreamAgent": upstream_agent,
+        "downstreamAgent": downstream_agent,
+        "escalationAgents": escalation_agents,
+        "escalationRules": escalation_rules,
+        "collaborationPolicy": "single_primary_agent_with_risk_triggered_support",
         "status": status,
         "stageGoal": stage_goal,
         "mainDeliverable": main_deliverable,
@@ -7628,6 +7650,17 @@ def create_outcome_slice(
             "## Main Deliverable",
             "",
             main_deliverable,
+            "",
+            "## Agent Ownership",
+            "",
+            f"- owner: {owner}",
+            f"- primaryAgent: {primary_agent}",
+            f"- upstreamAgent: {upstream_agent or 'none'}",
+            f"- downstreamAgent: {downstream_agent or 'none'}",
+            "- escalationAgents:",
+            *([f"  - {item}" for item in escalation_agents] or ["  - none"]),
+            "- escalationRules:",
+            *([f"  - {item}" for item in escalation_rules] or ["  - none"]),
             "",
             "## State Change",
             "",
@@ -17146,6 +17179,20 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                     outcome = load_object(outcome_path)
                     if outcome.get("type") != "OutcomeSlice":
                         problems.append(f"{rel_path}: outcomeSliceRef must point to OutcomeSlice: {outcome_ref}")
+                    else:
+                        assignee = str(fm.get("assignee") or "").strip()
+                        allowed_agents = {
+                            str(outcome.get("owner") or "").strip(),
+                            str(outcome.get("primaryAgent") or "").strip(),
+                            str(outcome.get("upstreamAgent") or "").strip(),
+                            str(outcome.get("downstreamAgent") or "").strip(),
+                            *[str(item).strip() for item in as_list(outcome.get("escalationAgents"))],
+                        }
+                        allowed_agents = {item for item in allowed_agents if item}
+                        if assignee and allowed_agents and assignee not in allowed_agents:
+                            problems.append(
+                                f"{rel_path}: task assignee {assignee} is not allowed by OutcomeSlice agent ownership {outcome_ref}"
+                            )
             for review_ref in as_list(fm.get("receiverReviewRefs")):
                 review_path = bundle.root / review_ref
                 if not review_path.exists():
@@ -17155,9 +17202,13 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                 if review.get("type") != "ReceiverReview":
                     problems.append(f"{rel_path}: receiverReviewRefs must point to ReceiverReview: {review_ref}")
         if fm.get("type") == "OutcomeSlice":
-            for field in ["outcomeSliceId", "projectId", "owner", "stageGoal", "mainDeliverable", "currentState", "targetState"]:
+            for field in ["outcomeSliceId", "projectId", "owner", "primaryAgent", "stageGoal", "mainDeliverable", "currentState", "targetState"]:
                 if is_empty_value(fm.get(field)):
                     problems.append(f"{rel_path}: OutcomeSlice missing required field {field}")
+            if as_list(fm.get("escalationAgents")) and not as_list(fm.get("escalationRules")):
+                problems.append(f"{rel_path}: OutcomeSlice escalationAgents require escalationRules")
+            if as_list(fm.get("escalationRules")) and not as_list(fm.get("escalationAgents")):
+                problems.append(f"{rel_path}: OutcomeSlice escalationRules require escalationAgents")
             current_state = str(fm.get("currentState") or "")
             target_state = str(fm.get("targetState") or "")
             if current_state and current_state not in OUTCOME_SLICE_STATE_VALUES:

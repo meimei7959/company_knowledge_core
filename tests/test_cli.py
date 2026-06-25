@@ -606,6 +606,16 @@ evidenceRefs:
                         "implementable",
                         "--outcome-slice-id",
                         "qa-implementation-slice",
+                        "--primary-agent",
+                        "agent.company.development",
+                        "--upstream-agent",
+                        "agent.company.product-manager",
+                        "--downstream-agent",
+                        "agent.company.test",
+                        "--escalation-agent",
+                        "agent.company.architecture",
+                        "--escalation-rule",
+                        "Architecture risk or data model boundary is unclear.",
                         "--stop-condition",
                         "Stop when development ownership or evidence is missing.",
                         "--token-budget",
@@ -617,6 +627,11 @@ evidenceRefs:
                 0,
             )
             outcome_ref = "projects/qa/outcome-slices/qa-implementation-slice.md"
+            outcome = load_object(root / outcome_ref)
+            self.assertEqual(outcome["primaryAgent"], "agent.company.development")
+            self.assertEqual(outcome["upstreamAgent"], "agent.company.product-manager")
+            self.assertEqual(outcome["downstreamAgent"], "agent.company.test")
+            self.assertEqual(outcome["escalationAgents"], ["agent.company.architecture"])
             task_path = create_project_task(
                 bundle,
                 "Implement delegated feature",
@@ -680,6 +695,23 @@ evidenceRefs:
                 },
             )
             self.assertFalse([problem for problem in validate_bundle(bundle) if "ProjectManagerAction" in problem])
+
+            unowned_task = create_project_task(
+                bundle,
+                "Unplanned design work",
+                "qa",
+                "agent.company.project-manager",
+                "agent.company.design",
+                task_type="design_action",
+                task_id="PM-ACTION-DESIGN-UNOWNED",
+                work_source_type="feature",
+                requirement_refs=["REQ-PM-ACTION-001"],
+                outcome_slice_ref=outcome_ref,
+            )
+            problems = validate_bundle(bundle)
+            self.assertTrue(any("is not allowed by OutcomeSlice agent ownership" in problem for problem in problems))
+            update_frontmatter_file(unowned_task, {"assignee": "agent.company.architecture", "updatedAt": "2026-06-25T00:00:00Z"})
+            self.assertFalse([problem for problem in validate_bundle(bundle) if "OutcomeSlice agent ownership" in problem])
 
             blocked = create_project_manager_action(
                 bundle,
