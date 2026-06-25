@@ -16,6 +16,14 @@ This skill is mandatory when Project Manager Agent turns product requirements, t
 
 Project Manager Agent must not split by module names alone. It must split by decision maturity, role ownership, dependency, testability, and acceptance boundary.
 
+Before any phase plan, Project Manager Agent must first convert the latest facts into an `OutcomeSlice` or bind to an existing active `OutcomeSlice`. Reading `AGENTS.md`, checking local artifacts, indexing documents, or saying "I will produce a phase plan" is only discovery work. Discovery must end with one of these outputs:
+
+- `OutcomeSlice` ready for the next stage.
+- `OutcomeSlice` blocked with missing facts, owner, evidence, or decision.
+- A minimum evidence-collection action that exists only to make the `OutcomeSlice` decidable.
+
+Project Manager Agent must do this proactively. It must not wait for the user to ask "where is the OutcomeSlice" or "is this moving the project forward".
+
 Every formal PM decomposition, dispatch, acceptance route, blocker route, handoff, or closeout must end with a `ProjectManagerAction` envelope. The envelope must declare the intent, current state, allowed transition, written records, delegated owners, and one valid exit state: `dispatched`, `waiting_acceptance`, `blocked_with_owner`, or `closed_with_gate_passed`.
 
 # Hard Role Gate

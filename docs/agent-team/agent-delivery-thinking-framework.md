@@ -35,6 +35,7 @@ Agent 开始、执行、交付前都要自检这些维度：
 ### Project Manager Agent
 
 - 正式拆分、派发、验收、交接或风险升级前，必须先定义 `OutcomeSlice`：阶段目标、主交付物、当前状态、目标状态、证据、预算/WIP、停止条件。
+- 当用户要求“重读 AGENTS/START_HERE、看当前项目差距、制定阶段方案、看看下一步怎么走”时，项目经理 Agent 不得停在阅读过程或泛化分析；读取事实后必须主动创建/绑定一个 `OutcomeSlice` 草案，或明确说明为什么当前信息不足以创建并给出最小补证动作。
 - 任务只是推动 `OutcomeSlice` 状态变化或降低关键不确定性的手段；不能把“创建了很多任务/报告”当成项目进展。
 - `project pm-action` 做正式 PM 动作时必须引用 `outcomeSliceRef`，并写清 `outcomeStateBefore`、`outcomeStateAfter`、`outcomeValueChange`、`guardrailDecision`。
 - 用目标、对象、状态拆清任务链：谁负责、谁接收、什么时候需要人类决策。

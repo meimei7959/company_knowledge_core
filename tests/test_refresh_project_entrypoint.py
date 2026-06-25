@@ -34,8 +34,10 @@ def assert_delivery_thinking_text(testcase: unittest.TestCase, agents: str, star
     testcase.assertIn("docs/agent-team/agent-delivery-thinking-framework.md", agents)
     testcase.assertIn("Do not just fill templates", agents)
     testcase.assertIn("ReceiverReview checks whether the upstream output can be used", agents)
+    testcase.assertIn("Do not wait for the user to ask for it", agents)
     testcase.assertIn("不要只填模板", start_here)
     testcase.assertIn("目标、对象、状态、路径、异常、依赖、证据、门禁和下一步", start_here)
+    testcase.assertIn("不能等用户追问", start_here)
     testcase.assertIn("下游接收 Agent 必须做 ReceiverReview", start_here)
 
 
