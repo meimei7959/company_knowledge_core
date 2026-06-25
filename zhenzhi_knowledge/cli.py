@@ -414,6 +414,7 @@ def make_parser() -> argparse.ArgumentParser:
     p_project_outcome.add_argument("--primary-agent", default="")
     p_project_outcome.add_argument("--upstream-agent", default="")
     p_project_outcome.add_argument("--downstream-agent", default="")
+    p_project_outcome.add_argument("--handoff-agent", action="append", default=[])
     p_project_outcome.add_argument("--escalation-agent", action="append", default=[])
     p_project_outcome.add_argument("--escalation-rule", action="append", default=[])
     p_project_outcome.add_argument("--acceptance-signal", default="")
@@ -1454,6 +1455,7 @@ def main(argv: list[str] | None = None) -> int:
                     primary_agent=args.primary_agent,
                     upstream_agent=args.upstream_agent,
                     downstream_agent=args.downstream_agent,
+                    handoff_chain=args.handoff_agent,
                     escalation_agents=args.escalation_agent,
                     escalation_rules=args.escalation_rule,
                     acceptance_signal=args.acceptance_signal,

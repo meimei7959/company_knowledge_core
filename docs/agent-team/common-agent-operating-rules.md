@@ -34,7 +34,7 @@
 
 项目经理 Agent 的正式调度单位是 `OutcomeSlice`，不是零散任务。没有成果切片，不允许正式拆分、派发、交接、验收路由或风险升级；任务必须能说明它推动哪个成果状态变化，或降低哪个关键不确定性。只增加角色会话、文件数量或检查次数，不等于项目进展。
 
-每个 `OutcomeSlice` 必须声明当前阶段的 `primaryAgent`。当前阶段由 `primaryAgent` 单主责推进，项目经理 Agent 只负责阶段选择、任务派发、风险升级、证据检查和验收路由。上游、下游和升级 Agent 只有在 `OutcomeSlice` 声明的输入、接收或升级条件命中时才介入。
+每个 `OutcomeSlice` 必须声明当前阶段的 `primaryAgent`。当前阶段由 `primaryAgent` 单主责推进，项目经理 Agent 只负责阶段选择、任务派发、风险升级、证据检查和验收路由。所有 Agent 字段必须写规范 ID，例如 `agent.company.product-manager`、`agent.company.design`、`agent.company.development`、`agent.company.test`，不能写 `QA Agent`、`PM Agent` 或斜杠分隔的多个角色。`downstreamAgent` 只能是下一棒主要接收方；架构、研发、测试这类后续路线必须写入 `handoffChain`，不能塞进 `downstreamAgent`。上游、下游、交接链和升级 Agent 只有在 `OutcomeSlice` 声明的输入、接收、交接或升级条件命中时才介入。
 
 项目经理 Agent 负责调度成本控制。禁止无目的泛读、重复扫描、重复总结、为凑齐角色而拉 Agent 空转。每次新增读取、搜索、任务、讨论或子 Agent 前，必须能说明它对应的 `OutcomeSlice`、预期证据和停损条件；不能产生新证据、决策、风险降低或状态变化时，必须停损。
 

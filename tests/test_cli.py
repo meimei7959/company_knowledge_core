@@ -612,6 +612,12 @@ evidenceRefs:
                         "agent.company.product-manager",
                         "--downstream-agent",
                         "agent.company.test",
+                        "--handoff-agent",
+                        "agent.company.architecture",
+                        "--handoff-agent",
+                        "agent.company.development",
+                        "--handoff-agent",
+                        "agent.company.test",
                         "--escalation-agent",
                         "agent.company.architecture",
                         "--escalation-rule",
@@ -631,6 +637,7 @@ evidenceRefs:
             self.assertEqual(outcome["primaryAgent"], "agent.company.development")
             self.assertEqual(outcome["upstreamAgent"], "agent.company.product-manager")
             self.assertEqual(outcome["downstreamAgent"], "agent.company.test")
+            self.assertEqual(outcome["handoffChain"], ["agent.company.architecture", "agent.company.development", "agent.company.test"])
             self.assertEqual(outcome["escalationAgents"], ["agent.company.architecture"])
             task_path = create_project_task(
                 bundle,
@@ -712,6 +719,24 @@ evidenceRefs:
             self.assertTrue(any("is not allowed by OutcomeSlice agent ownership" in problem for problem in problems))
             update_frontmatter_file(unowned_task, {"assignee": "agent.company.architecture", "updatedAt": "2026-06-25T00:00:00Z"})
             self.assertFalse([problem for problem in validate_bundle(bundle) if "OutcomeSlice agent ownership" in problem])
+
+            update_frontmatter_file(root / outcome_ref, {"downstreamAgent": "agent.company.architecture, agent.company.development", "updatedAt": "2026-06-25T00:00:00Z"})
+            self.assertTrue(any("OutcomeSlice downstreamAgent must be one canonical Agent id" in problem for problem in validate_bundle(bundle)))
+
+            with self.assertRaises(KnowledgeError):
+                create_outcome_slice(
+                    bundle,
+                    "qa",
+                    "Bad human labels",
+                    "agent.company.project-manager",
+                    "Check invalid labels.",
+                    "Invalid labels should be rejected.",
+                    "clarified",
+                    "implementable",
+                    stop_conditions=["Stop immediately."],
+                    primary_agent="QA Agent",
+                    downstream_agent="PM Agent / Development Agent",
+                )
 
             blocked = create_project_manager_action(
                 bundle,

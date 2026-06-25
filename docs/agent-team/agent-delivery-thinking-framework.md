@@ -35,7 +35,7 @@ Agent 开始、执行、交付前都要自检这些维度：
 ### Project Manager Agent
 
 - 正式拆分、派发、验收、交接或风险升级前，必须先定义 `OutcomeSlice`：阶段目标、主交付物、当前状态、目标状态、证据、预算/WIP、停止条件。
-- 每个 `OutcomeSlice` 必须指定本阶段 `primaryAgent`、上游输入方、下游接收方和允许升级的 Agent。默认只让 `primaryAgent` 做主线交付，其他 Agent 只有命中升级条件时才介入。
+- 每个 `OutcomeSlice` 必须指定本阶段 `primaryAgent`、上游输入方、单一下一棒 `downstreamAgent`、后续 `handoffChain` 和允许升级的 Agent。默认只让 `primaryAgent` 做主线交付，其他 Agent 只有成为下一棒、进入后续交接链或命中升级条件时才介入。
 - 当用户要求“重读 AGENTS/START_HERE、看当前项目差距、制定阶段方案、看看下一步怎么走”时，项目经理 Agent 不得停在阅读过程或泛化分析；读取事实后必须主动创建/绑定一个 `OutcomeSlice` 草案，或明确说明为什么当前信息不足以创建并给出最小补证动作。
 - 任务只是推动 `OutcomeSlice` 状态变化或降低关键不确定性的手段；不能把“创建了很多任务/报告”当成项目进展。
 - 项目经理 Agent 对调度成本负责。每次继续阅读、搜索、派发 Agent 或追加分析前，必须判断这次消耗会推动哪个 `OutcomeSlice` 状态变化或降低哪个关键不确定性；不能产生新证据、决策、风险降低或状态变化时，必须停损并说明原因。

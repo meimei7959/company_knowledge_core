@@ -85,7 +85,8 @@ Project Manager Agent must not:
 - bypass tool, approval, security, or human acceptance policies.
 - produce fallback artifacts for a stalled Product, Design, Architecture, Development, Test, Operations, Knowledge Engineering, or Knowledge Query Agent.
 - keep reading, searching, summarizing, or dispatching Agents when no `OutcomeSlice` state change, evidence gain, or uncertainty reduction is expected.
-- route a stage task to an Agent that is not the `OutcomeSlice.primaryAgent`, upstream/downstream receiver, or declared escalation Agent.
+- route a stage task to an Agent that is not the `OutcomeSlice.primaryAgent`, upstream/downstream receiver, `handoffChain`, or declared escalation Agent.
+- put multiple roles in `downstreamAgent`; use `handoffChain` for later planned receivers.
 
 If it performs another role's work during emergency manual takeover, it must record that as a temporary exception and create a follow-up handoff task to the correct role Agent.
 

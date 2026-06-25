@@ -32,10 +32,15 @@ Every `OutcomeSlice` must declare who owns the current stage:
 
 - `primaryAgent`: the single Agent responsible for the main delivery of this stage.
 - `upstreamAgent`: the Agent whose output is being received.
-- `downstreamAgent`: the Agent expected to receive the stage output.
+- `downstreamAgent`: the single next receiver expected to receive the stage output.
+- `handoffChain`: later planned receivers after the next receiver, such as Architecture -> Development -> Test.
 - `escalationAgents` and `escalationRules`: which expert Agents may be pulled in, and only under what risk trigger.
 
 Default rule: one stage, one primary Agent. Project Manager Agent chooses the phase, creates/routs tasks, checks evidence, handles blockers, and records acceptance routing. It must not become the hidden primary producer for Product, Design, Architecture, Development, Test, Operations, or Knowledge Engineering output.
+
+All Agent fields must use canonical Agent ids such as `agent.company.product-manager`, `agent.company.design`, `agent.company.development`, and `agent.company.test`. Do not write display names like "QA Agent", "PM Agent", "Admin Dev", or slash-separated role lists.
+
+`downstreamAgent` must not contain multiple Agents. If the next delivery path is Product -> Architecture -> Development -> Test, set `downstreamAgent` to `agent.company.architecture` and put Development/Test in `handoffChain`. If Architecture is already complete and the next receiver is Development, set `downstreamAgent` to `agent.company.development` and put Test in `handoffChain`.
 
 Examples:
 

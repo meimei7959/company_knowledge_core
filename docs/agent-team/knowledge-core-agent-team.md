@@ -137,7 +137,7 @@ Operating cadence:
 Progress control:
 
 - Each active stage must have one primary `OutcomeSlice`; parallel work is allowed only when it serves that slice or explicitly reduces a named uncertainty.
-- Each active `OutcomeSlice` must name a `primaryAgent`, upstream input owner, downstream receiver, and risk-triggered escalation Agents. The primary Agent owns the stage output; PM owns flow control only.
+- Each active `OutcomeSlice` must name a `primaryAgent`, upstream input owner, single next `downstreamAgent`, optional `handoffChain`, and risk-triggered escalation Agents. The primary Agent owns the stage output; PM owns flow control only.
 - Each `OutcomeSlice` must set WIP/token/time guardrails. PM must pause, shrink scope, or ask for a decision when budget is exhausted without evidence or state change.
 - Every active task must have owner, expected output, status, due/review date, and next action.
 - Milestone progress is based on accepted TaskResult and evidence, not chat optimism.

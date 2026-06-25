@@ -7529,6 +7529,15 @@ PM_ACTION_OUTCOME_REQUIRED_INTENTS = {
 }
 
 
+def validate_outcome_agent_ref(field_name: str, value: str) -> None:
+    if not value:
+        return
+    if any(separator in value for separator in [",", "，", "/", "\n"]):
+        raise KnowledgeError(f"outcome slice {field_name} must be one canonical Agent id")
+    if not value.startswith("agent."):
+        raise KnowledgeError(f"outcome slice {field_name} must use canonical Agent id like agent.company.design")
+
+
 def create_outcome_slice(
     bundle: Bundle,
     project_id: str,
@@ -7547,6 +7556,7 @@ def create_outcome_slice(
     primary_agent: str = "",
     upstream_agent: str = "",
     downstream_agent: str = "",
+    handoff_chain: list[str] | None = None,
     escalation_agents: list[str] | None = None,
     escalation_rules: list[str] | None = None,
     acceptance_signal: str = "",
@@ -7566,6 +7576,7 @@ def create_outcome_slice(
     primary_agent = primary_agent.strip() or owner
     upstream_agent = upstream_agent.strip()
     downstream_agent = downstream_agent.strip()
+    handoff_chain = [str(item).strip() for item in handoff_chain or [] if str(item).strip()]
     escalation_agents = [str(item).strip() for item in escalation_agents or [] if str(item).strip()]
     escalation_rules = [str(item).strip() for item in escalation_rules or [] if str(item).strip()]
     if not title:
@@ -7590,6 +7601,17 @@ def create_outcome_slice(
         raise KnowledgeError("outcome slice must declare a target state change")
     if not stop_conditions:
         raise KnowledgeError("outcome slice requires at least one stop condition")
+    for field_name, value in [
+        ("owner", owner),
+        ("primaryAgent", primary_agent),
+        ("upstreamAgent", upstream_agent),
+        ("downstreamAgent", downstream_agent),
+    ]:
+        validate_outcome_agent_ref(field_name, value)
+    for value in handoff_chain:
+        validate_outcome_agent_ref("handoffChain", value)
+    for value in escalation_agents:
+        validate_outcome_agent_ref("escalationAgents", value)
     if escalation_agents and not escalation_rules:
         raise KnowledgeError("outcome slice escalationAgents require escalationRules")
     if escalation_rules and not escalation_agents:
@@ -7618,6 +7640,7 @@ def create_outcome_slice(
         "primaryAgent": primary_agent,
         "upstreamAgent": upstream_agent,
         "downstreamAgent": downstream_agent,
+        "handoffChain": handoff_chain,
         "escalationAgents": escalation_agents,
         "escalationRules": escalation_rules,
         "collaborationPolicy": "single_primary_agent_with_risk_triggered_support",
@@ -7657,6 +7680,8 @@ def create_outcome_slice(
             f"- primaryAgent: {primary_agent}",
             f"- upstreamAgent: {upstream_agent or 'none'}",
             f"- downstreamAgent: {downstream_agent or 'none'}",
+            "- handoffChain:",
+            *([f"  - {item}" for item in handoff_chain] or ["  - none"]),
             "- escalationAgents:",
             *([f"  - {item}" for item in escalation_agents] or ["  - none"]),
             "- escalationRules:",
@@ -17186,6 +17211,7 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                             str(outcome.get("primaryAgent") or "").strip(),
                             str(outcome.get("upstreamAgent") or "").strip(),
                             str(outcome.get("downstreamAgent") or "").strip(),
+                            *[str(item).strip() for item in as_list(outcome.get("handoffChain"))],
                             *[str(item).strip() for item in as_list(outcome.get("escalationAgents"))],
                         }
                         allowed_agents = {item for item in allowed_agents if item}
@@ -17205,6 +17231,20 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             for field in ["outcomeSliceId", "projectId", "owner", "primaryAgent", "stageGoal", "mainDeliverable", "currentState", "targetState"]:
                 if is_empty_value(fm.get(field)):
                     problems.append(f"{rel_path}: OutcomeSlice missing required field {field}")
+            downstream_agent = str(fm.get("downstreamAgent") or "")
+            for field_name, value in [
+                ("owner", str(fm.get("owner") or "")),
+                ("primaryAgent", str(fm.get("primaryAgent") or "")),
+                ("upstreamAgent", str(fm.get("upstreamAgent") or "")),
+                ("downstreamAgent", downstream_agent),
+            ]:
+                if value and (any(separator in value for separator in [",", "，", "/", "\n"]) or not value.startswith("agent.")):
+                    problems.append(f"{rel_path}: OutcomeSlice {field_name} must be one canonical Agent id")
+            for field_name in ["handoffChain", "escalationAgents"]:
+                for value in as_list(fm.get(field_name)):
+                    value = str(value).strip()
+                    if value and (any(separator in value for separator in [",", "，", "/", "\n"]) or not value.startswith("agent.")):
+                        problems.append(f"{rel_path}: OutcomeSlice {field_name} must contain canonical Agent ids")
             if as_list(fm.get("escalationAgents")) and not as_list(fm.get("escalationRules")):
                 problems.append(f"{rel_path}: OutcomeSlice escalationAgents require escalationRules")
             if as_list(fm.get("escalationRules")) and not as_list(fm.get("escalationAgents")):
