@@ -6,3 +6,4 @@
 - [PM action status_query: 项目经理刷新已有项目入口规则，使进行中的项目可上报体系问题和可复用 Skill 缺口到中枢。](pm-action.20260624T031254095017Z.md)
 - [PM action status_query: 项目经理刷新已有项目入口规则，使进行中的项目可上报体系问题和可复用 Skill 缺口到中枢。](pm-action.20260624T061055665951Z.md)
 - [PM action status_query: 项目经理刷新已有项目入口规则，使进行中的项目可上报体系问题和可复用 Skill 缺口到中枢。](pm-action.20260624T122444170798Z.md)
+- [PM action status_query: 项目经理刷新已有项目入口规则，使进行中的项目可上报体系问题和可复用 Skill 缺口到中枢。](pm-action.20260625T105405660506Z.md)
