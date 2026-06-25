@@ -134,6 +134,7 @@ def _refresh_project(
             records_written=[],
             evidence_refs=[],
             next_action="Project Agent reads refreshed AGENTS.md/START_HERE.md before reporting system issues or skill gaps.",
+            cost_summary="Single entrypoint refresh only; no downstream Agent fan-out or project delivery analysis.",
         )
     return RefreshOutcome(pid, "refreshed", workspace_ref, project_ref)
 

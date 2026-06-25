@@ -7720,6 +7720,8 @@ def create_project_manager_action(
     project_path = find_project(bundle, project_id)
     project = load_object(project_path)
     pid = str(project.get("projectId") or slug(project_id))
+    if not cost_summary.strip():
+        raise KnowledgeError("ProjectManagerAction requires costSummary: explain the cost-value check before PM writes state.")
     action_id = unique_time_id("pm-action")
     action_dir = project_manager_action_storage_dir(bundle, pid)
     ensure_dir(action_dir)
@@ -16776,6 +16778,7 @@ def validate_pm_action_runtime(records: list[tuple[str, dict[str, Any]]]) -> lis
         outcome_state_before = str(record.get("outcomeStateBefore") or "").strip()
         outcome_state_after = str(record.get("outcomeStateAfter") or "").strip()
         outcome_value_change = str(record.get("outcomeValueChange") or "").strip()
+        cost_summary = str(record.get("costSummary") or "").strip()
         guardrail_decision = str(record.get("guardrailDecision") or "").strip()
         guardrail_reason = str(record.get("guardrailReason") or "").strip()
         if not any([next_action, blocker, terminal_decision]):
@@ -16792,11 +16795,15 @@ def validate_pm_action_runtime(records: list[tuple[str, dict[str, Any]]]) -> lis
                 problems.append(f"{rel_path}: ProjectManagerAction outcome state did not change; use guardrailDecision pause/stop/escalate or record a target state change")
             if not outcome_value_change:
                 problems.append(f"{rel_path}: ProjectManagerAction with outcomeSliceRef requires outcomeValueChange")
+            if not cost_summary:
+                problems.append(f"{rel_path}: ProjectManagerAction with outcomeSliceRef requires costSummary")
             if guardrail_decision:
                 if guardrail_decision not in OUTCOME_GUARDRAIL_DECISIONS:
                     problems.append(f"{rel_path}: ProjectManagerAction guardrailDecision must be one of {sorted(OUTCOME_GUARDRAIL_DECISIONS)}")
                 if guardrail_decision in {"pause", "stop", "escalate"} and not guardrail_reason:
                     problems.append(f"{rel_path}: ProjectManagerAction guardrailDecision {guardrail_decision} requires guardrailReason")
+        if strict_runtime and not cost_summary:
+            problems.append(f"{rel_path}: ProjectManagerAction requires costSummary")
         if exit_state == "dispatched" and not (records_written or delegated_owners or next_action):
             problems.append(f"{rel_path}: dispatched PM action requires recordsWritten, delegatedOwners, or nextAction")
         if exit_state == "waiting_acceptance" and not (records_written or next_action):

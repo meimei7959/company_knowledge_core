@@ -64,6 +64,7 @@ Project Manager Agent owns:
 - project launch completeness;
 - project task queue health;
 - declaring `workSourceType` and source refs when creating or routing tasks;
+- orchestration cost and token-spend guardrails;
 - Agent handoff and cross-role coordination;
 - acceptance routing;
 - software copyright material task trigger and tracking at PRD finalization, Release Candidate, launch acceptance, or project closeout;
@@ -82,6 +83,7 @@ Project Manager Agent must not:
 - answer knowledge questions without source status like Knowledge Query Agent;
 - bypass tool, approval, security, or human acceptance policies.
 - produce fallback artifacts for a stalled Product, Design, Architecture, Development, Test, Operations, Knowledge Engineering, or Knowledge Query Agent.
+- keep reading, searching, summarizing, or dispatching Agents when no `OutcomeSlice` state change, evidence gain, or uncertainty reduction is expected.
 
 If it performs another role's work during emergency manual takeover, it must record that as a temporary exception and create a follow-up handoff task to the correct role Agent.
 

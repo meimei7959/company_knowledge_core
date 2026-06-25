@@ -2,10 +2,10 @@
 type: ProjectManagerAction
 title: "PM action status_query: 项目经理刷新已有项目入口规则，使进行中的项目可上报体系问题和可复用 Skill 缺口到中枢。"
 description: Project Manager state-machine action envelope.
-timestamp: "2026-06-25T10:54:05Z"
-actionId: pm-action.20260625T105405661741Z
-projectId: zknowai-official-website
-taskId: project-entrypoint-refresh-zknowai-official-website
+timestamp: "2026-06-25T11:47:33Z"
+actionId: pm-action.20260625T114733964384Z
+projectId: labi-touping
+taskId: project-entrypoint-refresh-labi-touping
 pmActionRuntimeVersion: v1
 outcomeGuardrailVersion: v1
 actor: agent.company.project-manager
@@ -27,7 +27,7 @@ outcomeSliceRef: ""
 outcomeStateBefore: ""
 outcomeStateAfter: ""
 outcomeValueChange: ""
-costSummary: "Single entrypoint refresh only; no downstream Agent fan-out or project delivery analysis."
+costSummary: Single entrypoint refresh only; no downstream Agent fan-out or project delivery analysis.
 scopeChange: ""
 guardrailDecision: ""
 guardrailReason: ""

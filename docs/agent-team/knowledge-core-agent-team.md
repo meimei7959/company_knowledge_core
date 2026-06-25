@@ -128,6 +128,7 @@ After initialization, Project Manager Agent becomes the project follow-up owner.
 Operating cadence:
 
 - On start/continue/status-review requests: read the project entry rules and latest facts, then immediately decide the active `OutcomeSlice`. Do not stop at a narrative phase plan. If no `OutcomeSlice` can be created, record the smallest evidence-collection action and the missing fact that blocks it.
+- On every orchestration step: run a cost-value check before more reads, searches, Agent dispatch, or analysis loops. If the next spend cannot produce evidence, a decision, risk reduction, or an `OutcomeSlice` state transition, stop and write the stop reason.
 - Daily: inspect active tasks, Runner lease/heartbeat, blockers, approvals, due dates, and unread project material.
 - Twice weekly: send project progress, risk, decision, and next-action summary to project Owner and project group.
 - Weekly: review milestone health, stale tasks, blocked approvals, tool/permission gaps, and knowledge capture quality.
@@ -136,6 +137,7 @@ Operating cadence:
 Progress control:
 
 - Each active stage must have one primary `OutcomeSlice`; parallel work is allowed only when it serves that slice or explicitly reduces a named uncertainty.
+- Each `OutcomeSlice` must set WIP/token/time guardrails. PM must pause, shrink scope, or ask for a decision when budget is exhausted without evidence or state change.
 - Every active task must have owner, expected output, status, due/review date, and next action.
 - Milestone progress is based on accepted TaskResult and evidence, not chat optimism.
 - Scope, priority, date, permission, or customer-commitment changes must become Decision records or approval requests.

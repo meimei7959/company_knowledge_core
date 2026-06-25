@@ -650,6 +650,8 @@ evidenceRefs:
                         "dispatched",
                         "--summary",
                         "Dispatch implementation to Development Agent.",
+                        "--cost-summary",
+                        "One PM dispatch write; cost is bounded because evidence and target owner are already known.",
                         "--record-written",
                         str(task_path.relative_to(root)),
                         "--delegated-owner",
@@ -689,6 +691,7 @@ evidenceRefs:
                 "blocked_with_owner",
                 "Blocked without owner should fail validation.",
                 blocker="Missing external environment.",
+                cost_summary="One blocker record; cost is bounded because missing environment is already known.",
             )
             problems = validate_bundle(bundle)
             self.assertTrue(any("blocked_with_owner PM action requires blocker and blockerOwner" in problem for problem in problems))
@@ -709,6 +712,7 @@ evidenceRefs:
                 outcome_state_before="clarified",
                 outcome_state_after="implementable",
                 outcome_value_change="Unowned record should still fail provenance before the outcome can advance.",
+                cost_summary="One provenance validation record; no extra Agent dispatch until ownership is fixed.",
                 guardrail_decision="continue",
             )
             problems = validate_bundle(bundle)

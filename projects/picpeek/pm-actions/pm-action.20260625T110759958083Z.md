@@ -27,7 +27,7 @@ outcomeSliceRef: ""
 outcomeStateBefore: ""
 outcomeStateAfter: ""
 outcomeValueChange: ""
-costSummary: ""
+costSummary: "Single entrypoint refresh only; no downstream Agent fan-out or project delivery analysis."
 scopeChange: ""
 guardrailDecision: ""
 guardrailReason: ""
@@ -70,7 +70,7 @@ pmDeliveryGate: {"enforce":false,"requirementRefs":["PROJECT-INIT"],"requireProd
 ## Outcome Guardrail
 
 - outcomeValueChange: none
-- costSummary: none
+- costSummary: Single entrypoint refresh only; no downstream Agent fan-out or project delivery analysis.
 - scopeChange: none
 - guardrailDecision: none
 - guardrailReason: none
