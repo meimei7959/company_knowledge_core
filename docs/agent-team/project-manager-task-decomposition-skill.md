@@ -40,7 +40,7 @@ Default rule: one stage, one primary Agent. Project Manager Agent chooses the ph
 
 All Agent fields must use canonical Agent ids such as `agent.company.product-manager`, `agent.company.design`, `agent.company.development`, and `agent.company.test`. Do not write display names like "QA Agent", "PM Agent", "Admin Dev", or slash-separated role lists.
 
-`downstreamAgent` must not contain multiple Agents. If the next delivery path is Product -> Architecture -> Development -> Test, set `downstreamAgent` to `agent.company.architecture` and put Development/Test in `handoffChain`. If Architecture is already complete and the next receiver is Development, set `downstreamAgent` to `agent.company.development` and put Test in `handoffChain`.
+`downstreamAgent` must not contain multiple Agents. `handoffChain` must be a structured list of canonical Agent ids, not one arrow string. If the next delivery path is Product -> Architecture -> Development -> Test, set `downstreamAgent` to `agent.company.architecture` and put `agent.company.development` / `agent.company.test` as separate items in `handoffChain`. If Architecture is already complete and the next receiver is Development, set `downstreamAgent` to `agent.company.development` and put `agent.company.test` in `handoffChain`.
 
 Examples:
 

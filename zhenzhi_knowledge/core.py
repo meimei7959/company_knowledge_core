@@ -7527,14 +7527,13 @@ PM_ACTION_OUTCOME_REQUIRED_INTENTS = {
     "handoff",
     "closeout",
 }
+CANONICAL_AGENT_ID_PATTERN = re.compile(r"^agent\.[a-z0-9][a-z0-9.-]*$")
 
 
 def validate_outcome_agent_ref(field_name: str, value: str) -> None:
     if not value:
         return
-    if any(separator in value for separator in [",", "，", "/", "\n"]):
-        raise KnowledgeError(f"outcome slice {field_name} must be one canonical Agent id")
-    if not value.startswith("agent."):
+    if not CANONICAL_AGENT_ID_PATTERN.fullmatch(value):
         raise KnowledgeError(f"outcome slice {field_name} must use canonical Agent id like agent.company.design")
 
 
@@ -17238,12 +17237,12 @@ def validate_bundle(bundle: Bundle) -> list[str]:
                 ("upstreamAgent", str(fm.get("upstreamAgent") or "")),
                 ("downstreamAgent", downstream_agent),
             ]:
-                if value and (any(separator in value for separator in [",", "，", "/", "\n"]) or not value.startswith("agent.")):
+                if value and not CANONICAL_AGENT_ID_PATTERN.fullmatch(value):
                     problems.append(f"{rel_path}: OutcomeSlice {field_name} must be one canonical Agent id")
             for field_name in ["handoffChain", "escalationAgents"]:
                 for value in as_list(fm.get(field_name)):
                     value = str(value).strip()
-                    if value and (any(separator in value for separator in [",", "，", "/", "\n"]) or not value.startswith("agent.")):
+                    if value and not CANONICAL_AGENT_ID_PATTERN.fullmatch(value):
                         problems.append(f"{rel_path}: OutcomeSlice {field_name} must contain canonical Agent ids")
             if as_list(fm.get("escalationAgents")) and not as_list(fm.get("escalationRules")):
                 problems.append(f"{rel_path}: OutcomeSlice escalationAgents require escalationRules")

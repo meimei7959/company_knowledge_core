@@ -723,6 +723,16 @@ evidenceRefs:
             update_frontmatter_file(root / outcome_ref, {"downstreamAgent": "agent.company.architecture, agent.company.development", "updatedAt": "2026-06-25T00:00:00Z"})
             self.assertTrue(any("OutcomeSlice downstreamAgent must be one canonical Agent id" in problem for problem in validate_bundle(bundle)))
 
+            update_frontmatter_file(
+                root / outcome_ref,
+                {
+                    "downstreamAgent": "agent.company.test",
+                    "handoffChain": "agent.company.project-manager -> agent.company.development -> agent.company.test",
+                    "updatedAt": "2026-06-25T00:00:01Z",
+                },
+            )
+            self.assertTrue(any("OutcomeSlice handoffChain must contain canonical Agent ids" in problem for problem in validate_bundle(bundle)))
+
             with self.assertRaises(KnowledgeError):
                 create_outcome_slice(
                     bundle,

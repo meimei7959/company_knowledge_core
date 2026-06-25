@@ -38,6 +38,7 @@ def assert_delivery_thinking_text(testcase: unittest.TestCase, agents: str, star
     testcase.assertIn("Project Manager Agent owns cost control", agents)
     testcase.assertIn("One stage has one primary Agent", agents)
     testcase.assertIn("downstreamAgent means one next receiver only", agents)
+    testcase.assertIn("do not write one arrow string", agents)
     testcase.assertIn("must use canonical Agent ids", agents)
     testcase.assertIn("不要只填模板", start_here)
     testcase.assertIn("目标、对象、状态、路径、异常、依赖、证据、门禁和下一步", start_here)
@@ -46,6 +47,7 @@ def assert_delivery_thinking_text(testcase: unittest.TestCase, agents: str, star
     testcase.assertIn("必须停损", start_here)
     testcase.assertIn("一个阶段只有一个主责 Agent", start_here)
     testcase.assertIn("downstreamAgent 只表示一个下一棒主要接收方", start_here)
+    testcase.assertIn("不要写成 agent.company.architecture -> agent.company.development", start_here)
     testcase.assertIn("必须写规范 Agent ID", start_here)
     testcase.assertIn("下游接收 Agent 必须做 ReceiverReview", start_here)
 
