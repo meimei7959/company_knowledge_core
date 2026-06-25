@@ -299,6 +299,50 @@ class ProjectInitProfileTests(unittest.TestCase):
                     shutil.rmtree(workspace)
 
 
+class ProjectInitExistingRepoTests(unittest.TestCase):
+    def test_existing_source_repo_workspace_gets_active_source_boundary_rule(self) -> None:
+        module = load_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "central"
+            workspace = Path(tmp) / "official-website"
+            workspace.mkdir()
+            write_minimal_bundle(root)
+            old_argv = sys.argv
+            try:
+                sys.argv = [
+                    "init_project.py",
+                    "--root",
+                    str(root),
+                    "--project-id",
+                    "official-website",
+                    "--name",
+                    "官网",
+                    "--owner",
+                    "meimei",
+                    "--workspace-profile",
+                    "development",
+                    "--workspace-ref",
+                    str(workspace),
+                    "--source-repo-url",
+                    "https://github.com/example/official-website.git",
+                    "--source-repo-path",
+                    str(workspace),
+                    "--no-create-workspace",
+                    "--goal",
+                    "接管已有官网项目",
+                ]
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(module.main(), 0)
+                agents = (workspace / "AGENTS.md").read_text(encoding="utf-8")
+                self.assertIn("This workspace is the active source repository", agents)
+                self.assertNotIn("Source code is a reference mirror", agents)
+                self.assertFalse(validate_bundle(Bundle(root)))
+            finally:
+                sys.argv = old_argv
+                if workspace.exists():
+                    shutil.rmtree(workspace)
+
+
 class ProjectInitCloneTests(unittest.TestCase):
     def test_clone_source_repo_uses_profile_source_mirror(self) -> None:
         module = load_script_module()

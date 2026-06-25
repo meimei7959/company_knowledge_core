@@ -20,3 +20,4 @@ Each project should have:
 - [PicPeek](picpeek/project.md)
 - [蜡笔投屏](labi-touping/project.md)
 - [统一付费轻服务](billing-lite/project.md)
+- [桢知科技官网](zknowai-official-website/project.md)

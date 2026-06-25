@@ -2313,3 +2313,39 @@
 - 2026-06-24T12:37:34Z pm action pm-action.20260624T123734344215Z dispatch exit=dispatched
 - 2026-06-24T12:41:18Z audit pm.action.record projects/billing-lite/pm-actions/pm-action.20260624T124118060117Z.md pm_action_runtime
 - 2026-06-24T12:41:18Z pm action pm-action.20260624T124118060117Z status_query exit=waiting_acceptance
+- 2026-06-25T03:09:35Z registered project 桢知科技官网 (zknowai-official-website)
+- 2026-06-25T03:09:35Z registered Agent agent.zknowai-official-website.project-manager
+- 2026-06-25T03:09:35Z audit agent.attachProject projects/zknowai-official-website/project.md draft
+- 2026-06-25T03:09:35Z registered Agent agent.zknowai-official-website.knowledge-engineering
+- 2026-06-25T03:09:35Z audit agent.attachProject projects/zknowai-official-website/project.md draft
+- 2026-06-25T03:09:35Z registered Agent agent.zknowai-official-website.executor
+- 2026-06-25T03:09:35Z audit agent.attachProject projects/zknowai-official-website/project.md draft
+- 2026-06-25T03:09:35Z registered Agent agent.zknowai-official-website.product-manager
+- 2026-06-25T03:09:35Z audit agent.attachProject projects/zknowai-official-website/project.md draft
+- 2026-06-25T03:09:35Z audit task.create projects/zknowai-official-website/tasks/project-init-zknowai-official-website.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website.md feishu
+- 2026-06-25T03:09:35Z created task project-init-zknowai-official-website assigned=agent.zknowai-official-website.project-manager
+- 2026-06-25T03:09:35Z audit task.updateStatus projects/zknowai-official-website/tasks/project-init-zknowai-official-website.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website.md feishu
+- 2026-06-25T03:09:35Z audit project.intake projects/zknowai-official-website/project.md draft_created
+- 2026-06-25T03:09:35Z audit material.ingest projects/zknowai-official-website/sources/source.20260625T030935030481Z.md review_required
+- 2026-06-25T03:09:35Z ingested SourceMaterial source.20260625T030935030481Z project=zknowai-official-website
+- 2026-06-25T03:09:35Z audit task.create projects/zknowai-official-website/tasks/project-init-zknowai-official-website-product-requirements.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website-product-requirements.md feishu
+- 2026-06-25T03:09:35Z created task project-init-zknowai-official-website-product-requirements assigned=agent.company.product-manager
+- 2026-06-25T03:09:35Z audit task.create projects/zknowai-official-website/tasks/project-init-zknowai-official-website-design-spec.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website-design-spec.md feishu
+- 2026-06-25T03:09:35Z created task project-init-zknowai-official-website-design-spec assigned=agent.company.design
+- 2026-06-25T03:09:35Z audit task.create projects/zknowai-official-website/tasks/project-init-zknowai-official-website-architecture-solution.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website-architecture-solution.md feishu
+- 2026-06-25T03:09:35Z created task project-init-zknowai-official-website-architecture-solution assigned=agent.company.architect
+- 2026-06-25T03:09:35Z audit task.create projects/zknowai-official-website/tasks/project-init-zknowai-official-website-development-plan.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website-development-plan.md feishu
+- 2026-06-25T03:09:35Z created task project-init-zknowai-official-website-development-plan assigned=agent.company.development
+- 2026-06-25T03:09:35Z audit task.create projects/zknowai-official-website/tasks/project-init-zknowai-official-website-test-strategy.md
+- 2026-06-25T03:09:35Z audit task.notification.record projects/zknowai-official-website/tasks/project-init-zknowai-official-website-test-strategy.md feishu
+- 2026-06-25T03:09:35Z created task project-init-zknowai-official-website-test-strategy assigned=agent.company.test
+- 2026-06-25T03:09:35Z audit pm.action.record projects/zknowai-official-website/pm-actions/pm-action.20260625T030935037465Z.md pm_action_runtime
+- 2026-06-25T03:09:35Z pm action pm-action.20260625T030935037465Z dispatch exit=dispatched
+- 2026-06-25T03:11:13Z audit pm.action.record projects/zknowai-official-website/pm-actions/pm-action.20260625T031113612259Z.md pm_action_runtime
+- 2026-06-25T03:11:13Z pm action pm-action.20260625T031113612259Z status_query exit=waiting_acceptance

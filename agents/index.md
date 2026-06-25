@@ -45,3 +45,7 @@ Knowledge Engineering Agent is the umbrella owner. The linked steward, review, a
 - [统一付费轻服务 知识工程 Agent](agent.billing-lite.knowledge-engineering.md)
 - [统一付费轻服务 执行 Agent](agent.billing-lite.executor.md)
 - [统一付费轻服务 产品经理 Agent](agent.billing-lite.product-manager.md)
+- [桢知科技官网 项目经理 Agent](agent.zknowai-official-website.project-manager.md)
+- [桢知科技官网 知识工程 Agent](agent.zknowai-official-website.knowledge-engineering.md)
+- [桢知科技官网 执行 Agent](agent.zknowai-official-website.executor.md)
+- [桢知科技官网 产品经理 Agent](agent.zknowai-official-website.product-manager.md)

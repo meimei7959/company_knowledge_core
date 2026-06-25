@@ -411,9 +411,17 @@ def record_project_manager_initialization(
     )
 
 
-def workspace_source_rule(source_repo_note: str) -> str:
+def workspace_source_rule(source_repo_note: str, *, workspace_ref: str = "", source_repo_path: str = "") -> str:
     if source_repo_note == "none":
         return "No source repository was registered during initialization."
+    if workspace_ref.strip() and source_repo_path.strip():
+        workspace = Path(workspace_ref).expanduser().resolve()
+        source_repo = Path(source_repo_path).expanduser().resolve()
+        if workspace == source_repo:
+            return (
+                "This workspace is the active source repository. Keep normal code, docs, AGENTS.md, and START_HERE.md here. "
+                "Do not dump raw materials, long logs, screenshots, or unrelated delivery archives into the source tree; store them externally and reference them from central records."
+            )
     return (
         "Source code is a reference mirror. Do not write project materials into it. "
         "When source code must be refreshed, update only the source mirror, then keep soft-copyright, operations, screenshots, and delivery materials in this workspace."
@@ -585,7 +593,7 @@ def write_workspace_entrypoint(
             "",
             f"- workspaceProfile: `{profile}`",
             f"- sourceRepoRef: `{source_repo_note}`",
-            f"- rule: {workspace_source_rule(source_repo_note)}",
+            f"- rule: {workspace_source_rule(source_repo_note, workspace_ref=workspace_ref, source_repo_path=source_repo_path)}",
             "",
             "The user may keep working from this entity workspace. The Project Manager Agent coordinates role handoff. Only compact project records, task flow, TaskResult summaries, evidence refs, and AuditLog are written back to the central repository. Raw artifacts, long logs, screenshots, and PRD files stay in this workspace or external storage and are referenced through storageRef.",
             "",
