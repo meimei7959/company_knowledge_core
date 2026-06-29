@@ -2,29 +2,40 @@
 
 ## Product Principle
 
-Agent Hub is not a command list and not a central engineering executor. It is the front door for starting projects, registering material, creating scheduler tasks, querying knowledge, and tracking state.
+Agent Hub is not a command list, not a central engineering executor, and not the business project manager for every project.
+
+It is the front door for:
+
+- project adoption of company Agent rules;
+- knowledge engineering intake;
+- Agent capability and tool capability feedback;
+- governance event intake;
+- knowledge queries;
+- stage-level project status.
+
+Canonical boundary: [Central Knowledge And Agent Governance Target](../strategy/central-knowledge-agent-governance-target.md).
 
 Each menu action should follow one closed loop:
 
 ```txt
 Intent
--> DeepSeek routing decision
+-> deterministic Agent Hub intake
 -> safety gate
 -> intake card
 -> user confirmation
--> approval, task creation, or safe execution
--> scheduler assignment to Agent Ring when execution is needed
--> project/group/Agent/tool/knowledge/task state update
+-> project adoption, knowledge intake, governance event, capability gap, tool gap, or safe central action
+-> central governance dispatch only when central capability work is needed
+-> project/Agent/tool/knowledge/governance state update
 -> next action
 ```
 
 The first implementation can return text cards. Feishu interactive cards should use the same fields and actions when card callbacks are enabled.
 
-## DeepSeek Routing Layer
+## Deterministic Intake Layer
 
-Feishu remains the entrance. DeepSeek paid API is the bot-side routing model.
+Feishu remains the entrance. Agent Hub uses deterministic intake rules for high-confidence actions and hands material processing to the Codex Worker result contract.
 
-DeepSeek should:
+Agent Hub should:
 
 - classify intent;
 - extract fields;
@@ -32,20 +43,18 @@ DeepSeek should:
 - draft reply/card content;
 - recommend safe tool calls or task creation.
 
-DeepSeek should not directly execute engineering work, publish verified knowledge, modify permissions, reveal secrets, delete content, or bypass review. Those actions must become server-side validated actions, approval flows, or Agent Ring tasks.
-
-Routing reference: [DeepSeek Feishu Routing Plan](deepseek-feishu-routing-plan.md).
+Agent Hub should not directly execute engineering work, publish verified knowledge, modify permissions, reveal secrets, delete content, or bypass review. Those actions must become server-side validated actions, approval flows, local project Agent actions, or central governance tasks.
 
 ## Create Project
 
-Creating a project means starting a real project, not only creating a knowledge folder.
+Creating a project in central means registering that a real project adopts company Agent capability, tool policy, quality gates, and high-signal sync. It does not mean central owns the project's business backlog.
 
 ### Two Paths
 
 | Path | User Situation | Required Outcome |
 | --- | --- | --- |
-| Existing repository | Team already has code or a repo | Register project, bind repo, inspect initialization, create missing project docs, bind group, assign Agents |
-| New repository | Project starts from zero | Register project, request repo creation, initialize repo, create project group, assign Agents |
+| Existing repository | Team already has code or a repo | Register project adoption, bind repo, install or verify `.zhenzhi/` governance surface, bind group, attach Agent rules |
+| New repository | Project starts from zero | Register project adoption, request repo creation, initialize local Agent surface, create project group, attach Agent rules |
 
 ### Intake Card
 
@@ -63,17 +72,18 @@ Fields:
 | requestedAgents | recommended | PM, product, frontend, backend, ops, knowledge, etc. |
 | initialTools | optional | Project-private tools or common tools |
 | dueDate | optional | First milestone |
+| syncPolicy | recommended | Git snapshot cadence and urgent governance event path |
 
 Card buttons:
 
 | Button | Action |
 | --- | --- |
 | 补充信息 | Ask for missing fields |
-| 生成启动卡 | Create project draft and launch checklist |
+| 生成启动卡 | Create project adoption draft and launch checklist |
 | 发起审批 | Submit project init approval |
 | 创建/绑定项目群 | After approval, create or bind Feishu group |
 | 处理仓库 | Existing repo: inspect/init. New repo: create repo through approved integration |
-| 组建 Agent 团队 | Create project Agent roster proposal |
+| 组建 Agent 团队 | Create local project Agent roster proposal and adopted rule set |
 
 ### Execution Flow
 
@@ -85,14 +95,14 @@ flowchart TB
     C --> E["新项目: 申请创建 repo"]
     D --> F["项目草稿 + launch.md"]
     E --> F
-    F --> G["project_initialization ProjectTask"]
+    F --> G["ProjectGovernanceProfile"]
     G --> H["项目 owner 审批"]
-    H --> I["Scheduler / Agent Ring 或 manual runner"]
-    I --> J["项目经理 Agent 初始化"]
-    J --> K["仓库 / 项目群 / Agent team / Review 规则"]
-    K --> L["TaskResult: 风险 + 阻塞 + 首批 ProjectTask"]
+    H --> I["项目本地 Agent surface / manual setup"]
+    I --> J["项目本地 PM Agent 初始化"]
+    J --> K["仓库 / 项目群 / Agent team / Review 规则 / 同步策略"]
+    K --> L["ProjectStageSnapshot + GovernanceEvent path"]
     L --> M["通知 owner / 请求人"]
-    M --> N["项目进入首批任务执行"]
+    M --> N["项目本地进入业务规划和执行"]
 ```
 
 ### Startup Milestones
@@ -104,9 +114,9 @@ Project creation does not invent a product roadmap. It creates startup milestone
 | M0 Intake Complete | required intake fields are captured or marked missing | Agent Hub |
 | M1 Approval And Ownership | human project owner and approval path are clear | Human owner + Project Manager Agent |
 | M2 Initialization Executed | repo, group, default Agent team, Runner, and Review rules are ready or blocked | Project Manager Agent |
-| M3 First Work Queue | first actionable `ProjectTask` list exists | Project Manager Agent |
+| M3 Local Agent Surface Ready | local business planning can run in the project repo; high-signal sync path exists | Project Manager Agent |
 
-Business milestones, product delivery dates, and engineering sprint plans are proposed later by the Project Manager Agent after initialization, then confirmed by the human project owner.
+Business milestones, product delivery dates, and engineering sprint plans are proposed later by the project-local PM/Product Agents, then confirmed by the human project owner. They are not centrally generated by Agent Hub.
 
 ### Agent Team Entry
 
@@ -117,45 +127,47 @@ Every project starts with a minimal default team:
 | `agent.<project>.project-manager` | yes | initialization owner, scope and task flow |
 | `agent.company.product-manager` | yes, unless intake clearly excludes product work | product requirement clarification and acceptance criteria |
 | `agent.<project>.knowledge-engineering` | yes | project material and reusable knowledge drafts |
-| `agent.<project>.executor` | yes | local execution through Agent Ring or manual runner |
+| `agent.<project>.executor` | yes | local execution in the project repo through Codex, Claude, local tools, Agent Ring, or manual runner |
 
 Product requirement clarification must not be assigned to the generic Project Manager Agent. It needs either `agent.company.product-manager` or a named human product owner. A project-scoped actor such as `agent.<project-id>.product-manager` may execute the task, but the company-level role identity stays `agent.company.product-manager`. Agent Hub decides this during first intake: include Product Manager Agent by default; skip it only when the user explicitly says requirements are already clear, the work is only technical/repository migration, or product is not needed. The skip reason is recorded in `launch.md`; no separate confirmation task is created.
 
 Default Product Manager Agent responsibilities and skill pack are defined in [Product Manager Agent Role And Skill Pack](product-manager-agent-role-and-skill-pack.md).
 
-Requested roles such as frontend, backend, test, ops, growth, or domain expert do not automatically become durable Agents just because the user typed them once. They become candidate Agents or first ProjectTasks. The Project Manager Agent confirms actual need, available runners, permissions, and owner approval before attaching more Agents.
+Requested roles such as frontend, backend, test, ops, growth, or domain expert do not automatically become durable Agents just because the user typed them once. They become candidate local project Agents or local backlog items. The project-local Project Manager Agent confirms actual need, available local tools, permissions, and owner approval before attaching more Agents.
 
 ### After Creation Flow
 
 ```txt
 Project draft + launch.md
--> project_initialization ProjectTask
--> Project Manager Agent claim or manual handoff
--> initialization TaskResult
--> first ProjectTask list
--> Scheduler dispatches each task to eligible Agent Ring runner
--> task result / review / notification loop
+-> ProjectGovernanceProfile
+-> local .zhenzhi/ governance surface
+-> Project Manager Agent local initialization or manual setup
+-> ProjectStageSnapshot
+-> local business planning and execution
+-> central receives only high-signal records
 ```
 
 ### Closed Loop Contract
 
-Project creation is closed only when the project can run without the intake requester holding hidden state.
+Project creation is closed only when the project can run locally without the intake requester holding hidden state, and central knows how the project will report high-signal records.
 
 Owner:
 
 - The generated `agent.<project>.project-manager` is the default Project Initialization Agent.
 - Human project owner remains accountable for scope, approval, and final project direction.
-- Agent Hub and DeepSeek only collect intent and fields. They do not own project execution.
-- Scheduler and Agent Ring own dispatch and local execution, not product acceptance.
+- Agent Hub only collects intent and fields. It does not own project execution.
+- Project-local Agents own business planning and execution.
+- Central Scheduler owns only governance, knowledge, Agent capability, and tool capability follow-ups.
 
 Required durable records:
 
 - `Project` draft.
-- `launch.md` with owner, goal, repo mode, group plan, default Agent team, Runner, and M0-M3 startup milestones.
-- `ProjectTask` with `taskType: project_initialization`.
+- `launch.md` with owner, goal, repo mode, group plan, default Agent team, sync policy, and M0-M3 startup milestones.
+- `ProjectGovernanceProfile`.
+- local `.zhenzhi/` governance surface or blocker.
 - project Agent roster.
 - approval request when owner approval is required.
-- `TaskResult` and `AgentRun` or manual handoff record after initialization work.
+- `ProjectStageSnapshot` or manual handoff record after initialization work.
 - notification to requester/project owner with result, risks, blockers, and next action.
 
 Done means:
@@ -164,8 +176,8 @@ Done means:
 - README, AGENTS, project structure, Review rules, and project context are initialized or listed as blockers;
 - Feishu project group is created, bound, or explicitly marked unnecessary;
 - Agent team has role boundaries and allowed project scope;
-- Runner is assigned, claimed, or manual runner handoff is recorded;
-- first ProjectTasks exist or unresolved risk has an owner and next action;
+- high-signal sync paths exist for stage snapshots, governance events, knowledge candidates, Agent gaps, and tool gaps;
+- local business backlog ownership is explicit in the project repo;
 - reusable knowledge, policy, tool, or permission changes enter the correct Review path.
 
 ## Agent Team
