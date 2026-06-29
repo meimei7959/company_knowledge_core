@@ -828,6 +828,15 @@ def secret_fingerprint(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+EXECUTION_CONTRACT_VERSION = "execution-contract.v1"
+EXECUTION_CONTRACT_RULE_REF = "docs/workflows/execution-contract-lifecycle.md"
+
+
+def canonical_json_hash(value: Any) -> str:
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
 def unique_time_id(prefix: str) -> str:
     return prefix + "." + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
 
@@ -3770,6 +3779,11 @@ def create_capability_release(
     summary: str = "",
     target_agents: list[str] | None = None,
     target_projects: list[str] | None = None,
+    reason: str = "",
+    impact: str = "",
+    rollback_plan: str = "",
+    usage_metric: str = "",
+    ttl_days: int = 14,
 ) -> dict[str, Any]:
     flags = capability_feature_flags()
     if not flags["CAPABILITY_RELEASE_ENABLED"]:
@@ -3780,6 +3794,16 @@ def create_capability_release(
         raise KnowledgeError("capability release owner is required")
     if not candidate_refs:
         raise KnowledgeError("capability release requires at least one candidate ref")
+    if not reason.strip():
+        raise KnowledgeError("capability release reason is required")
+    if not impact.strip():
+        raise KnowledgeError("capability release impact is required")
+    if not rollback_plan.strip():
+        raise KnowledgeError("capability release rollback plan is required")
+    if not usage_metric.strip():
+        raise KnowledgeError("capability release usage metric is required")
+    if ttl_days <= 0:
+        raise KnowledgeError("capability release ttl days must be positive")
     rid = slug(release_id) if release_id.strip() else unique_time_id("capability-release")
     ensure_dir(capability_release_storage_dir(bundle))
     path = capability_release_storage_dir(bundle) / f"{rid}.md"
@@ -3788,6 +3812,7 @@ def create_capability_release(
     normalized_status = status.strip().lower() or "draft"
     if normalized_status in CAPABILITY_RELEASED_STATUSES and flags["CAPABILITY_RELEASE_REQUIRE_APPROVAL"]:
         raise KnowledgeError("capability release requires human approval before released/active status")
+    expires_at = (datetime.now(timezone.utc).replace(microsecond=0) + timedelta(days=ttl_days)).isoformat().replace("+00:00", "Z")
     candidate_objects: list[tuple[str, Path, dict[str, Any]]] = []
     release_approval_required = False
     for candidate_ref in candidate_refs:
@@ -3812,6 +3837,20 @@ def create_capability_release(
         "assetRefs": [],
         "targetAgents": target_agents or [],
         "targetProjects": [slug(item) for item in target_projects or []],
+        "releaseDiscipline": {
+            "reason": reason.strip(),
+            "impact": impact.strip(),
+            "rollbackPlan": rollback_plan.strip(),
+            "usageMetric": usage_metric.strip(),
+            "ttlDays": ttl_days,
+            "expiresAt": expires_at,
+        },
+        "reason": reason.strip(),
+        "impact": impact.strip(),
+        "rollbackPlan": rollback_plan.strip(),
+        "usageMetric": usage_metric.strip(),
+        "ttlDays": ttl_days,
+        "expiresAt": expires_at,
         "reviewRequired": True,
         "approvalRequired": release_approval_required,
         "usageEventRefs": [],
@@ -3833,6 +3872,15 @@ def create_capability_release(
             "",
             "- Draft releases are not active Runner defaults.",
             "- Published releases require capability review and any required human approval.",
+            "",
+            "## Release Discipline",
+            "",
+            f"- why: {reason.strip()}",
+            f"- impact: {impact.strip()}",
+            f"- rollback_plan: {rollback_plan.strip()}",
+            f"- usage_metric: {usage_metric.strip()}",
+            f"- ttl_days: {ttl_days}",
+            f"- expires_at: {expires_at}",
         ]
     )
     write_text(path, render_doc(frontmatter, body))
@@ -3847,7 +3895,7 @@ def create_capability_release(
                     "updatedAt": utc_now(),
                 },
             )
-    create_audit_log(bundle, owner, "capability.release.create", rel(path, bundle.root), after=normalized_status, policy_result="review_required", details=summary[:1000])
+    create_audit_log(bundle, owner, "capability.release.create", rel(path, bundle.root), after=normalized_status, policy_result="review_required", details=f"{summary[:1000]}\nreason={reason.strip()}\nusageMetric={usage_metric.strip()}\nexpiresAt={expires_at}")
     return {"apiVersion": "v0.1", "kind": "CapabilityRelease", "releaseId": rid, "releaseRef": rel(path, bundle.root), "status": normalized_status}
 
 
@@ -4070,7 +4118,7 @@ def runner_capability_pull(
     releases = [
         item
         for item in control["releases"]
-        if item.get("status") in {"released", "active"} and (not project_id or not as_list(item.get("targetProjects")) or slug(project_id) in as_list(item.get("targetProjects")))
+        if item.get("status") in {"released", "active"} and not release_is_expired(item) and (not project_id or not as_list(item.get("targetProjects")) or slug(project_id) in as_list(item.get("targetProjects")))
     ]
     drafts = []
     if include_drafts:
@@ -4115,6 +4163,8 @@ def record_skill_usage_event(
     outcome: str = "observed",
     summary: str = "",
     evidence_refs: list[str] | None = None,
+    time_saved_minutes: float = 0,
+    user_feedback_score: float = 0,
 ) -> dict[str, Any]:
     if not capability_feature_flags()["CAPABILITY_USAGE_FEEDBACK_ENABLED"]:
         raise KnowledgeError("capability usage feedback is disabled by CAPABILITY_USAGE_FEEDBACK_ENABLED")
@@ -4138,6 +4188,8 @@ def record_skill_usage_event(
         "taskId": task_id,
         "resultRef": result_ref,
         "outcome": outcome,
+        "timeSavedMinutes": float(time_saved_minutes or 0),
+        "userFeedbackScore": float(user_feedback_score or 0),
         "status": "observed",
         "evidenceRefs": evidence_refs or [],
         "createdAt": utc_now(),
@@ -4209,6 +4261,93 @@ def list_capability_objects(bundle: Bundle, root: Path, object_type: str = "", s
     return rows
 
 
+def release_is_expired(release: dict[str, Any]) -> bool:
+    expires_at = parse_utc(str(release.get("expiresAt") or dict(release.get("releaseDiscipline") or {}).get("expiresAt") or ""))
+    return bool(expires_at and expires_at <= datetime.now(timezone.utc).replace(microsecond=0))
+
+
+def rating_to_score(value: str) -> float:
+    normalized = str(value or "").strip().lower()
+    if normalized in {"excellent", "great", "good", "positive", "5"}:
+        return 5.0
+    if normalized in {"ok", "neutral", "3"}:
+        return 3.0
+    if normalized in {"bad", "poor", "negative", "1"}:
+        return 1.0
+    try:
+        score = float(normalized)
+    except ValueError:
+        return 0.0
+    return max(0.0, min(5.0, score))
+
+
+def usage_outcome_is_success(outcome: str) -> bool:
+    return str(outcome or "").strip().lower() in {"success", "succeeded", "helped", "useful", "done", "accepted", "observed"}
+
+
+def usage_outcome_is_failure(outcome: str) -> bool:
+    return str(outcome or "").strip().lower() in {"failure", "failed", "error", "rejected", "bad", "poor", "blocked"}
+
+
+def capability_evaluation_read_model(bundle: Bundle) -> dict[str, Any]:
+    releases = list_capability_objects(bundle, capability_release_storage_dir(bundle), "CapabilityRelease")
+    usage_events = list_capability_objects(bundle, capability_usage_storage_dir(bundle), "SkillUsageEvent")
+    feedback = list_capability_objects(bundle, capability_feedback_storage_dir(bundle), "CapabilityFeedback")
+    evaluations: list[dict[str, Any]] = []
+    for release in releases:
+        release_ref = str(release.get("path") or "")
+        release_usage = [item for item in usage_events if str(item.get("releaseRef") or "") == release_ref]
+        release_feedback = [item for item in feedback if str(item.get("capabilityRef") or "") == release_ref]
+        success_count = sum(1 for item in release_usage if usage_outcome_is_success(str(item.get("outcome") or "")))
+        failure_count = sum(1 for item in release_usage if usage_outcome_is_failure(str(item.get("outcome") or "")))
+        usage_count = len(release_usage)
+        feedback_scores = [rating_to_score(str(item.get("rating") or "")) for item in release_feedback]
+        feedback_scores = [score for score in feedback_scores if score > 0]
+        rejection_count = sum(1 for item in release_feedback if str(item.get("feedbackType") or item.get("rating") or "").lower() in {"negative", "bad", "poor", "rejected"})
+        time_saved = sum(float(item.get("timeSavedMinutes") or 0) for item in release_usage)
+        success_rate = (success_count / usage_count) if usage_count else 0.0
+        failure_rate = (failure_count / usage_count) if usage_count else 0.0
+        feedback_score = (sum(feedback_scores) / len(feedback_scores)) if feedback_scores else 0.0
+        rejection_rate = (rejection_count / len(release_feedback)) if release_feedback else 0.0
+        expired = release_is_expired(release)
+        if expired:
+            recommendation = "require_review"
+        elif usage_count == 0:
+            recommendation = "needs_usage_data"
+        elif failure_rate >= 0.5 or rejection_rate >= 0.5 or (feedback_score and feedback_score < 2.5):
+            recommendation = "deprecate_candidate"
+        elif success_rate >= 0.8 and (feedback_score >= 4.0 or not feedback_scores):
+            recommendation = "stabilize_candidate"
+        else:
+            recommendation = "monitor"
+        evaluations.append(
+            {
+                "releaseRef": release_ref,
+                "releaseId": release.get("releaseId", ""),
+                "status": release.get("status", ""),
+                "usageMetric": release.get("usageMetric", ""),
+                "expiresAt": release.get("expiresAt", ""),
+                "expired": expired,
+                "usageCount": usage_count,
+                "successRate": round(success_rate, 4),
+                "failureRate": round(failure_rate, 4),
+                "timeSavedMinutes": round(time_saved, 2),
+                "userFeedbackScore": round(feedback_score, 2),
+                "rejectionRate": round(rejection_rate, 4),
+                "recommendation": recommendation,
+            }
+        )
+    return {"apiVersion": "v0.1", "kind": "CapabilityEvaluationReadModel", "generatedAt": utc_now(), "evaluations": evaluations}
+
+
+def status_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        status = str(row.get("status") or "unknown")
+        counts[status] = counts.get(status, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def capability_control_read_model(bundle: Bundle, status: str = "", candidate_type: str = "") -> dict[str, Any]:
     candidates = list_capability_objects(bundle, capability_candidate_storage_dir(bundle), "CapabilityCandidate", status)
     if candidate_type:
@@ -4219,6 +4358,7 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
     feedback = list_capability_objects(bundle, capability_feedback_storage_dir(bundle), "CapabilityFeedback")
     skill_assets = list_capability_objects(bundle, skill_storage_dir(bundle), "SkillAsset")
     tool_assets = list_capability_objects(bundle, bundle.root / "tools", "ToolAsset")
+    evaluations = capability_evaluation_read_model(bundle)["evaluations"]
     return {
         "apiVersion": "v0.1",
         "kind": "CapabilityControlPlane",
@@ -4231,6 +4371,9 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
             "toolAssetCount": len(tool_assets),
             "usageEventCount": len(usage_events),
             "feedbackCount": len(feedback),
+            "expiredReleaseCount": sum(1 for item in releases if release_is_expired(item)),
+            "releaseNeedingUsageDataCount": sum(1 for item in evaluations if item.get("recommendation") == "needs_usage_data"),
+            "releaseReviewRequiredCount": sum(1 for item in evaluations if item.get("recommendation") in {"require_review", "deprecate_candidate"}),
         },
         "candidates": candidates,
         "releases": releases,
@@ -4238,6 +4381,46 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
         "toolAssets": tool_assets,
         "usageEvents": usage_events[-50:],
         "feedback": feedback[-50:],
+        "evaluations": evaluations,
+    }
+
+
+def control_plane_status_read_model(bundle: Bundle) -> dict[str, Any]:
+    capabilities = capability_control_read_model(bundle)
+    runners = runner_registry_for_workbench(bundle)
+    tasks = list_project_tasks(bundle)
+    knowledge = search_index(bundle, {"type": "KnowledgeItem"})
+    failed_task_statuses = {"blocked", "failed", "rejected", "changes_requested"}
+    stuck_task_statuses = {"waiting_runner", "processing", "running", "blocked"}
+    return {
+        "apiVersion": "v0.1",
+        "kind": "ControlPlaneStatus",
+        "generatedAt": utc_now(),
+        "capability": {
+            "statusCounts": status_counts(capabilities["releases"]),
+            "candidateStatusCounts": status_counts(capabilities["candidates"]),
+            "pendingApproval": [item for item in capabilities["candidates"] if item.get("status") in {"waiting_acceptance", "reviewing"}],
+            "expiredReleases": [item for item in capabilities["releases"] if release_is_expired(item)],
+            "evaluation": capabilities["evaluations"],
+        },
+        "runner": {
+            "activeCount": sum(1 for item in runners if item.get("status") in {"online", "idle", "busy"}),
+            "staleHeartbeatCount": sum(1 for item in runners if item.get("heartbeatStale")),
+            "failedTaskCount": sum(len(as_list(item.get("failedLeases"))) for item in runners),
+            "runners": runners,
+        },
+        "task": {
+            "statusCounts": status_counts(tasks),
+            "failedTasks": [item for item in tasks if item.get("status") in failed_task_statuses],
+            "stuckTasks": [item for item in tasks if item.get("status") in stuck_task_statuses],
+        },
+        "knowledge": {
+            "statusCounts": status_counts(knowledge),
+            "signalCount": sum(1 for item in knowledge if item.get("status") in {"draft", "observed", "testing", "pending_review"}),
+            "draftCount": sum(1 for item in knowledge if item.get("status") == "draft"),
+            "reviewedCount": sum(1 for item in knowledge if item.get("status") in {"observed", "verified", "approved", "active"}),
+            "activeCount": sum(1 for item in knowledge if item.get("status") in {"verified", "approved", "active"}),
+        },
     }
 
 
@@ -7404,6 +7587,9 @@ def create_project_task(
         "pmControlLeaseRef": pm_lease_context.get("leaseRef", ""),
     }
     frontmatter["taskRuntime"] = normalized_task_runtime(frontmatter)
+    frontmatter["taskRuntime"]["executionContractRequired"] = True
+    frontmatter["taskRuntime"]["executionContractFreshnessRequired"] = True
+    frontmatter["executionContract"] = build_task_execution_contract(frontmatter, frontmatter["taskRuntime"])
     body = "\n".join(
         [
             "## Request",
@@ -7426,6 +7612,13 @@ def create_project_task(
             "## Expected Output",
             "",
             "\n".join(f"- {item}" for item in expected_output or []) or "- TaskResult with summary, evidence, and next actions.",
+            "",
+            "## Execution Contract",
+            "",
+            f"- contractId: {frontmatter['executionContract'].get('contractId') or 'none'}",
+            f"- sourceFactsHash: {frontmatter['executionContract'].get('sourceFactsHash') or 'none'}",
+            f"- ruleRef: {EXECUTION_CONTRACT_RULE_REF}",
+            "- Runner must refresh this contract before execution when source materials, expected output, linked requirements, defects, or runtime constraints change.",
             "",
             "## Handling Notes",
             "",
@@ -11671,6 +11864,9 @@ def run_agent_worker(
             )
             continue
         try:
+            if boolish(normalized_task_runtime(task).get("executionContractRequired"), False):
+                refresh_project_task_execution_contract(bundle, task_id, actor=agent_id or selected_runner_id or "agent.worker")
+                task = load_object(task_path)
             claim = claim_project_task(bundle, task_id, selected_runner_id, lease_seconds=lease_seconds)
             counts["claimed"] += 1
             task_after_claim = dict(claim.get("task") or task)
@@ -12208,6 +12404,9 @@ def execute_v1_task_package(bundle: Bundle, package_id: str, runner_id: str, exe
     task = load_object(task_path)
     agent_id = executor_agent or str(package.get("toAgentId") or task.get("assignee") or "")
     project_id = str(package.get("projectId") or task.get("projectId") or "")
+    if boolish(normalized_task_runtime(task).get("executionContractRequired"), False):
+        refresh_project_task_execution_contract(bundle, task_id, actor=agent_id or runner_id or "v1.runtime")
+        task = load_object(task_path)
     worktree_ref = ""
     if agent_id == DEVELOPMENT_AGENT_ID or str(task.get("currentStage") or "") in {"implementation", "development"}:
         worktree_ref = rel(allocate_v1_worktree(bundle, project_id, task_id, agent_id), bundle.root)
@@ -12280,6 +12479,7 @@ def run_v1_single_machine_acceptance(bundle: Bundle, project_id: str = "company-
     except KnowledgeError:
         dev_task_path = create_project_task(bundle, "V1 acceptance development task - Local Router runtime proof", project_id, actor, DEVELOPMENT_AGENT_ID, task_type="implementation", task_id=dev_task_id, priority="critical", source_material_refs=["projects/company-knowledge-core/product-reviews/ai-native-agent-v1-executable-product-package.md"], expected_output=["Runtime proof result and worktree binding."])
         update_frontmatter_file(dev_task_path, {"currentStage": "implementation", "requiredCapabilities": ["implementation"], "technicalSolutionRequired": False})
+        refresh_project_task_execution_contract(bundle, dev_task_id, actor=actor)
     dev_package = compile_v1_task_package(bundle, dev_task_id, PROJECT_MANAGER_AGENT_ID, DEVELOPMENT_AGENT_ID, project_id)
     dev_execution = execute_v1_task_package(bundle, str(load_object(dev_package).get("packageId") or ""), "runner.v1.local.dev", DEVELOPMENT_AGENT_ID)
     test_task_id = "kt-v1-local-router-runtime-acceptance-test"
@@ -12288,6 +12488,7 @@ def run_v1_single_machine_acceptance(bundle: Bundle, project_id: str = "company-
     except KnowledgeError:
         test_task_path = create_project_task(bundle, "V1 acceptance test task - Local Router runtime proof", project_id, actor, TEST_AGENT_ID, task_type="testing", task_id=test_task_id, priority="critical", source_material_refs=[dev_execution["resultRef"], dev_execution["worktreeRef"]], expected_output=["Acceptance test report with pass/fail evidence."])
         update_frontmatter_file(test_task_path, {"currentStage": "testing", "requiredCapabilities": ["testing"], "technicalSolutionRequired": False})
+        refresh_project_task_execution_contract(bundle, test_task_id, actor=actor)
     test_package = compile_v1_task_package(bundle, test_task_id, PROJECT_MANAGER_AGENT_ID, TEST_AGENT_ID, project_id)
     test_execution = execute_v1_task_package(bundle, str(load_object(test_package).get("packageId") or ""), "runner.v1.local.test", TEST_AGENT_ID)
     confirm_message = send_v1_agent_message(bundle, project_id, PROJECT_MANAGER_AGENT_ID, PROJECT_MANAGER_AGENT_ID, "confirm_request", {"action": "merge_or_publish_v1_acceptance", "requiresHuman": True}, [dev_execution["resultRef"], test_execution["resultRef"]], priority="high")
@@ -12927,6 +13128,195 @@ def normalize_approval_request(
     }
 
 
+def execution_contract_source_facts(task: dict[str, Any], runtime: dict[str, Any] | None = None) -> dict[str, Any]:
+    resolved_runtime = runtime or normalized_task_runtime(task)
+    required_env_vars = append_runtime_unique(as_list(task.get("requiredEnvVars")), as_list(resolved_runtime.get("requiredEnvVars")))
+    runtime_facts = {
+        key: resolved_runtime.get(key)
+        for key in [
+            "runtimeVersion",
+            "taskType",
+            "category",
+            "stage",
+            "requiredCapabilities",
+            "requiredTools",
+            "requiredEnvVars",
+            "sourceRefs",
+            "repositoryRefs",
+            "dataScopes",
+            "qualityGate",
+            "acceptancePath",
+            "reviewPath",
+            "riskLevel",
+            "permissionPolicy",
+            "closurePolicy",
+            "approvalRelayRequired",
+            "executionContractRequired",
+            "executionContractFreshnessRequired",
+            "testEvidenceRequired",
+            "knowledgeEvidenceRequired",
+            "productEvidenceRequired",
+            "manualHandoffAllowed",
+            "requiresSourceMaterial",
+            "requiresKnowledgeDraft",
+            "requiresTests",
+        ]
+    }
+    return {
+        "taskId": str(task.get("taskId") or ""),
+        "taskType": str(task.get("taskType") or resolved_runtime.get("taskType") or ""),
+        "projectId": str(task.get("projectId") or ""),
+        "title": str(task.get("title") or ""),
+        "workSourceType": task_effective_work_source_type(task),
+        "requirementRefs": as_list(task.get("requirementRefs")),
+        "requirementObjectRefs": as_list(task.get("requirementObjectRefs")),
+        "acceptanceCriteriaRefs": as_list(task.get("acceptanceCriteriaRefs")),
+        "defectRefs": as_list(task.get("defectRefs")),
+        "defectObjectRefs": as_list(task.get("defectObjectRefs")),
+        "incidentRefs": as_list(task.get("incidentRefs")),
+        "operationRefs": as_list(task.get("operationRefs")),
+        "knowledgeTaskRefs": as_list(task.get("knowledgeTaskRefs")),
+        "researchQuestion": str(task.get("researchQuestion") or ""),
+        "sourceReason": str(task.get("sourceReason") or ""),
+        "outcomeSliceRef": str(task.get("outcomeSliceRef") or ""),
+        "sourceMaterialRefs": as_list(task.get("sourceMaterialRefs")),
+        "expectedOutput": as_list(task.get("expectedOutput")),
+        "requiredSecretRefs": as_list(task.get("requiredSecretRefs")),
+        "requiredEnvVars": required_env_vars,
+        "humanAcceptanceRequired": task.get("humanAcceptanceRequired", ""),
+        "handoffContract": task.get("handoffContract") if isinstance(task.get("handoffContract"), dict) else {},
+        "taskRuntime": runtime_facts,
+    }
+
+
+def execution_contract_source_hash(task: dict[str, Any], runtime: dict[str, Any] | None = None) -> str:
+    return canonical_json_hash(execution_contract_source_facts(task, runtime))
+
+
+def build_task_execution_contract(task: dict[str, Any], runtime: dict[str, Any] | None = None) -> dict[str, Any]:
+    resolved_runtime = runtime or normalized_task_runtime(task)
+    task_id = str(task.get("taskId") or "")
+    expected_outputs = as_list(task.get("expectedOutput"))
+    test_obligations: list[str] = []
+    if boolish(resolved_runtime.get("testEvidenceRequired"), False):
+        test_obligations.append("TaskResult.testsOrChecks must name the executed test/check commands and outcomes.")
+    if boolish(resolved_runtime.get("knowledgeEvidenceRequired"), False):
+        test_obligations.append("TaskResult must include evidenceRefs and a reviewable KnowledgeItem draft or knowledge output.")
+    if boolish(resolved_runtime.get("productEvidenceRequired"), False):
+        test_obligations.append("TaskResult must include product evidence or acceptance artifact refs.")
+    closure_evidence = [
+        "summary",
+        "outputRefs or evidenceRefs",
+        "handoffContract or terminal reason",
+        "qualityEvaluation",
+        "commonRulesEvaluation",
+    ]
+    if test_obligations:
+        closure_evidence.append("testsOrChecks")
+    return {
+        "version": EXECUTION_CONTRACT_VERSION,
+        "contractId": f"EC-{task_id}" if task_id else "",
+        "taskId": task_id,
+        "projectId": str(task.get("projectId") or ""),
+        "taskType": str(task.get("taskType") or resolved_runtime.get("taskType") or ""),
+        "status": "active",
+        "generatedAt": utc_now(),
+        "ruleRef": EXECUTION_CONTRACT_RULE_REF,
+        "hashAlgorithm": "sha256",
+        "sourceFactsHash": execution_contract_source_hash(task, resolved_runtime),
+        "intent": str(task.get("title") or task.get("researchQuestion") or ""),
+        "scope": {
+            "workSourceType": task_effective_work_source_type(task),
+            "expectedOutput": expected_outputs,
+            "sourceMaterialRefs": as_list(task.get("sourceMaterialRefs")),
+            "requirementRefs": as_list(task.get("requirementRefs")),
+            "acceptanceCriteriaRefs": as_list(task.get("acceptanceCriteriaRefs")),
+            "defectRefs": as_list(task.get("defectRefs")),
+        },
+        "runtimeConstraints": {
+            "requiredCapabilities": as_list(resolved_runtime.get("requiredCapabilities")),
+            "requiredTools": as_list(resolved_runtime.get("requiredTools")),
+            "requiredSecretRefs": as_list(task.get("requiredSecretRefs")),
+            "requiredEnvVars": append_runtime_unique(as_list(task.get("requiredEnvVars")), as_list(resolved_runtime.get("requiredEnvVars"))),
+            "riskLevel": str(resolved_runtime.get("riskLevel") or ""),
+            "permissionPolicy": str(resolved_runtime.get("permissionPolicy") or ""),
+            "closurePolicy": str(resolved_runtime.get("closurePolicy") or ""),
+        },
+        "testObligations": test_obligations,
+        "closureEvidence": closure_evidence,
+        "approval": {
+            "approvalRelayRequired": boolish(resolved_runtime.get("approvalRelayRequired"), False),
+            "humanAcceptanceRequired": task.get("humanAcceptanceRequired", ""),
+            "humanAcceptancePolicyRef": "docs/agent-team/human-acceptance-policy.md",
+        },
+    }
+
+
+def evaluate_task_execution_contract(task: dict[str, Any], runtime: dict[str, Any] | None = None) -> dict[str, Any]:
+    resolved_runtime = runtime or normalized_task_runtime(task)
+    required = boolish(resolved_runtime.get("executionContractRequired"), False)
+    freshness_required = boolish(resolved_runtime.get("executionContractFreshnessRequired"), required)
+    contract = task.get("executionContract") if isinstance(task.get("executionContract"), dict) else {}
+    current_hash = execution_contract_source_hash(task, resolved_runtime)
+    stored_hash = str(contract.get("sourceFactsHash") or "")
+    reasons: list[str] = []
+    if required and not contract:
+        reasons.append("executionContract is required")
+    if contract and str(contract.get("version") or "") != EXECUTION_CONTRACT_VERSION:
+        reasons.append(f"executionContract.version must be {EXECUTION_CONTRACT_VERSION}")
+    if contract and freshness_required and stored_hash != current_hash:
+        reasons.append("executionContract is stale; refresh task contract before closing")
+    passed = not reasons
+    return {
+        "version": "execution-contract-evaluation.v1",
+        "status": "passed" if passed else "failed",
+        "passed": passed,
+        "required": required,
+        "freshnessRequired": freshness_required,
+        "contractRef": str(contract.get("contractId") or ""),
+        "storedSourceFactsHash": stored_hash,
+        "currentSourceFactsHash": current_hash,
+        "ruleRef": EXECUTION_CONTRACT_RULE_REF,
+        "reasons": reasons,
+    }
+
+
+def execution_contract_gaps(task: dict[str, Any], runtime: dict[str, Any] | None = None) -> list[str]:
+    evaluation = evaluate_task_execution_contract(task, runtime)
+    return as_list(evaluation.get("reasons"))
+
+
+def refresh_project_task_execution_contract(bundle: Bundle, task_id: str, actor: str = "system") -> dict[str, Any]:
+    task_path = find_project_task(bundle, task_id)
+    task = ensure_project_task_runtime(bundle, task_path)
+    runtime = normalized_task_runtime(task)
+    runtime["executionContractRequired"] = True
+    runtime["executionContractFreshnessRequired"] = True
+    task = update_frontmatter_file(task_path, {"taskRuntime": runtime, "updatedAt": utc_now()})
+    contract = build_task_execution_contract(task, runtime)
+    before_hash = ""
+    existing = task.get("executionContract") if isinstance(task.get("executionContract"), dict) else {}
+    if existing:
+        before_hash = str(existing.get("sourceFactsHash") or "")
+    task = update_frontmatter_file(task_path, {"executionContract": contract, "updatedAt": utc_now()})
+    after_hash = str(contract.get("sourceFactsHash") or "")
+    create_audit_log(
+        bundle,
+        actor,
+        "task.execution_contract.refresh",
+        rel(task_path, bundle.root),
+        before=before_hash,
+        after=after_hash,
+        details=f"taskId={task.get('taskId', task_id)}\ncontractId={contract.get('contractId', '')}",
+    )
+    return {
+        "taskId": str(task.get("taskId") or task_id),
+        "taskRef": rel(task_path, bundle.root),
+        "executionContract": contract,
+        "evaluation": evaluate_task_execution_contract(task, runtime),
+    }
+
+
 def validate_task_result_contract(
     task: dict[str, Any],
     runtime: dict[str, Any],
@@ -12959,6 +13349,8 @@ def validate_task_result_contract(
         gaps.append("approvalRequest.requiredDecisionOwner is required")
     if status == "blocked" and not (blockers or open_risks or approval_request):
         gaps.append("blocked result requires blockers, risks, or approvalRequest")
+    if status in {"done", "submitted"}:
+        gaps.extend(execution_contract_gaps(task, runtime))
     return gaps
 
 
@@ -13051,6 +13443,7 @@ def finish_project_task(
     result_id = f"TR-{str(task_fm.get('taskId', task_id))}"
     result_path = task_result_storage_dir(bundle) / f"{slug(result_id)}.md"
     source_refs = as_list(task_fm.get("sourceMaterialRefs"))
+    execution_contract_evaluation = evaluate_task_execution_contract(task_fm, runtime)
     validation_gaps = validate_task_result_contract(
         task_fm,
         runtime,
@@ -13064,8 +13457,9 @@ def finish_project_task(
         normalized_approval_request,
     )
     if validation_gaps and successful_close:
-        if any("approvalRequest" in item for item in validation_gaps):
+        if any("approvalRequest" in item for item in validation_gaps) or any(item.startswith("executionContract") for item in validation_gaps):
             status = "blocked"
+            successful_close = False
         blockers = append_runtime_unique(list(blockers or []), validation_gaps)
     created_knowledge_refs = list(knowledge_refs or [])
     if knowledge_draft:
@@ -13172,6 +13566,8 @@ def finish_project_task(
         "approvalRequest": normalized_approval_request,
         "capabilityCandidateRefs": [],
         "capabilityFeedbackRefs": [],
+        "executionContract": task_fm.get("executionContract") if isinstance(task_fm.get("executionContract"), dict) else {},
+        "executionContractEvaluation": execution_contract_evaluation,
         "operatingRuleRefs": operating_rule_refs,
         "handoffContract": handoff_contract,
         "commonRulesEvaluation": common_rules_evaluation,
@@ -13214,6 +13610,14 @@ def finish_project_task(
             "## Approval Request",
             "",
             json.dumps(normalized_approval_request, ensure_ascii=False, indent=2) if normalized_approval_request else "none",
+            "",
+            "## Execution Contract",
+            "",
+            f"- status: {execution_contract_evaluation.get('status', '')}",
+            f"- contractRef: {execution_contract_evaluation.get('contractRef', '') or 'none'}",
+            f"- storedSourceFactsHash: {execution_contract_evaluation.get('storedSourceFactsHash', '') or 'none'}",
+            f"- currentSourceFactsHash: {execution_contract_evaluation.get('currentSourceFactsHash', '') or 'none'}",
+            f"- reasons: {', '.join(as_list(execution_contract_evaluation.get('reasons'))) or 'none'}",
             "",
             "## Handoff",
             "",
@@ -14167,6 +14571,8 @@ def task_runtime_snapshot(task_type: str) -> dict[str, Any]:
         "permissionPolicy": "runner_scope_required",
         "closurePolicy": "task_result_with_evidence",
         "approvalRelayRequired": False,
+        "executionContractRequired": False,
+        "executionContractFreshnessRequired": False,
         "testEvidenceRequired": bool(profile["requiresTests"]),
         "knowledgeEvidenceRequired": bool(profile["requiresKnowledgeDraft"]),
         "productEvidenceRequired": category == "product",
@@ -14195,6 +14601,11 @@ def normalized_task_runtime(task: dict[str, Any]) -> dict[str, Any]:
     merged["requiredTools"] = append_runtime_unique(as_list(merged.get("requiredTools")), as_list(task.get("requiredTools")))
     merged["riskLevel"] = str(task.get("riskLevel") or merged.get("riskLevel") or "low")
     merged["approvalRelayRequired"] = boolish(task.get("approvalRelayRequired"), boolish(merged.get("approvalRelayRequired"), False))
+    merged["executionContractRequired"] = boolish(task.get("executionContractRequired"), boolish(merged.get("executionContractRequired"), False))
+    merged["executionContractFreshnessRequired"] = boolish(
+        task.get("executionContractFreshnessRequired"),
+        boolish(merged.get("executionContractFreshnessRequired"), boolish(merged.get("executionContractRequired"), False)),
+    )
     merged["testEvidenceRequired"] = boolish(task.get("testEvidenceRequired"), boolish(merged.get("testEvidenceRequired"), False))
     merged["knowledgeEvidenceRequired"] = boolish(task.get("knowledgeEvidenceRequired"), boolish(merged.get("knowledgeEvidenceRequired"), False))
     merged["productEvidenceRequired"] = boolish(task.get("productEvidenceRequired"), boolish(merged.get("productEvidenceRequired"), False))
@@ -14741,6 +15152,7 @@ def ensure_project_initialization_task(
     if not ring_enabled and str(task.get("status", "")) in {"pending", "waiting_runner"}:
         updates["status"] = "waiting_runner"
     update_frontmatter_file(task_path, updates)
+    refresh_project_task_execution_contract(bundle, str(task.get("taskId") or task_id), actor=requester)
     if updates.get("status") == "waiting_runner" and task.get("status") != "waiting_runner":
         create_audit_log(bundle, requester, "task.waitingRunner", rel(task_path, bundle.root), before=str(task.get("status", "")), after="waiting_runner")
     return task_path
@@ -18283,6 +18695,12 @@ def validate_bundle(bundle: Bundle) -> list[str]:
             problems.append(f"{rel_path}: unknown task routing status {fm.get('status')}")
         if fm.get("type") in {"ProjectTask", "KnowledgeTask"}:
             problems.extend(validate_task_source_traceability(rel_path, fm, require_explicit=bool(fm.get("workSourceType"))))
+            runtime = normalized_task_runtime(fm)
+            if boolish(runtime.get("executionContractRequired"), False):
+                contract_evaluation = evaluate_task_execution_contract(fm, runtime)
+                if not contract_evaluation.get("passed"):
+                    for reason in as_list(contract_evaluation.get("reasons")):
+                        problems.append(f"{rel_path}: {reason}")
             outcome_ref = str(fm.get("outcomeSliceRef") or "").strip()
             if outcome_ref:
                 outcome_path = bundle.root / outcome_ref

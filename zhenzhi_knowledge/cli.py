@@ -55,6 +55,8 @@ from .core import (
     bulk_review,
     cancel_project_task,
     capability_control_read_model,
+    capability_evaluation_read_model,
+    control_plane_status_read_model,
     create_project_task,
     create_project_manager_action,
     create_project_launch,
@@ -91,6 +93,7 @@ from .core import (
     register_agent_runner,
     register_workbench_tool,
     record_skill_usage_event,
+    refresh_project_task_execution_contract,
     runner_capability_pull,
     register_project_agent,
     attach_agent_to_project,
@@ -477,6 +480,9 @@ def make_parser() -> argparse.ArgumentParser:
     p_task_fact.add_argument("task_id")
     p_task_fact.add_argument("--project", required=True)
     p_task_fact.add_argument("--format", choices=["json", "markdown"], default="json")
+    p_task_contract = p_task_sub.add_parser("contract")
+    p_task_contract.add_argument("task_id")
+    p_task_contract.add_argument("--actor", default="system")
     p_task_finish = p_task_sub.add_parser("finish")
     p_task_finish.add_argument("task_id")
     p_task_finish.add_argument("--result", default="done")
@@ -864,6 +870,11 @@ def make_parser() -> argparse.ArgumentParser:
     p_capability_release.add_argument("--summary", default="")
     p_capability_release.add_argument("--target-agent", action="append", default=[])
     p_capability_release.add_argument("--target-project", action="append", default=[])
+    p_capability_release.add_argument("--reason", required=True)
+    p_capability_release.add_argument("--impact", required=True)
+    p_capability_release.add_argument("--rollback-plan", required=True)
+    p_capability_release.add_argument("--usage-metric", required=True)
+    p_capability_release.add_argument("--ttl-days", type=int, default=14)
     p_capability_usage = p_capability_sub.add_parser("usage")
     p_capability_usage.add_argument("--skill-ref", required=True)
     p_capability_usage.add_argument("--runner-id", default="")
@@ -874,6 +885,8 @@ def make_parser() -> argparse.ArgumentParser:
     p_capability_usage.add_argument("--outcome", default="observed")
     p_capability_usage.add_argument("--summary", default="")
     p_capability_usage.add_argument("--evidence-ref", action="append", default=[])
+    p_capability_usage.add_argument("--time-saved-minutes", type=float, default=0)
+    p_capability_usage.add_argument("--user-feedback-score", type=float, default=0)
     p_capability_feedback = p_capability_sub.add_parser("feedback")
     p_capability_feedback.add_argument("--capability-ref", required=True)
     p_capability_feedback.add_argument("--actor", required=True)
@@ -888,6 +901,11 @@ def make_parser() -> argparse.ArgumentParser:
     p_capability_pull.add_argument("--agent-id", default="")
     p_capability_pull.add_argument("--project", default="")
     p_capability_pull.add_argument("--include-drafts", action="store_true")
+    p_capability_evaluate = p_capability_sub.add_parser("evaluate")
+
+    p_control_plane = sub.add_parser("control-plane")
+    p_control_plane_sub = p_control_plane.add_subparsers(dest="control_plane_command", required=True)
+    p_control_plane_sub.add_parser("status")
 
     p_trace = sub.add_parser("trace")
     p_trace_sub = p_trace.add_subparsers(dest="trace_command", required=True)
@@ -1647,6 +1665,9 @@ def main(argv: list[str] | None = None) -> int:
                         print("- none")
                 else:
                     print(json.dumps(fact_view, indent=2, ensure_ascii=False))
+            elif args.task_command == "contract":
+                result = refresh_project_task_execution_contract(bundle, args.task_id, actor=args.actor)
+                print(json.dumps(result, indent=2, ensure_ascii=False))
             elif args.task_command == "finish":
                 knowledge_draft = None
                 if args.knowledge_draft_json and args.knowledge_draft_file:
@@ -2251,6 +2272,11 @@ def main(argv: list[str] | None = None) -> int:
                     args.summary,
                     args.target_agent,
                     args.target_project,
+                    args.reason,
+                    args.impact,
+                    args.rollback_plan,
+                    args.usage_metric,
+                    args.ttl_days,
                 )
                 print(json.dumps(result, indent=2, ensure_ascii=False))
             elif args.capability_command == "pull":
@@ -2274,6 +2300,8 @@ def main(argv: list[str] | None = None) -> int:
                     args.outcome,
                     args.summary,
                     args.evidence_ref,
+                    args.time_saved_minutes,
+                    args.user_feedback_score,
                 )
                 print(json.dumps(result, indent=2, ensure_ascii=False))
             elif args.capability_command == "feedback":
@@ -2288,6 +2316,13 @@ def main(argv: list[str] | None = None) -> int:
                     args.result_ref,
                     args.evidence_ref,
                 )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "evaluate":
+                result = capability_evaluation_read_model(bundle)
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+        elif args.command == "control-plane":
+            if args.control_plane_command == "status":
+                result = control_plane_status_read_model(bundle)
                 print(json.dumps(result, indent=2, ensure_ascii=False))
         elif args.command == "trace":
             result = trace_read_model(bundle, args.trace_command, args.identifier)

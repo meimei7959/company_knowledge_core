@@ -212,6 +212,18 @@ def minimal_feishu_settings(**overrides):
     return feishu_module.FeishuSettings(**values)
 
 
+def release_discipline(**overrides):
+    values = {
+        "reason": "Validate controlled enterprise Agent capability rollout.",
+        "impact": "Runner may install one reviewed capability after approval.",
+        "rollback_plan": "Set release status to deprecated and remove it from Runner pull.",
+        "usage_metric": "success_rate>=0.8 and user_feedback_score>=4.0",
+        "ttl_days": 14,
+    }
+    values.update(overrides)
+    return values
+
+
 class CliTests(unittest.TestCase):
     def setUp(self) -> None:
         self._previous_database_url = os.environ.get("DATABASE_URL")
@@ -954,12 +966,23 @@ evidenceRefs:
             self.assertEqual("pending_review", candidate["status"])
             self.assertEqual(str(result.relative_to(root)), candidate["sourceResultRef"])
 
+            with self.assertRaisesRegex(KnowledgeError, "reason is required"):
+                core_module.create_capability_release(
+                    bundle,
+                    "Release without discipline",
+                    "agent.company-knowledge-core.knowledge-engineering",
+                    result_fm["capabilityCandidateRefs"],
+                    impact="Changes Runner package.",
+                    rollback_plan="Deprecate release.",
+                    usage_metric="success_rate",
+                )
             release = core_module.create_capability_release(
                 bundle,
                 "Enterprise Agent research skills 0.1",
                 "agent.company-knowledge-core.knowledge-engineering",
                 result_fm["capabilityCandidateRefs"],
                 summary="Draft release for local Runner pull after capability review.",
+                **release_discipline(),
             )
             candidate_after_release = load_object(root / result_fm["capabilityCandidateRefs"][0])
             self.assertEqual([release["releaseRef"]], candidate_after_release["releaseRefs"])
@@ -971,12 +994,15 @@ evidenceRefs:
                 "agent.company-knowledge-core.knowledge-engineering",
                 task_id="KT-CAPABILITY-001",
                 result_ref=str(result.relative_to(root)),
+                release_ref=release["releaseRef"],
                 outcome="helped",
                 summary="Runner used the candidate while processing a webpage.",
+                time_saved_minutes=12,
+                user_feedback_score=5,
             )
             feedback = core_module.create_capability_feedback(
                 bundle,
-                result_fm["capabilityCandidateRefs"][0],
+                release["releaseRef"],
                 "agent.company.project-manager",
                 "Useful enough to keep in the next release review.",
                 rating="good",
@@ -989,6 +1015,28 @@ evidenceRefs:
             self.assertEqual(1, control["summary"]["feedbackCount"])
             self.assertEqual(usage["usageEventRef"], control["usageEvents"][0]["path"])
             self.assertEqual(feedback["feedbackRef"], control["feedback"][0]["path"])
+            self.assertEqual("success_rate>=0.8 and user_feedback_score>=4.0", load_object(root / release["releaseRef"])["usageMetric"])
+            evaluation = core_module.capability_evaluation_read_model(bundle)["evaluations"][0]
+            self.assertEqual(release["releaseRef"], evaluation["releaseRef"])
+            self.assertEqual(1.0, evaluation["successRate"])
+            self.assertEqual(0.0, evaluation["failureRate"])
+            self.assertEqual(12.0, evaluation["timeSavedMinutes"])
+            self.assertEqual(5.0, evaluation["userFeedbackScore"])
+            self.assertEqual("stabilize_candidate", evaluation["recommendation"])
+            status = core_module.control_plane_status_read_model(bundle)
+            self.assertEqual("ControlPlaneStatus", status["kind"])
+            self.assertIn("capability", status)
+            self.assertIn("runner", status)
+            self.assertIn("task", status)
+            self.assertIn("knowledge", status)
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                self.assertEqual(main(["--root", str(root), "control-plane", "status"]), 0)
+            self.assertEqual("ControlPlaneStatus", json.loads(stdout.getvalue())["kind"])
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                self.assertEqual(main(["--root", str(root), "capability", "evaluate"]), 0)
+            self.assertEqual("CapabilityEvaluationReadModel", json.loads(stdout.getvalue())["kind"])
             actions = audit_actions(root)
             self.assertIn("capability.candidate.create", actions)
             self.assertIn("capability.release.create", actions)
@@ -1062,6 +1110,7 @@ evidenceRefs:
                 "agent.company-knowledge-core.knowledge-engineering",
                 [candidate_ref],
                 status="draft",
+                **release_discipline(),
             )
             draft_package = core_module.runner_capability_pull(bundle, runner_id="runner.local.codex", agent_id="agent.company-knowledge-core.knowledge-engineering")
             self.assertEqual([], draft_package["releases"])
@@ -1186,6 +1235,7 @@ evidenceRefs:
                     "agent.company-knowledge-core.knowledge-engineering",
                     [candidate_ref],
                     status="released",
+                    **release_discipline(),
                 )
             release = core_module.create_capability_release(
                 bundle,
@@ -1193,6 +1243,7 @@ evidenceRefs:
                 "agent.company-knowledge-core.knowledge-engineering",
                 [candidate_ref],
                 status="draft",
+                **release_discipline(),
             )
             self.assertEqual([], core_module.runner_capability_pull(bundle, runner_id="runner.trace")["releases"])
             review_task = core_module.create_capability_review_task(bundle, candidate_ref, requester="ou_trace")
@@ -1391,6 +1442,7 @@ evidenceRefs:
                     "agent.company-knowledge-core.knowledge-engineering",
                     [candidate["candidateRef"]],
                     status="released",
+                    **release_discipline(),
                 )
             release = core_module.create_capability_release(
                 bundle,
@@ -1398,6 +1450,7 @@ evidenceRefs:
                 "agent.company-knowledge-core.knowledge-engineering",
                 [candidate["candidateRef"]],
                 status="draft",
+                **release_discipline(),
             )
             package = core_module.runner_capability_pull(bundle, runner_id="runner.pressure")
             self.assertEqual([], package["releases"])
@@ -4150,6 +4203,7 @@ metadata only.
                     "nextRequiredAction": "worker_run",
                 },
             )
+            core_module.refresh_project_task_execution_contract(bundle, "DEV-VALIDATE-001", actor="agent.company.project-manager")
 
             self.assertEqual(main(["--root", str(root), "validate"]), 0)
 
@@ -5485,6 +5539,105 @@ Product package complete.
             result = load_object(result_path)
             self.assertTrue(result["qualityEvaluation"]["passed"])
             self.assertNotIn("missing KnowledgeItem draft", result["qualityEvaluation"]["reasons"])
+
+    def test_execution_contract_blocks_stale_task_closure_until_refreshed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            task_path = create_project_task(
+                bundle,
+                "Runner reports current contract evidence.",
+                "agent-hub",
+                "meimei",
+                "",
+                task_type="engineering_action",
+                task_id="RUNTIME-CONTRACT-001",
+                expected_output=["Runner reports current contract evidence."],
+            )
+            task = load_object(task_path)
+            self.assertTrue(task["taskRuntime"]["executionContractRequired"])
+            self.assertTrue(task["taskRuntime"]["executionContractFreshnessRequired"])
+            self.assertEqual(
+                task["executionContract"]["sourceFactsHash"],
+                core_module.execution_contract_source_hash(task, task["taskRuntime"]),
+            )
+
+            update_frontmatter_file(task_path, {"sourceReason": "Scope changed after contract generation."})
+            self.assertTrue(any("executionContract is stale" in problem for problem in validate_bundle(bundle)))
+
+            stale_result_path = finish_project_task(
+                bundle,
+                "RUNTIME-CONTRACT-001",
+                "done",
+                "Runner reports current contract evidence.",
+                evidence_refs=["projects/agent-hub/evidence/current-contract.md"],
+                tests_or_checks=["contract freshness check passed"],
+            )
+            stale_result = load_object(stale_result_path)
+            self.assertEqual("blocked", stale_result["status"])
+            self.assertFalse(stale_result["executionContractEvaluation"]["passed"])
+            self.assertTrue(any("executionContract is stale" in item for item in stale_result["blockers"]))
+
+            refreshed = core_module.refresh_project_task_execution_contract(
+                bundle,
+                "RUNTIME-CONTRACT-001",
+                actor="agent.company.project-manager",
+            )
+            self.assertTrue(refreshed["evaluation"]["passed"])
+            self.assertFalse([problem for problem in validate_bundle(bundle) if "executionContract" in problem])
+
+            final_result_path = finish_project_task(
+                bundle,
+                "RUNTIME-CONTRACT-001",
+                "done",
+                "Runner reports current contract evidence.",
+                evidence_refs=["projects/agent-hub/evidence/current-contract.md"],
+                tests_or_checks=["contract freshness check passed"],
+            )
+            final_result = load_object(final_result_path)
+            self.assertTrue(final_result["executionContractEvaluation"]["passed"])
+            self.assertTrue(final_result["qualityEvaluation"]["passed"])
+
+    def test_cli_task_contract_refreshes_execution_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            task_path = create_project_task(
+                bundle,
+                "Refresh execution contract from CLI.",
+                "agent-hub",
+                "meimei",
+                "",
+                task_type="engineering_action",
+                task_id="RUNTIME-CONTRACT-CLI-001",
+            )
+            update_frontmatter_file(task_path, {"sourceReason": "CLI refresh should pick up this changed source reason."})
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                self.assertEqual(
+                    main(
+                        [
+                            "--root",
+                            str(root),
+                            "task",
+                            "contract",
+                            "RUNTIME-CONTRACT-CLI-001",
+                            "--actor",
+                            "agent.company.project-manager",
+                        ]
+                    ),
+                    0,
+                )
+            payload = json.loads(stdout.getvalue())
+            self.assertTrue(payload["evaluation"]["passed"])
+            task = load_object(task_path)
+            self.assertEqual(
+                payload["executionContract"]["sourceFactsHash"],
+                task["executionContract"]["sourceFactsHash"],
+            )
+            self.assertIn("task.execution_contract.refresh", audit_actions(root))
 
     def test_unified_task_runtime_keeps_knowledge_capture_gate(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -9227,6 +9380,7 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                     ),
                     encoding="utf-8",
                 )
+                core_module.refresh_project_task_execution_contract(Bundle(root), "KT-20260618-012", actor="test")
                 with self.assertRaises(urllib.error.HTTPError) as missing_secret:
                     post("/v0/tasks/claim", {"taskId": "KT-20260618-012", "runnerId": "runner.macbook"})
                 self.assertEqual(missing_secret.exception.code, 400)
@@ -9277,6 +9431,7 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                     ),
                     encoding="utf-8",
                 )
+                core_module.refresh_project_task_execution_contract(Bundle(root), "KT-20260618-013", actor="test")
                 ready_claim = post("/v0/tasks/claim", {"taskId": "KT-20260618-013", "runnerId": "runner.macbook"})
                 self.assertEqual(ready_claim["task"]["status"], "processing")
 
@@ -9309,6 +9464,7 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                     ),
                     encoding="utf-8",
                 )
+                core_module.refresh_project_task_execution_contract(Bundle(root), "KT-20260618-014", actor="test")
                 with self.assertRaises(urllib.error.HTTPError) as missing_capability:
                     post("/v0/tasks/claim", {"taskId": "KT-20260618-014", "runnerId": "runner.macbook"})
                 self.assertEqual(missing_capability.exception.code, 400)
@@ -9349,6 +9505,7 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                     0,
                 )
                 update_frontmatter_file(root / "projects" / "core" / "tasks" / "kt-20260618-018.md", {"humanAcceptanceRequired": False})
+                core_module.refresh_project_task_execution_contract(Bundle(root), "KT-20260618-018", actor="test")
                 project_claim = post("/v0/tasks/claim", {"taskId": "KT-20260618-018", "runnerId": "runner.engineer"})
                 project_context = post(
                     "/v0/tasks/pull",

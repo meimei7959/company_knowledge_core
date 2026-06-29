@@ -16,6 +16,8 @@ from .core import (
     cancel_project_task,
     claim_project_task,
     capability_control_read_model,
+    capability_evaluation_read_model,
+    control_plane_status_read_model,
     apply_capability_approval_result,
     apply_capability_review_result,
     create_agent_capability_report,
@@ -170,6 +172,10 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
             elif parsed.path == "/v0/capabilities":
                 query = parse_qs(parsed.query)
                 self._json(200, capability_control_read_model(self.server.bundle, status=first(query, "status"), candidate_type=first(query, "type")))
+            elif parsed.path == "/v0/capabilities/evaluations":
+                self._json(200, capability_evaluation_read_model(self.server.bundle))
+            elif parsed.path == "/v0/control-plane/status":
+                self._json(200, control_plane_status_read_model(self.server.bundle))
             elif parsed.path == "/v0/rag/search":
                 query = parse_qs(parsed.query)
                 rows = search_retrieval(
@@ -713,6 +719,11 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     summary=str(payload.get("summary", "")),
                     target_agents=list_field(payload, "targetAgents"),
                     target_projects=list_field(payload, "targetProjects"),
+                    reason=require(payload, "reason"),
+                    impact=require(payload, "impact"),
+                    rollback_plan=require(payload, "rollbackPlan"),
+                    usage_metric=require(payload, "usageMetric"),
+                    ttl_days=int(payload.get("ttlDays", 14)),
                 )
                 self._json(200, result)
             elif self.path == "/v0/usage/skill-events":
@@ -727,6 +738,8 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     outcome=str(payload.get("outcome", "observed")),
                     summary=str(payload.get("summary", "")),
                     evidence_refs=list_field(payload, "evidenceRefs"),
+                    time_saved_minutes=float(payload.get("timeSavedMinutes", 0) or 0),
+                    user_feedback_score=float(payload.get("userFeedbackScore", 0) or 0),
                 )
                 self._json(200, result)
             elif self.path == "/v0/runners/capability-pull":
