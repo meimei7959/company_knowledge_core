@@ -8307,6 +8307,18 @@ def accept_project_task_result(
             as_list(dict(result_fm.get("handoffContract") or {}).get("openRisks")),
         )
     before = str(acceptance_policy.get("acceptanceStatus") or "")
+    if before in {"accepted", "auto_accepted", "rejected", "changes_requested"}:
+        create_audit_log(
+            bundle,
+            reviewer or "system.acceptance",
+            "task.acceptance.replay_rejected",
+            rel(result_path, bundle.root),
+            before=before,
+            after="rejected",
+            policy_result="task_replay_guard",
+            details=f"taskId={task_id}\nrequestedDecision={decision_value}\nreason={reason}",
+        )
+        raise KnowledgeError(f"task acceptance already decided: {before}")
     now = utc_now()
     followup_path: Path | None = None
     next_status = decision_value

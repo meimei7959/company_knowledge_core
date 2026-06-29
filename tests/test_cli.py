@@ -1241,6 +1241,203 @@ evidenceRefs:
             self.assertTrue(trace["notifications"])
             self.assertTrue(trace["auditLogs"])
 
+    def test_feishu_control_plane_is_split_into_gateway_router_intent_command_executor(self) -> None:
+        import zhenzhi_knowledge.feishu_command as feishu_command_module
+        import zhenzhi_knowledge.feishu_executor as feishu_executor_module
+        import zhenzhi_knowledge.feishu_gateway as feishu_gateway_module
+        import zhenzhi_knowledge.feishu_intent as feishu_intent_module
+        import zhenzhi_knowledge.feishu_router as feishu_router_module
+
+        self.assertTrue(hasattr(feishu_gateway_module, "handle_feishu_event"))
+        self.assertTrue(hasattr(feishu_router_module, "route_feishu_event"))
+        self.assertTrue(hasattr(feishu_intent_module, "classify_message_intent"))
+        self.assertTrue(hasattr(feishu_command_module, "FeishuCommand"))
+        self.assertTrue(hasattr(feishu_executor_module, "execute_feishu_command"))
+        route = feishu_router_module.route_feishu_event({"header": {"event_type": "im.message.receive_v1"}})
+        self.assertEqual("message", route.kind)
+
+    def test_system_pressure_a_feishu_duplicate_forged_card_and_task_replay_are_guarded(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "qa", "QA", "meimei")
+            settings = minimal_feishu_settings(
+                approval_enabled=True,
+                approval_code_project="approval_project",
+                approval_code_common="approval_common",
+                common_reviewer_open_ids=["reviewer"],
+                user_open_id_map={"hanson": "owner"},
+            )
+            created: list[dict[str, str]] = []
+            original_create = feishu_module.create_feishu_approval_instance
+
+            def fake_create_approval(*_args, **kwargs):
+                created.append(dict(kwargs.get("form_values", {})))
+                return "approval_once"
+
+            payload = {
+                "schema": "2.0",
+                "header": {"event_type": "im.message.receive_v1", "token": "expected-token"},
+                "event": {
+                    "sender": {"sender_id": {"open_id": "ou_submitter", "user_id": "submitter"}},
+                    "message": {
+                        "message_id": "om_pressure_duplicate",
+                        "chat_id": "oc_test",
+                        "chat_type": "group",
+                        "message_type": "text",
+                        "content": json.dumps({"text": "创建一个项目，名字叫做工业软件点胶机。项目负责人是hanson"}),
+                    },
+                },
+            }
+            try:
+                feishu_module.create_feishu_approval_instance = fake_create_approval
+                first = feishu_module.handle_feishu_event(bundle, payload, settings)
+                second = feishu_module.handle_feishu_event(bundle, payload, settings)
+            finally:
+                feishu_module.create_feishu_approval_instance = original_create
+            self.assertTrue(first["ok"])
+            self.assertTrue(second["duplicate"])
+            self.assertEqual(len(created), 1)
+
+            forged = feishu_module.handle_feishu_event(
+                bundle,
+                {
+                    "schema": "2.0",
+                    "header": {"event_type": "card.action.trigger", "token": "expected-token"},
+                    "event": {
+                        "operator": {"operator_id": {"open_id": "ou_reviewer", "user_id": "reviewer"}},
+                        "context": {"open_message_id": "om_forged_task", "open_chat_id": "oc_test"},
+                        "action": {"value": {"action": "task_acceptance_accept", "taskId": "TASK-FORGED", "human": "true"}},
+                    },
+                },
+                settings,
+            )
+            self.assertEqual("error", forged["toast"]["type"])
+            self.assertIn("not found", forged["toast"]["content"])
+            self.assertIn("feishu.card.submit_failed", audit_actions(root))
+
+            task_path = create_project_task(
+                bundle,
+                "Pressure acceptance task",
+                "qa",
+                "agent.company.project-manager",
+                "agent.company.development",
+                task_type="engineering_action",
+                task_id="PRESSURE-ACCEPT-001",
+                expected_output=["Replay guard result."],
+            )
+            result_path = finish_project_task(
+                bundle,
+                "PRESSURE-ACCEPT-001",
+                "done",
+                "Ready for human acceptance.",
+                evidence_refs=[str(task_path.relative_to(root))],
+                tests_or_checks=["pressure replay guard"],
+                executor_agent="agent.company.development",
+            )
+            update_frontmatter_file(
+                result_path,
+                {
+                    "acceptancePolicy": {
+                        "acceptanceStatus": "pending",
+                        "humanAcceptanceRequired": True,
+                        "acceptanceRequiredByDefault": True,
+                    }
+                },
+            )
+            accept_payload = {
+                "schema": "2.0",
+                "header": {"event_type": "card.action.trigger", "token": "expected-token"},
+                "event": {
+                    "operator": {"operator_id": {"open_id": "ou_reviewer", "user_id": "reviewer"}},
+                    "context": {"open_message_id": "om_accept_replay", "open_chat_id": "oc_test"},
+                    "action": {"value": {"action": "task_acceptance_accept", "taskId": "PRESSURE-ACCEPT-001", "human": "true"}},
+                },
+            }
+            accepted = feishu_module.handle_feishu_event(bundle, accept_payload, settings)
+            replay = feishu_module.handle_feishu_event(bundle, accept_payload, settings)
+            self.assertEqual("success", accepted["toast"]["type"])
+            self.assertEqual("error", replay["toast"]["type"])
+            self.assertIn("already decided", replay["toast"]["content"])
+            self.assertIn("task.acceptance.replay_rejected", audit_actions(root))
+
+    def test_system_pressure_b_unreleased_capability_cannot_be_runner_active(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            candidate = core_module.create_capability_candidate(
+                bundle,
+                "Pressure draft skill",
+                candidate_id="pressure-draft-skill",
+                candidate_type="skill",
+                owner="agent.company-knowledge-core.knowledge-engineering",
+                summary="Draft capability cannot be runner active.",
+            )
+            with self.assertRaises(KnowledgeError):
+                core_module.create_capability_release(
+                    bundle,
+                    "Unsafe released pressure skill",
+                    "agent.company-knowledge-core.knowledge-engineering",
+                    [candidate["candidateRef"]],
+                    status="released",
+                )
+            release = core_module.create_capability_release(
+                bundle,
+                "Draft pressure skill",
+                "agent.company-knowledge-core.knowledge-engineering",
+                [candidate["candidateRef"]],
+                status="draft",
+            )
+            package = core_module.runner_capability_pull(bundle, runner_id="runner.pressure")
+            self.assertEqual([], package["releases"])
+            self.assertEqual("nothing_to_install", package["installStatus"])
+            self.assertEqual("draft", load_object(root / release["releaseRef"])["status"])
+
+    def test_system_pressure_c_knowledge_signals_do_not_auto_publish_capability(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "qa", "QA", "meimei")
+            update_frontmatter_file(
+                make_agent(bundle, "agent.company-knowledge-core.knowledge-engineering", "Knowledge Engineering", "meimei", "codex", "knowledge engineering"),
+                {"writePermissions": ["knowledge:draft"]},
+            )
+            task = create_project_task(
+                bundle,
+                "Knowledge signal only",
+                "qa",
+                "agent.company.project-manager",
+                "agent.company-knowledge-core.knowledge-engineering",
+                task_type="knowledge_capture",
+                task_id="PRESSURE-KNOWLEDGE-SIGNAL-001",
+                source_material_refs=["projects/qa/sources/signal.md"],
+                expected_output=["Draft knowledge only."],
+            )
+            result_path = finish_project_task(
+                bundle,
+                "PRESSURE-KNOWLEDGE-SIGNAL-001",
+                "done",
+                "Knowledge draft mentions skill/tool impact but must not publish capability.",
+                evidence_refs=[str(task.relative_to(root))],
+                tests_or_checks=["knowledge signal guard"],
+                executor_agent="agent.company-knowledge-core.knowledge-engineering",
+                knowledge_draft={
+                    "title": "Signal-only knowledge",
+                    "summary": "This mentions skillImpact and toolImpact for review.",
+                    "structured": "skillImpact: possible future workflow. toolImpact: possible future read-only helper. These are review signals only.",
+                    "category": "engineering",
+                    "confidence": "medium",
+                },
+            )
+            result = load_object(result_path)
+            self.assertTrue(result["knowledgeRefs"])
+            self.assertEqual([], result.get("capabilityCandidateRefs") or [])
+            self.assertFalse((root / "capabilities" / "releases").exists())
+            self.assertFalse(list((root / "capabilities" / "candidates").glob("*.md")) if (root / "capabilities" / "candidates").exists() else [])
+
     def test_project_health_reports_traceability_receiver_review_and_defect_risks(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
