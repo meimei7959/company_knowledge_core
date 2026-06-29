@@ -1248,6 +1248,8 @@ evidenceRefs:
         import zhenzhi_knowledge.feishu_intent as feishu_intent_module
         import zhenzhi_knowledge.feishu_router as feishu_router_module
 
+        facade_lines = (REPO_ROOT / "zhenzhi_knowledge" / "feishu.py").read_text(encoding="utf-8").splitlines()
+        self.assertLessEqual(len(facade_lines), 80)
         self.assertTrue(hasattr(feishu_gateway_module, "handle_feishu_event"))
         self.assertTrue(hasattr(feishu_router_module, "route_feishu_event"))
         self.assertTrue(hasattr(feishu_intent_module, "classify_message_intent"))
@@ -1255,6 +1257,13 @@ evidenceRefs:
         self.assertTrue(hasattr(feishu_executor_module, "execute_feishu_command"))
         route = feishu_router_module.route_feishu_event({"header": {"event_type": "im.message.receive_v1"}})
         self.assertEqual("message", route.kind)
+        original_create = feishu_executor_module.create_feishu_approval_instance
+        sentinel = lambda *_args, **_kwargs: "patched"
+        try:
+            feishu_module.create_feishu_approval_instance = sentinel
+            self.assertIs(feishu_executor_module.create_feishu_approval_instance, sentinel)
+        finally:
+            feishu_module.create_feishu_approval_instance = original_create
 
     def test_system_pressure_a_feishu_duplicate_forged_card_and_task_replay_are_guarded(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
