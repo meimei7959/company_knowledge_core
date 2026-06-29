@@ -16,6 +16,8 @@ from .core import (
     acquire_pm_control_lease,
     apply_knowledge_approval_result,
     apply_knowledge_review_result,
+    apply_capability_approval_result,
+    apply_capability_review_result,
     default_config,
     find_bundle_root,
     finish_task,
@@ -52,10 +54,15 @@ from .core import (
     discussion_session_status,
     bulk_review,
     cancel_project_task,
+    capability_control_read_model,
     create_project_task,
     create_project_manager_action,
     create_project_launch,
     create_runner_invitation,
+    create_capability_candidate,
+    create_capability_review_task,
+    create_capability_feedback,
+    create_capability_release,
     create_tool_registration_request,
     create_workbench_project,
     create_requirement,
@@ -83,6 +90,8 @@ from .core import (
     publish_knowledge_bundle,
     register_agent_runner,
     register_workbench_tool,
+    record_skill_usage_event,
+    runner_capability_pull,
     register_project_agent,
     attach_agent_to_project,
     heartbeat_agent_runner,
@@ -129,12 +138,14 @@ from .core import (
     release_pm_control_lease,
     runner_registry_for_workbench,
     submit_runner_registration,
+    trace_read_model,
     validate_requirement_tree_records,
     v1_workbench_read_model,
     workbench_project_execution_read_model,
     write_v1_workbench_read_model,
     upsert_actor_context,
 )
+from .knowledge_signals import distill_signals, search_knowledge_index
 from .server import serve
 
 
@@ -493,6 +504,10 @@ def make_parser() -> argparse.ArgumentParser:
     p_task_finish.add_argument("--blocker", action="append", default=[])
     p_task_finish.add_argument("--approval-request-json", default="")
     p_task_finish.add_argument("--approval-request-file", default="")
+    p_task_finish.add_argument("--capability-candidate-json", action="append", default=[])
+    p_task_finish.add_argument("--capability-candidate-file", default="")
+    p_task_finish.add_argument("--capability-feedback-json", action="append", default=[])
+    p_task_finish.add_argument("--capability-feedback-file", default="")
     p_task_status = p_task_sub.add_parser("status")
     p_task_status.add_argument("task_id")
     p_task_diagnose = p_task_sub.add_parser("diagnose")
@@ -803,6 +818,83 @@ def make_parser() -> argparse.ArgumentParser:
     p_skill_register.add_argument("--source-ref", default="")
     p_skill_sub.add_parser("validate")
 
+    p_capability = sub.add_parser("capability")
+    p_capability_sub = p_capability.add_subparsers(dest="capability_command", required=True)
+    p_capability_list = p_capability_sub.add_parser("list")
+    p_capability_list.add_argument("--status", default="")
+    p_capability_list.add_argument("--type", dest="candidate_type", default="")
+    p_capability_candidate = p_capability_sub.add_parser("candidate")
+    p_capability_candidate.add_argument("--title", required=True)
+    p_capability_candidate.add_argument("--type", dest="candidate_type", default="skill")
+    p_capability_candidate.add_argument("--owner", default="system.capability-control")
+    p_capability_candidate.add_argument("--summary", default="")
+    p_capability_candidate.add_argument("--source-material-ref", action="append", default=[])
+    p_capability_candidate.add_argument("--source-task-id", default="")
+    p_capability_candidate.add_argument("--source-result-ref", default="")
+    p_capability_candidate.add_argument("--target-agent", action="append", default=[])
+    p_capability_candidate.add_argument("--target-project", action="append", default=[])
+    p_capability_candidate.add_argument("--risk", default="L2")
+    p_capability_candidate.add_argument("--evidence-ref", action="append", default=[])
+    p_capability_candidate.add_argument("--candidate-id", default="")
+    p_capability_candidate.add_argument("--approval-required", action="store_true")
+    p_capability_review_task = p_capability_sub.add_parser("review-task")
+    p_capability_review_task.add_argument("--candidate-ref", required=True)
+    p_capability_review_task.add_argument("--requester", default="system.capability-control")
+    p_capability_review_task.add_argument("--reviewer", default="agent.core.capability-review")
+    p_capability_review = p_capability_sub.add_parser("review")
+    p_capability_review.add_argument("--review-task-id", required=True)
+    p_capability_review.add_argument("--outcome", choices=["approved_for_release", "needs_human_approval", "changes_requested", "reject"], required=True)
+    p_capability_review.add_argument("--reviewer", required=True)
+    p_capability_review.add_argument("--summary", required=True)
+    p_capability_review.add_argument("--target-ref", action="append", default=[])
+    p_capability_approval = p_capability_sub.add_parser("approval")
+    p_capability_approval.add_argument("--approval-task-id", required=True)
+    p_capability_approval.add_argument("--outcome", choices=["approved", "rejected"], required=True)
+    p_capability_approval.add_argument("--approver", required=True)
+    p_capability_approval.add_argument("--summary", required=True)
+    p_capability_approval.add_argument("--target-ref", action="append", default=[])
+    p_capability_approval.add_argument("--release-ref", action="append", default=[])
+    p_capability_release = p_capability_sub.add_parser("release")
+    p_capability_release.add_argument("--title", required=True)
+    p_capability_release.add_argument("--owner", required=True)
+    p_capability_release.add_argument("--candidate-ref", action="append", required=True)
+    p_capability_release.add_argument("--version", default="0.1.0")
+    p_capability_release.add_argument("--release-id", default="")
+    p_capability_release.add_argument("--status", default="draft")
+    p_capability_release.add_argument("--summary", default="")
+    p_capability_release.add_argument("--target-agent", action="append", default=[])
+    p_capability_release.add_argument("--target-project", action="append", default=[])
+    p_capability_usage = p_capability_sub.add_parser("usage")
+    p_capability_usage.add_argument("--skill-ref", required=True)
+    p_capability_usage.add_argument("--runner-id", default="")
+    p_capability_usage.add_argument("--agent-id", default="")
+    p_capability_usage.add_argument("--task-id", default="")
+    p_capability_usage.add_argument("--result-ref", default="")
+    p_capability_usage.add_argument("--release-ref", default="")
+    p_capability_usage.add_argument("--outcome", default="observed")
+    p_capability_usage.add_argument("--summary", default="")
+    p_capability_usage.add_argument("--evidence-ref", action="append", default=[])
+    p_capability_feedback = p_capability_sub.add_parser("feedback")
+    p_capability_feedback.add_argument("--capability-ref", required=True)
+    p_capability_feedback.add_argument("--actor", required=True)
+    p_capability_feedback.add_argument("--content", required=True)
+    p_capability_feedback.add_argument("--rating", default="")
+    p_capability_feedback.add_argument("--type", dest="feedback_type", default="")
+    p_capability_feedback.add_argument("--task-id", default="")
+    p_capability_feedback.add_argument("--result-ref", default="")
+    p_capability_feedback.add_argument("--evidence-ref", action="append", default=[])
+    p_capability_pull = p_capability_sub.add_parser("pull")
+    p_capability_pull.add_argument("--runner-id", default="")
+    p_capability_pull.add_argument("--agent-id", default="")
+    p_capability_pull.add_argument("--project", default="")
+    p_capability_pull.add_argument("--include-drafts", action="store_true")
+
+    p_trace = sub.add_parser("trace")
+    p_trace_sub = p_trace.add_subparsers(dest="trace_command", required=True)
+    for trace_name in ["feishu-message", "task", "material", "capability-release", "runner"]:
+        p_trace_item = p_trace_sub.add_parser(trace_name)
+        p_trace_item.add_argument("identifier")
+
     p_policy = sub.add_parser("policy")
     p_policy_sub = p_policy.add_subparsers(dest="policy_command", required=True)
     p_policy_register = p_policy_sub.add_parser("register")
@@ -876,6 +968,14 @@ def make_parser() -> argparse.ArgumentParser:
     p_rag_search.add_argument("--project-id", default="")
     p_rag_search.add_argument("--scope", action="append", default=[])
     p_rag_search.add_argument("--limit", type=int, default=5)
+
+    p_knowledge = sub.add_parser("knowledge")
+    p_knowledge_sub = p_knowledge.add_subparsers(dest="knowledge_command", required=True)
+    p_knowledge_sub.add_parser("distill-signals")
+    p_knowledge_search = p_knowledge_sub.add_parser("search")
+    p_knowledge_search.add_argument("query")
+    p_knowledge_search.add_argument("--include-restricted", action="store_true")
+    p_knowledge_search.add_argument("--limit", type=int, default=10)
 
     p_publish = sub.add_parser("publish")
     p_publish.add_argument("--actor", default="system.publisher")
@@ -1146,6 +1246,22 @@ def api_request(bundle: Bundle, method: str, path: str, payload: dict | None = N
 
 def use_api_backend(bundle: Bundle) -> bool:
     return active_profile(bundle).get("backend") == "api"
+
+
+def load_json_object_list(json_values: list[str], file_path: str, label: str) -> list[dict[str, object]]:
+    rows: list[object] = []
+    for raw in json_values:
+        value = json.loads(raw)
+        rows.extend(value if isinstance(value, list) else [value])
+    if file_path:
+        value = json.loads(Path(file_path).read_text(encoding="utf-8"))
+        rows.extend(value if isinstance(value, list) else [value])
+    result: list[dict[str, object]] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            raise KnowledgeError(f"{label} JSON entries must be objects")
+        result.append(item)
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1554,6 +1670,16 @@ def main(argv: list[str] | None = None) -> int:
                     approval_request = json.loads(Path(args.approval_request_file).read_text(encoding="utf-8"))
                     if not isinstance(approval_request, dict):
                         raise KnowledgeError("approval request file must contain a JSON object")
+                capability_candidates = load_json_object_list(
+                    args.capability_candidate_json,
+                    args.capability_candidate_file,
+                    "capability candidate",
+                )
+                capability_feedback = load_json_object_list(
+                    args.capability_feedback_json,
+                    args.capability_feedback_file,
+                    "capability feedback",
+                )
                 path = finish_project_task(
                     bundle,
                     args.task_id,
@@ -1580,6 +1706,8 @@ def main(argv: list[str] | None = None) -> int:
                     next_suggested_task=args.next_suggested_task,
                     blockers=args.blocker,
                     approval_request=approval_request,
+                    capability_candidates=capability_candidates,
+                    capability_feedback=capability_feedback,
                 )
                 print(path)
             elif args.task_command == "status":
@@ -2059,6 +2187,111 @@ def main(argv: list[str] | None = None) -> int:
                         print(problem)
                     return 1
                 print("valid")
+        elif args.command == "capability":
+            if args.capability_command == "list":
+                result = capability_control_read_model(bundle, args.status, args.candidate_type)
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "candidate":
+                result = create_capability_candidate(
+                    bundle,
+                    args.title,
+                    args.candidate_type,
+                    args.owner,
+                    args.summary,
+                    args.source_material_ref,
+                    args.source_task_id,
+                    args.source_result_ref,
+                    args.target_agent,
+                    args.target_project,
+                    args.risk,
+                    args.evidence_ref,
+                    args.candidate_id,
+                    True,
+                    args.approval_required,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "review-task":
+                result = create_capability_review_task(
+                    bundle,
+                    args.candidate_ref,
+                    args.requester,
+                    args.reviewer,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "review":
+                result = apply_capability_review_result(
+                    bundle,
+                    args.review_task_id,
+                    args.outcome,
+                    args.reviewer,
+                    args.summary,
+                    args.target_ref,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "approval":
+                result = apply_capability_approval_result(
+                    bundle,
+                    args.approval_task_id,
+                    args.outcome,
+                    args.approver,
+                    args.summary,
+                    args.target_ref,
+                    args.release_ref,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "release":
+                result = create_capability_release(
+                    bundle,
+                    args.title,
+                    args.owner,
+                    args.candidate_ref,
+                    args.version,
+                    args.release_id,
+                    args.status,
+                    args.summary,
+                    args.target_agent,
+                    args.target_project,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "pull":
+                result = runner_capability_pull(
+                    bundle,
+                    args.runner_id,
+                    args.agent_id,
+                    args.project,
+                    args.include_drafts,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "usage":
+                result = record_skill_usage_event(
+                    bundle,
+                    args.skill_ref,
+                    args.runner_id,
+                    args.agent_id,
+                    args.task_id,
+                    args.result_ref,
+                    args.release_ref,
+                    args.outcome,
+                    args.summary,
+                    args.evidence_ref,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+            elif args.capability_command == "feedback":
+                result = create_capability_feedback(
+                    bundle,
+                    args.capability_ref,
+                    args.actor,
+                    args.content,
+                    args.rating,
+                    args.feedback_type,
+                    args.task_id,
+                    args.result_ref,
+                    args.evidence_ref,
+                )
+                print(json.dumps(result, indent=2, ensure_ascii=False))
+        elif args.command == "trace":
+            result = trace_read_model(bundle, args.trace_command, args.identifier)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
         elif args.command == "policy":
             path = make_policy(
                 bundle,
@@ -2162,6 +2395,32 @@ def main(argv: list[str] | None = None) -> int:
                     rows = search_retrieval(bundle, args.query, project_id=args.project_id, scopes=args.scope, limit=args.limit)
                 for row in rows:
                     print(f"{row['score']}\t{row['path']}#{row['chunkId']}\t{row['sourceRef']}")
+        elif args.command == "knowledge":
+            if args.knowledge_command == "distill-signals":
+                result = distill_signals(bundle)
+                print(f"Scanned {result['scanned']} knowledge signals.")
+                print(f"Valid: {result['valid']}")
+                print(f"Distilled: {result['distilled']}")
+                print(f"Duplicate: {result['duplicate']}")
+                print(f"Invalid: {result['invalid']}")
+                print(f"Already processed: {result['alreadyProcessed']}")
+                print(f"Review required: {result['reviewRequired']}")
+                if result["generatedPaths"]:
+                    print("Generated:")
+                    for path in result["generatedPaths"]:
+                        print(f"- {path}")
+                if result["updatedPaths"]:
+                    print("Updated:")
+                    for path in sorted(set(result["updatedPaths"])):
+                        print(f"- {path}")
+                if result["warnings"]:
+                    print("Warnings:")
+                    for warning in result["warnings"]:
+                        print(f"- {warning}")
+            elif args.knowledge_command == "search":
+                rows = search_knowledge_index(bundle, args.query, include_restricted=args.include_restricted, limit=args.limit)
+                for row in rows:
+                    print(f"{row['score']}\t{row['knowledgeId']}\t{row['path']}\t{row['status']}\t{row['title']}")
         elif args.command == "publish":
             payload = {
                 "actor": args.actor,

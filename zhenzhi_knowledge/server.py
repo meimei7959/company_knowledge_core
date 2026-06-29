@@ -15,7 +15,14 @@ from .core import (
     acquire_pm_control_lease,
     cancel_project_task,
     claim_project_task,
+    capability_control_read_model,
+    apply_capability_approval_result,
+    apply_capability_review_result,
     create_agent_capability_report,
+    create_capability_candidate,
+    create_capability_review_task,
+    create_capability_feedback,
+    create_capability_release,
     build_task_fact_view,
     create_metrics_report,
     create_bugfix_task,
@@ -51,6 +58,8 @@ from .core import (
     project_task_status,
     pm_control_lease_read_model,
     register_agent_runner,
+    record_skill_usage_event,
+    runner_capability_pull,
     create_runner_invitation,
     create_tool_registration_request,
     create_workbench_project,
@@ -71,7 +80,7 @@ from .core import (
     submit_runner_registration,
     workbench_project_execution_read_model,
 )
-from .feishu import handle_feishu_event, run_knowledge_query, update_knowledge_query_log_delivery
+from .feishu import handle_feishu_event, notify_feishu_task_status, run_knowledge_query, update_knowledge_query_log_delivery
 from .operational_store import ensure_operational_schema, operational_store_status, record_api_command_envelope
 
 
@@ -158,6 +167,9 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     "text": first(query, "text"),
                 }
                 self._json(200, {"apiVersion": "v0.1", "kind": "ObjectList", "objects": search_index(self.server.bundle, filters)})
+            elif parsed.path == "/v0/capabilities":
+                query = parse_qs(parsed.query)
+                self._json(200, capability_control_read_model(self.server.bundle, status=first(query, "status"), candidate_type=first(query, "type")))
             elif parsed.path == "/v0/rag/search":
                 query = parse_qs(parsed.query)
                 rows = search_retrieval(
@@ -186,6 +198,7 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     assignee=first(query, "assignee"),
                     project_id=first(query, "projectId"),
                     task_type=first(query, "taskType"),
+                    assigned_runner=first(query, "assignedRunner"),
                 )
                 self._json(200, {"apiVersion": "v0.1", "kind": "TaskList", "tasks": rows})
             elif parsed.path.startswith("/v0/projects/") and parsed.path.endswith("/fact-view"):
@@ -248,6 +261,21 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
             elif parsed.path == "/v0/runners":
                 query = parse_qs(parsed.query)
                 self._json(200, {"apiVersion": "v0.1", "kind": "RunnerRegistry", "runners": runner_registry_for_workbench(self.server.bundle, first(query, "projectId"))})
+            elif parsed.path.startswith("/v0/runners/") and parsed.path.endswith("/capability-sync"):
+                query = parse_qs(parsed.query)
+                parts = [part for part in parsed.path.split("/") if part]
+                if len(parts) != 4:
+                    raise KnowledgeError("invalid runner capability sync route")
+                self._json(
+                    200,
+                    runner_capability_pull(
+                        self.server.bundle,
+                        runner_id=parts[2],
+                        agent_id=first(query, "agentId"),
+                        project_id=first(query, "projectId"),
+                        include_drafts=first(query, "includeDrafts").lower() in {"1", "true", "yes"},
+                    ),
+                )
             elif parsed.path == "/v0/notifications":
                 query = parse_qs(parsed.query)
                 rows = list_notifications(
@@ -606,6 +634,15 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     str(payload.get("deliveryRef", "")),
                 )
                 self._json(200, {"apiVersion": "v0.1", "kind": "NotificationRecord", "notification": result})
+            elif self.path == "/v0/feishu/task-status":
+                result = notify_feishu_task_status(
+                    self.server.bundle,
+                    task_id=require(payload, "taskId"),
+                    status=require(payload, "status"),
+                    actor=str(payload.get("actor", "api")),
+                    detail=str(payload.get("detail", "")),
+                )
+                self._json(200, {"apiVersion": "v0.1", "kind": "FeishuTaskStatusNotification", **result})
             elif self.path == "/v0/agents/report":
                 path = create_agent_capability_report(
                     self.server.bundle,
@@ -615,6 +652,105 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     period=str(payload.get("period", "")),
                 )
                 self._json(200, {"apiVersion": "v0.1", "kind": "AgentCapabilityReport", "reportRef": str(path.relative_to(self.server.bundle.root))})
+            elif self.path == "/v0/capabilities/candidates":
+                result = create_capability_candidate(
+                    self.server.bundle,
+                    title=require(payload, "title"),
+                    candidate_type=str(payload.get("candidateType", payload.get("type", "skill"))),
+                    owner=str(payload.get("owner", payload.get("actor", "api"))),
+                    summary=str(payload.get("summary", payload.get("description", ""))),
+                    source_material_refs=list_field(payload, "sourceMaterialRefs"),
+                    source_task_id=str(payload.get("sourceTaskId", payload.get("taskId", ""))),
+                    source_result_ref=str(payload.get("sourceResultRef", payload.get("resultRef", ""))),
+                    target_agents=list_field(payload, "targetAgents"),
+                    target_projects=list_field(payload, "targetProjects"),
+                    risk_level=str(payload.get("riskLevel", payload.get("risk", "L2"))),
+                    evidence_refs=list_field(payload, "evidenceRefs"),
+                    candidate_id=str(payload.get("candidateId", "")),
+                    review_required=bool(payload.get("reviewRequired", True)),
+                    approval_required=bool(payload.get("approvalRequired", False)),
+                    status=str(payload.get("status", "pending_review")),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/capabilities/review-tasks":
+                result = create_capability_review_task(
+                    self.server.bundle,
+                    candidate_ref=require(payload, "candidateRef"),
+                    requester=str(payload.get("requester", payload.get("actor", "api"))),
+                    reviewer=str(payload.get("reviewer", "agent.core.capability-review")),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/capabilities/review":
+                result = apply_capability_review_result(
+                    self.server.bundle,
+                    review_task_id=require(payload, "reviewTaskId"),
+                    outcome=require(payload, "outcome"),
+                    reviewer=require(payload, "reviewer"),
+                    summary=require(payload, "summary"),
+                    target_refs=list_field(payload, "targetRefs"),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/capabilities/approval":
+                result = apply_capability_approval_result(
+                    self.server.bundle,
+                    approval_task_id=require(payload, "approvalTaskId"),
+                    outcome=require(payload, "outcome"),
+                    approver=require(payload, "approver"),
+                    summary=require(payload, "summary"),
+                    target_refs=list_field(payload, "targetRefs"),
+                    release_refs=list_field(payload, "releaseRefs"),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/capabilities/releases":
+                result = create_capability_release(
+                    self.server.bundle,
+                    title=require(payload, "title"),
+                    owner=str(payload.get("owner", payload.get("actor", "api"))),
+                    candidate_refs=list_field(payload, "candidateRefs"),
+                    version=str(payload.get("version", "0.1.0")),
+                    release_id=str(payload.get("releaseId", "")),
+                    status=str(payload.get("status", "draft")),
+                    summary=str(payload.get("summary", "")),
+                    target_agents=list_field(payload, "targetAgents"),
+                    target_projects=list_field(payload, "targetProjects"),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/usage/skill-events":
+                result = record_skill_usage_event(
+                    self.server.bundle,
+                    skill_ref=require(payload, "skillRef"),
+                    runner_id=str(payload.get("runnerId", "")),
+                    agent_id=str(payload.get("agentId", "")),
+                    task_id=str(payload.get("taskId", "")),
+                    result_ref=str(payload.get("resultRef", "")),
+                    release_ref=str(payload.get("releaseRef", "")),
+                    outcome=str(payload.get("outcome", "observed")),
+                    summary=str(payload.get("summary", "")),
+                    evidence_refs=list_field(payload, "evidenceRefs"),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/runners/capability-pull":
+                result = runner_capability_pull(
+                    self.server.bundle,
+                    runner_id=str(payload.get("runnerId", "")),
+                    agent_id=str(payload.get("agentId", "")),
+                    project_id=str(payload.get("projectId", "")),
+                    include_drafts=bool(payload.get("includeDrafts", False)),
+                )
+                self._json(200, result)
+            elif self.path == "/v0/capabilities/feedback":
+                result = create_capability_feedback(
+                    self.server.bundle,
+                    capability_ref=require(payload, "capabilityRef"),
+                    actor=require(payload, "actor"),
+                    content=require(payload, "content"),
+                    rating=str(payload.get("rating", "")),
+                    feedback_type=str(payload.get("feedbackType", payload.get("type", ""))),
+                    task_id=str(payload.get("taskId", "")),
+                    result_ref=str(payload.get("resultRef", "")),
+                    evidence_refs=list_field(payload, "evidenceRefs"),
+                )
+                self._json(200, result)
             elif self.path == "/v0/review/finish":
                 result = apply_knowledge_review_result(
                     self.server.bundle,
@@ -789,6 +925,8 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
                     next_suggested_task=str(payload.get("nextSuggestedTask", "")),
                     blockers=list_field(payload, "blockers"),
                     approval_request=payload.get("approvalRequest") if isinstance(payload.get("approvalRequest"), dict) else None,
+                    capability_candidates=payload.get("capabilityCandidates") if isinstance(payload.get("capabilityCandidates"), list) else None,
+                    capability_feedback=payload.get("capabilityFeedback") if isinstance(payload.get("capabilityFeedback"), list) else None,
                 )
                 task = project_task_status(self.server.bundle, require(payload, "taskId"))
                 task_result = load_object(result_path)

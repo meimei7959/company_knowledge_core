@@ -18,6 +18,8 @@ from .core import (
     Bundle,
     KnowledgeError,
     accept_project_task_result,
+    as_list,
+    capability_feature_flags,
     create_access_credential_request,
     create_audit_log,
     create_discussion_session,
@@ -28,6 +30,7 @@ from .core import (
     ensure_default_project_agents,
     ensure_project_initialization_task,
     find_project_task,
+    finish_project_task,
     list_review_queue,
     load_object,
     make_project,
@@ -81,6 +84,84 @@ PROJECT_GROUP_OPTIONS = [
     ("需要创建或绑定项目群", "create_or_bind"),
     ("暂不需要项目群", "none"),
 ]
+
+URL_PATTERN = re.compile(r"https?://[^\s，,。；;）)】\\>]+")
+RESEARCH_INTAKE_PREFIXES = (
+    "研究一下",
+    "研究下",
+    "看一下",
+    "看看",
+    "分析一下",
+    "分析下",
+    "参考一下",
+    "相关的",
+    "相关资料",
+    "学习一下",
+)
+SYSTEM_CHANGE_KEYWORDS = (
+    "改一下skill",
+    "改 skill",
+    "修改skill",
+    "修改 skill",
+    "更新skill",
+    "更新 skill",
+    "新增skill",
+    "新增 skill",
+    "融入体系",
+    "改一下流程",
+    "更新流程",
+    "修改流程",
+    "改工作流",
+    "更新工作流",
+    "修改工作流",
+    "改agents",
+    "改 agents",
+    "更新agents",
+    "更新 agents",
+    "改规则",
+    "更新规则",
+    "修改规则",
+)
+
+MATERIAL_FOLLOWUP_KEYWORDS = (
+    "进入能力候选复核",
+    "加入能力候选",
+    "加入候选材料",
+    "加入候选",
+    "加到候选",
+    "转成能力候选",
+    "生成能力候选",
+    "继续复核",
+    "继续处理",
+    "继续分析",
+    "加大后选材料",
+    "加大候选材料",
+)
+
+MATERIAL_STATUS_FOLLOWUP_KEYWORDS = (
+    "结果",
+    "结果呢",
+    "怎么没有结果",
+    "没有结果",
+    "整理结果",
+    "分析结果",
+    "处理结果",
+    "整理完了吗",
+    "分析完了吗",
+    "处理完了吗",
+    "完成了吗",
+    "好了没",
+    "进度",
+    "状态",
+    "现在怎么样",
+    "怎么样了",
+    "有用吗",
+    "有没有用",
+    "有没有作用",
+    "有什么用",
+    "价值",
+    "建议怎么做",
+)
 
 
 def agent_ring_enabled() -> bool:
@@ -399,6 +480,213 @@ def complete_feishu_message_event(bundle: Bundle, incoming: dict[str, str], repl
         error_class=str(error_info.get("errorClass") or ""),
         summary=reply_error or "Feishu delivery completed.",
     )
+
+
+def task_status_notification_text(status: str, task_id: str, executor_label: str, detail: str = "") -> str:
+    normalized = status.strip().lower()
+    if normalized in {"processing", "started", "parsing"}:
+        lines = [f"{executor_label} 已开始解析资料。", f"任务编号：{task_id}"]
+    elif normalized in {"indexing", "chunking", "vector_indexing"}:
+        lines = [f"{executor_label} 正在切片入库资料。", f"任务编号：{task_id}"]
+    elif normalized in {"completed", "done", "finished"}:
+        lines = ["资料已整理完成。", f"任务编号：{task_id}"]
+    elif normalized in {"failed", "blocked"}:
+        lines = ["资料处理遇到问题，已记录等待处理。", f"任务编号：{task_id}"]
+    else:
+        lines = [f"资料处理状态已更新：{status or '处理中'}。", f"任务编号：{task_id}"]
+    if detail.strip():
+        lines.append(detail.strip())
+    return "\n".join(lines)
+
+
+def task_source_message_id(bundle: Bundle, task: dict[str, Any]) -> str:
+    direct = str(task.get("feishuMessageId") or "").strip()
+    if direct:
+        return direct
+    refs = task.get("sourceMaterialRefs") or []
+    if isinstance(refs, str):
+        refs = [refs]
+    for ref in refs:
+        source_path = bundle.root / str(ref)
+        if not source_path.exists():
+            continue
+        try:
+            source = load_object(source_path)
+        except Exception:
+            continue
+        source_ref = str(source.get("sourceRef") or "").strip()
+        if source_ref.startswith("feishu://message/"):
+            return source_ref.rsplit("/", 1)[-1]
+    return ""
+
+
+def feishu_incoming_from_event(record: dict[str, Any]) -> dict[str, str]:
+    return {
+        "messageId": str(record.get("messageId") or ""),
+        "chatId": str(record.get("chatId") or ""),
+        "chatType": str(record.get("chatType") or ""),
+        "openId": str(record.get("openId") or ""),
+        "userId": str(record.get("userId") or ""),
+        "text": "",
+        "messageType": "text",
+        "mentionedOpenIds": "",
+        "mentionedUserIds": "",
+    }
+
+
+def append_feishu_message_status_update(
+    bundle: Bundle,
+    message_id: str,
+    status: str,
+    text: str,
+    sent: bool,
+    error: str = "",
+    task_id: str = "",
+) -> None:
+    if not message_id:
+        return
+    path = feishu_message_event_path(bundle, message_id)
+    record = load_feishu_message_event(bundle, message_id) or {"messageId": message_id, "createdAt": utc_now()}
+    updates = record.get("statusUpdates")
+    if not isinstance(updates, list):
+        updates = []
+    updates.append(
+        {
+            "taskId": task_id,
+            "status": status,
+            "text": text,
+            "sent": bool(sent),
+            "error": compact_snippet(error, 500),
+            "updatedAt": utc_now(),
+        }
+    )
+    record["statusUpdates"] = updates
+    record["lastStatus"] = status
+    record["lastStatusSent"] = bool(sent)
+    record["lastStatusError"] = compact_snippet(error, 500)
+    write_text(path, json.dumps(record, ensure_ascii=False, indent=2) + "\n")
+
+
+def create_feishu_status_notification_record(
+    bundle: Bundle,
+    task: dict[str, Any],
+    task_id: str,
+    message_id: str,
+    status: str,
+    text: str,
+    sent: bool,
+    error: str,
+    actor: str,
+) -> str:
+    directory = bundle.root / "notifications"
+    ensure_dir(directory)
+    notification_id = unique_time_id("notification")
+    path = directory / f"{notification_id}.md"
+    frontmatter = {
+        "type": "NotificationRecord",
+        "title": f"feishu_task_status {task_id}",
+        "description": "Feishu task status delivery trace.",
+        "timestamp": utc_now(),
+        "notificationId": notification_id,
+        "taskId": task_id,
+        "projectId": str(task.get("projectId") or ""),
+        "recipient": str(task.get("submitter") or task.get("requester") or task.get("owner") or ""),
+        "channel": "feishu",
+        "messageType": "feishu_task_status",
+        "status": "sent" if sent else "failed",
+        "sentAt": utc_now() if sent else "",
+        "sourceMessageRef": f"feishu://message/{message_id}" if message_id else "",
+        "failureReason": compact_snippet(error, 300),
+        "retryCount": 0,
+        "lastAttemptAt": utc_now(),
+        "deadLetterAt": "",
+    }
+    body = "\n".join(
+        [
+            "## Message",
+            "",
+            text,
+            "",
+            "## Delivery",
+            "",
+            f"- status: {'sent' if sent else 'failed'}",
+            f"- taskStatus: {status}",
+            f"- error: {compact_snippet(error, 500) if error else 'none'}",
+        ]
+    )
+    write_text(path, render_doc(frontmatter, body))
+    ref = str(path.relative_to(bundle.root))
+    create_audit_log(
+        bundle,
+        actor or "feishu-status-notifier",
+        "feishu.task_status.notification",
+        task_id,
+        after="sent" if sent else "failed",
+        policy_result="bot_gateway",
+        details=f"notificationRef={ref}\nmessageId={message_id}\nstatus={status}\nerror={compact_snippet(error, 500)}",
+    )
+    return ref
+
+
+def notify_feishu_task_status(
+    bundle: Bundle,
+    task_id: str,
+    status: str,
+    actor: str = "feishu-status-notifier",
+    detail: str = "",
+    settings: FeishuSettings | None = None,
+) -> dict[str, Any]:
+    task_path = find_project_task(bundle, task_id)
+    task = load_object(task_path)
+    updates: dict[str, Any] = {"status": status}
+    if updates:
+        update_frontmatter_file(task_path, updates)
+        task.update(updates)
+    runner_id = str(task.get("runnerId") or task.get("assignedRunner") or "").strip()
+    executor_label = manual_runner_executor_label(bundle, task) if runner_id else "资料处理器"
+    text = task_status_notification_text(status, task_id, executor_label, detail)
+    message_id = task_source_message_id(bundle, task)
+    if not message_id:
+        notification_ref = create_feishu_status_notification_record(bundle, task, task_id, "", status, text, False, "missing_feishu_message_id", actor)
+        return {"ok": False, "sent": False, "taskId": task_id, "status": status, "error": "missing_feishu_message_id", "notificationRef": notification_ref}
+    event = load_feishu_message_event(bundle, message_id)
+    if not event:
+        notification_ref = create_feishu_status_notification_record(bundle, task, task_id, message_id, status, text, False, "missing_feishu_message_event", actor)
+        append_feishu_message_status_update(bundle, message_id, status, text, False, "missing_feishu_message_event", task_id)
+        return {"ok": False, "sent": False, "taskId": task_id, "status": status, "messageId": message_id, "error": "missing_feishu_message_event", "notificationRef": notification_ref}
+    settings = settings or load_feishu_settings()
+    sent = False
+    error = ""
+    if settings.reply_enabled and settings.app_id and settings.app_secret:
+        try:
+            sent = send_feishu_incoming_response(settings, feishu_incoming_from_event(event), {"msg_type": "text", "reply": text})
+        except urllib.error.HTTPError as exc:
+            error = feishu_http_error_detail(exc)
+        except Exception as exc:
+            error = str(exc)
+    else:
+        error = "feishu_reply_disabled_or_missing_credentials"
+    append_feishu_message_status_update(bundle, message_id, status, text, sent, error, task_id)
+    error_info = classify_feishu_delivery_error(error) if error else {"errorClass": ""}
+    record_feishu_delivery_attempt(
+        message_id,
+        "task_status",
+        "sent" if sent else "failed",
+        event_id=message_id,
+        response_code="ok" if sent else "",
+        error_class=str(error_info.get("errorClass") or ""),
+        summary=error or f"taskId={task_id}; status={status}",
+    )
+    notification_ref = create_feishu_status_notification_record(bundle, task, task_id, message_id, status, text, sent, error, actor)
+    return {
+        "ok": bool(sent),
+        "sent": bool(sent),
+        "taskId": task_id,
+        "status": status,
+        "messageId": message_id,
+        "notificationRef": notification_ref,
+        "error": error,
+    }
 
 
 def knowledge_query_log_dir(bundle: Bundle) -> Path:
@@ -765,14 +1053,16 @@ def create_feishu_reject_audit(bundle: Bundle, payload: dict[str, Any], settings
     event_type = extract_event_type(payload)
     supplied = supplied_event_token(payload)
     target = str(deep_find(payload, "message_id") or deep_find(payload, "instance_code") or event_type or "unknown")
+    expected = settings.verification_token
     details = "\n".join(
         [
             f"reason: {reason}",
             f"eventType: {event_type or 'unknown'}",
-            f"suppliedToken: {token_fingerprint(supplied)}",
-            f"expectedToken: {token_fingerprint(settings.verification_token)}",
+            f"providedVerificationPresent: {bool(supplied)}",
+            f"configuredVerificationPresent: {bool(expected)}",
+            f"verificationMatched: {bool(supplied and expected and hmac.compare_digest(supplied, expected))}",
             f"hasEncrypt: {'encrypt' in payload}",
-            f"payloadKeys: {','.join(sorted(str(key) for key in payload.keys()))}",
+            f"payloadShape: {safe_payload_shape(payload)}",
         ]
     )
     create_audit_log(bundle, "feishu-callback", "feishu.event.rejected", target, after="rejected", policy_result="bot_gateway", details=details)
@@ -792,6 +1082,11 @@ def supplied_event_token(payload: dict[str, Any]) -> str:
     header = payload.get("header") or {}
     event = payload.get("event") or {}
     return str(header.get("token") or payload.get("token") or event.get("token") or "")
+
+
+def safe_payload_shape(payload: dict[str, Any]) -> str:
+    keys = sorted(str(key) for key in payload.keys())
+    return ",".join(keys) if keys else "empty"
 
 
 def token_fingerprint(value: str) -> str:
@@ -900,6 +1195,15 @@ class LocalIntentDecision:
     reason: str = ""
 
 
+@dataclass(frozen=True)
+class FeishuIntentDecision:
+    intent: str
+    confidence: float
+    fields: dict[str, str]
+    missing_fields: tuple[str, ...] = ()
+    reason: str = ""
+
+
 def is_project_status_prompt_without_project(text: str) -> bool:
     stripped = text.strip(" ：:，,。?？")
     if stripped in {"项目状态", "项目详情", "项目进度", "查项目", "查项目状态", "查看项目状态", "项目情况"}:
@@ -949,6 +1253,21 @@ def classify_local_intent(text: str) -> LocalIntentDecision | None:
             fields={},
             reason="local_project_material_pattern",
         )
+    if is_system_change_request(stripped):
+        return LocalIntentDecision(
+            intent="tool_or_skill_request",
+            confidence=0.92,
+            fields={"approvalBoundary": "system_change"},
+            reason="local_system_change_keyword",
+        )
+    research_material = parse_research_material(stripped)
+    if research_material:
+        return LocalIntentDecision(
+            intent="capture_material",
+            confidence=0.91,
+            fields={"intakeMode": "research"},
+            reason=research_material.get("reason", "local_research_material_pattern"),
+        )
     if parse_intake(stripped):
         return LocalIntentDecision(
             intent="capture_material",
@@ -975,6 +1294,28 @@ def record_local_intent_decision(bundle: Bundle, incoming: dict[str, str], decis
         incoming.get("messageId", ""),
         after=decision.intent,
         policy_result="local_router",
+        details=json.dumps(
+            {
+                "intent": decision.intent,
+                "confidence": decision.confidence,
+                "reason": decision.reason,
+                "fieldKeys": sorted(decision.fields.keys()),
+                "missingFields": list(decision.missing_fields),
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+        ),
+    )
+
+
+def record_feishu_intent_decision(bundle: Bundle, incoming: dict[str, str], decision: FeishuIntentDecision) -> None:
+    create_audit_log(
+        bundle,
+        incoming.get("openId") or incoming.get("userId") or "feishu-user",
+        "feishu.intent_router.decision",
+        incoming.get("messageId", ""),
+        after=decision.intent,
+        policy_result="intent_state_machine",
         details=json.dumps(
             {
                 "intent": decision.intent,
@@ -1188,6 +1529,93 @@ def run_knowledge_query(bundle: Bundle, incoming: dict[str, str], text: str, pro
     return result
 
 
+def has_material_status_followup_signal(text: str) -> bool:
+    normalized = normalize_for_keyword_match(text)
+    if not normalized:
+        return False
+    return any(normalize_for_keyword_match(keyword) in normalized for keyword in MATERIAL_STATUS_FOLLOWUP_KEYWORDS)
+
+
+def classify_feishu_intent(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings) -> FeishuIntentDecision:
+    del settings
+    text = incoming["text"].strip()
+    local_intent = classify_local_intent(text)
+    previous_material = latest_research_material_task_for_chat(bundle, incoming)
+    material_followup = parse_material_followup(text)
+    if material_followup:
+        return FeishuIntentDecision(
+            intent="material_followup",
+            confidence=0.96,
+            fields={
+                "action": material_followup["action"],
+                "keyword": material_followup.get("keyword", ""),
+                "hasPreviousMaterial": str(bool(previous_material)).lower(),
+            },
+            reason="material_followup_keyword_with_context_priority",
+        )
+    if has_material_status_followup_signal(text):
+        return FeishuIntentDecision(
+            intent="material_status",
+            confidence=0.92,
+            fields={"hasPreviousMaterial": str(bool(previous_material)).lower()},
+            reason="material_status_followup_signal",
+        )
+    if local_intent and local_intent.intent in {"status_query", "credential_request", "tool_or_skill_request"}:
+        return FeishuIntentDecision(local_intent.intent, local_intent.confidence, local_intent.fields, local_intent.missing_fields, local_intent.reason)
+    if parse_project_init(text):
+        return FeishuIntentDecision("create_project", 0.95, {}, reason="project_init_pattern")
+    if parse_project_material(text):
+        return FeishuIntentDecision("project_material", 0.92, {}, reason="project_material_pattern")
+    if parse_research_material(text):
+        return FeishuIntentDecision("research_material", 0.93, {}, reason="research_material_pattern")
+    if parse_intake(text):
+        return FeishuIntentDecision("research_material", 0.88, {"intakeMode": "plain_text"}, reason="plain_material_intake_pattern")
+    if is_ambiguous_short_input(text):
+        return FeishuIntentDecision("clarification_required", 0.82, {}, reason="ambiguous_short_input")
+    return FeishuIntentDecision("knowledge_query", 0.72, {}, reason="default_knowledge_query")
+
+
+def handle_feishu_intent(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, decision: FeishuIntentDecision) -> str:
+    text = incoming["text"].strip()
+    if decision.intent == "status_query":
+        return render_project_status_text(project_status_summary(bundle, decision.fields.get("projectName", "")))
+    if decision.intent == "credential_request":
+        return token_request_reply(bundle, incoming, settings)
+    if decision.intent == "tool_or_skill_request":
+        return system_change_request_reply()
+    if decision.intent == "create_project":
+        return project_init_reply(bundle, incoming, settings, parse_project_init(text))
+    if decision.intent == "project_material":
+        material = parse_project_material(text)
+        _source_path, _task_path, task_id, assignee = create_project_material_task(bundle, incoming, settings, material)
+        return "\n".join(
+            [
+                "已接收原始资料，并创建知识沉淀任务。",
+                f"项目：{material['projectRaw']}",
+                f"任务编号：{task_id}",
+                f"负责人：{assignee}",
+                "当前状态：等待整理",
+                "负责人会在指定执行电脑的 Codex / Claude 中处理，完成后我会通知提交人；如发现可复用 Agent 能力，会进入 CapabilityCandidate、Review 和 Approval。",
+            ]
+        )
+    if decision.intent == "research_material":
+        research_material = parse_research_material(text)
+        if not research_material:
+            intake = parse_intake(text)
+            research_material = {"title": "研究资料：飞书记录", "content": intake, "sourceRef": ""}
+        material_task = create_research_material_task(bundle, incoming, settings, research_material)
+        if material_task.get("idempotent"):
+            return render_existing_research_material_reply(bundle, material_task)
+        return process_research_material_task_inline(bundle, material_task["taskId"], material_task["runnerId"])
+    if decision.intent == "material_followup":
+        return handle_material_followup(bundle, incoming, {"action": decision.fields.get("action", ""), "keyword": decision.fields.get("keyword", "")})
+    if decision.intent == "material_status":
+        return handle_material_status_followup(bundle, incoming)
+    if decision.intent == "clarification_required":
+        return ambiguous_short_input_text()
+    return str(run_knowledge_query(bundle, incoming, text)["reply"])
+
+
 def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings) -> str:
     text = incoming["text"].strip()
     lowered = text.lower()
@@ -1205,53 +1633,375 @@ def build_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettin
     bind_project_name = parse_bind_project_group_text(text)
     if bind_project_name:
         return bind_project_group(bundle, incoming, bind_project_name, incoming.get("openId") or incoming.get("userId") or "feishu-user")
-    local_intent = classify_local_intent(text)
-    if local_intent:
-        record_local_intent_decision(bundle, incoming, local_intent)
-        if local_intent.intent == "status_query":
-            return render_project_status_text(project_status_summary(bundle, local_intent.fields.get("projectName", "")))
-    model_reply = deepseek_router_reply(bundle, incoming, settings)
-    if model_reply:
-        return model_reply
-    if "token" in lowered or "令牌" in text or "申请知识工程" in text:
-        return token_request_reply(bundle, incoming, settings)
-    project_intake = parse_project_init(text)
-    if project_intake:
-        return project_init_reply(bundle, incoming, settings, project_intake)
-    material = parse_project_material(text)
-    if material:
-        source_path, task_path, task_id, assignee = create_project_material_task(bundle, incoming, settings, material)
+    decision = classify_feishu_intent(bundle, incoming, settings)
+    record_feishu_intent_decision(bundle, incoming, decision)
+    return handle_feishu_intent(bundle, incoming, settings, decision)
+
+
+def default_manual_runner_id() -> str:
+    return os.environ.get("FEISHU_MANUAL_RUNNER", "runner.meimei-mac-local-codex").strip() or "runner.meimei-mac-local-codex"
+
+
+def render_research_material_reply(bundle: Bundle, task_ref: str, task_id: str, runner_id: str) -> str:
+    return "\n".join(
+        [
+            "已收到，已创建资料处理任务。",
+            "当前状态：等待资料整理。",
+            f"任务编号：{task_id}",
+        ]
+    )
+
+
+def render_existing_research_material_reply(bundle: Bundle, material_task: dict[str, Any]) -> str:
+    task_id = str(material_task.get("taskId") or "")
+    task_status = ""
+    task_ref = str(material_task.get("taskRef") or "")
+    if task_ref and (bundle.root / task_ref).exists():
+        try:
+            task_status = str(load_object(bundle.root / task_ref).get("status") or "")
+        except Exception:
+            task_status = ""
+    lines = [
+        "这个资料之前已经保存过，不会重复解析或切片。",
+        f"任务编号：{task_id or '已记录'}",
+    ]
+    if task_status:
+        lines.append(f"当前状态：{human_task_status_label(task_status)}")
+    return "\n".join(lines)
+
+
+def human_task_status_label(status: str) -> str:
+    normalized = status.strip().lower()
+    if normalized in {"pending", "waiting_runner"}:
+        return "等待资料整理"
+    if normalized in {"processing", "in_progress", "running"}:
+        return "正在整理资料"
+    if normalized in {"done", "accepted", "completed"}:
+        return "已完成"
+    if normalized in {"cancelled", "canceled", "deleted"}:
+        return "已取消重复处理"
+    if normalized in {"rejected"}:
+        return "已驳回"
+    if normalized in {"blocked", "failed"}:
+        return "处理遇到问题，已记录"
+    return display_status(normalized)
+
+
+def parse_material_followup(text: str) -> dict[str, str]:
+    normalized = normalize_for_keyword_match(text)
+    if not normalized:
+        return {}
+    for keyword in MATERIAL_FOLLOWUP_KEYWORDS:
+        if normalize_for_keyword_match(keyword) in normalized:
+            return {"action": "capability_candidate_review", "keyword": keyword}
+    return {}
+
+
+def latest_research_material_task_for_chat(bundle: Bundle, incoming: dict[str, str]) -> dict[str, Any]:
+    chat_id = str(incoming.get("chatId") or "").strip()
+    open_id = str(incoming.get("openId") or "").strip()
+    user_id = str(incoming.get("userId") or "").strip()
+    task_root = bundle.root / "projects" / "company-knowledge-core" / "tasks"
+    candidates: list[dict[str, Any]] = []
+    for path in sorted(task_root.glob("*.md")):
+        try:
+            task = load_object(path)
+        except Exception:
+            continue
+        if str(task.get("intakeSource") or "") != "feishu_research_material":
+            continue
+        same_chat = chat_id and str(task.get("feishuChatId") or "") == chat_id
+        same_sender = open_id and str(task.get("feishuOpenId") or "") == open_id
+        same_user = user_id and str(task.get("feishuUserId") or "") == user_id
+        if not (same_chat or same_sender or same_user):
+            continue
+        task["path"] = str(path.relative_to(bundle.root))
+        candidates.append(task)
+    candidates.sort(key=lambda item: str(item.get("timestamp") or ""), reverse=True)
+    return candidates[0] if candidates else {}
+
+
+def handle_material_followup(bundle: Bundle, incoming: dict[str, str], followup: dict[str, str]) -> str:
+    previous = latest_research_material_task_for_chat(bundle, incoming)
+    if not previous:
+        return "没有找到上一条已整理资料。请先发链接或资料，我整理完成后再继续复核。"
+    status = str(previous.get("status") or "")
+    if status not in {"done", "completed", "accepted"}:
         return "\n".join(
             [
-                "已接收资料，并创建知识沉淀任务。",
-                f"项目: {material['projectRaw']}",
-                f"任务编号: {task_id}",
-                f"负责人: {assignee}",
-                f"原始资料: {source_path}",
-                f"任务卡: {task_path}",
-                "状态: pending",
-                "负责人会在本地 Codex / Claude 中处理，完成后我会通知提交人。",
+                "上一条资料还没整理完成，暂时不能进入能力候选复核。",
+                f"当前状态：{human_task_status_label(status)}",
             ]
         )
-    intake = parse_intake(text)
-    if intake:
-        path = create_intake_draft(bundle, incoming, intake)
-        approval_line = trigger_approval_for_target(
-            bundle,
-            settings,
-            incoming,
-            approval_type=APPROVAL_TYPE_KNOWLEDGE_INGEST,
-            target_ref=path,
-            requested_status="verified",
-            project_id="",
-            project_name="通用知识",
-            owner_open_id=first_mentioned_open_id(incoming) or incoming.get("openId", ""),
-            summary=intake,
+    review_task = create_material_capability_candidate_review_task(bundle, incoming, previous, followup)
+    return process_material_capability_candidate_review_inline(bundle, previous, review_task)
+
+
+def handle_material_status_followup(bundle: Bundle, incoming: dict[str, str]) -> str:
+    previous = latest_research_material_task_for_chat(bundle, incoming)
+    if not previous:
+        return "没有找到上一条资料任务。请先发链接或资料，我整理完成后会把结果发回来。"
+    task_id = str(previous.get("taskId") or "")
+    status = str(previous.get("status") or "")
+    title = str(previous.get("title") or task_id or "上一条资料")
+    if status not in {"done", "completed", "accepted"}:
+        return "\n".join(
+            [
+                "上一条资料还没整理完成。",
+                f"资料：{title}",
+                f"任务编号：{task_id or '已记录'}",
+                f"当前状态：{human_task_status_label(status)}",
+            ]
         )
-        return f"已生成待审核知识草稿：{path}\n状态: draft\n{approval_line}"
-    if is_ambiguous_short_input(text):
-        return ambiguous_short_input_text()
-    return str(run_knowledge_query(bundle, incoming, text)["reply"])
+    summary = material_task_result_summary(bundle, previous)
+    lines = [
+        "上一条资料已经整理完成。",
+        f"资料：{title}",
+        f"任务编号：{task_id or '已记录'}",
+    ]
+    if summary:
+        lines.extend(["", "整理摘要：", summary])
+    lines.extend(
+        [
+            "",
+            "如果要判断它是否值得提升 Agent 团队能力，请回复：进入能力候选复核。",
+            "如果要查已沉淀知识，请直接问具体问题。",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def material_task_result_summary(bundle: Bundle, task: dict[str, Any]) -> str:
+    refs: list[str] = []
+    result_ref = str(task.get("resultRef") or "").strip()
+    if result_ref:
+        refs.append(result_ref)
+    task_id = str(task.get("taskId") or "").strip()
+    if task_id:
+        refs.append(f"projects/company-knowledge-core/task-results/tr-{slug(task_id)}.md")
+    for ref in refs:
+        path = bundle.root / ref
+        if not path.exists():
+            continue
+        try:
+            frontmatter, body = parse_frontmatter(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        summary = str(frontmatter.get("summary") or "").strip()
+        if summary:
+            return compact_snippet(summary, 260)
+        lines = [line.strip() for line in body.splitlines() if line.strip() and not line.startswith("#")]
+        if lines:
+            return compact_snippet(" ".join(lines[:4]), 260)
+    return compact_snippet(str(task.get("summary") or ""), 260)
+
+
+def create_material_capability_candidate_review_task(
+    bundle: Bundle,
+    incoming: dict[str, str],
+    previous: dict[str, Any],
+    followup: dict[str, str],
+) -> dict[str, str]:
+    requester = incoming.get("openId") or incoming.get("userId") or "feishu-user"
+    source_refs = as_list(previous.get("sourceMaterialRefs"))
+    result_ref = str(previous.get("resultRef") or "").strip()
+    if result_ref and result_ref not in source_refs:
+        source_refs.append(result_ref)
+    previous_task_id = str(previous.get("taskId") or "")
+    existing = find_existing_material_capability_review_task(bundle, previous_task_id, incoming)
+    if existing:
+        return existing
+    task_path = create_project_task(
+        bundle,
+        title=f"复核资料是否可提升 Agent 团队：{previous.get('title') or previous_task_id}",
+        project_id="company-knowledge-core",
+        requester=requester,
+        assignee="agent.company-knowledge-core.knowledge-engineering",
+        task_type="knowledge_review",
+        priority="normal",
+        source_material_refs=source_refs,
+        expected_output=[
+            "判断资料对 Agent 团队提升是否有作用。",
+            "说明它比现有 Skill、Tool、Workflow、设计理念或检查点好在哪里。",
+            "给出建议动作：仅保存、进入候选、建议改 Skill、建议改 Tool、建议改规则，或不采纳。",
+            "保留来源和边界，不直接修改正式体系。",
+        ],
+        work_source_type="research",
+        knowledge_task_refs=[previous_task_id] if previous_task_id else [],
+        research_question=str(previous.get("researchQuestion") or previous.get("title") or ""),
+        source_reason=f"Feishu follow-up requested capability candidate review: {followup.get('keyword') or followup.get('action')}",
+    )
+    task_fm, _ = parse_task_file(task_path)
+    update_frontmatter_file(
+        task_path,
+        {
+            "intakeSource": "feishu_material_followup",
+            "processingMode": "capability_candidate_review_queue",
+            "upstreamTaskId": previous_task_id,
+            "feishuMessageId": incoming.get("messageId", ""),
+            "feishuChatId": incoming.get("chatId", ""),
+            "feishuChatType": incoming.get("chatType", ""),
+            "feishuOpenId": incoming.get("openId", ""),
+            "feishuUserId": incoming.get("userId", ""),
+            "approvalRequired": False,
+            "approvalReason": "Capability candidate review may be prepared without approval; mutating Skill, Tool, Workflow, AGENTS, rules, or permissions requires separate approval.",
+        },
+    )
+    return {"taskId": str(task_fm.get("taskId") or task_path.stem), "taskRef": str(task_path.relative_to(bundle.root))}
+
+
+def find_existing_material_capability_review_task(bundle: Bundle, previous_task_id: str, incoming: dict[str, str]) -> dict[str, str]:
+    if not previous_task_id:
+        return {}
+    chat_id = str(incoming.get("chatId") or "")
+    task_root = bundle.root / "projects" / "company-knowledge-core" / "tasks"
+    for path in sorted(task_root.glob("*.md"), reverse=True):
+        try:
+            task = load_object(path)
+        except Exception:
+            continue
+        if str(task.get("intakeSource") or "") != "feishu_material_followup":
+            continue
+        if str(task.get("upstreamTaskId") or "") != previous_task_id:
+            continue
+        if chat_id and str(task.get("feishuChatId") or "") not in {"", chat_id}:
+            continue
+        return {
+            "taskId": str(task.get("taskId") or path.stem),
+            "taskRef": str(path.relative_to(bundle.root)),
+            "status": str(task.get("status") or ""),
+            "resultRef": str(task.get("resultRef") or ""),
+        }
+    return {}
+
+
+def process_material_capability_candidate_review_inline(bundle: Bundle, previous: dict[str, Any], review_task: dict[str, str]) -> str:
+    task_id = str(review_task.get("taskId") or "")
+    task_ref = str(review_task.get("taskRef") or "")
+    status = str(review_task.get("status") or "")
+    if status in {"done", "completed", "accepted"}:
+        existing_summary = material_task_result_summary(bundle, {"taskId": task_id, "resultRef": review_task.get("resultRef", "")})
+        return "\n".join(["能力候选复核已完成。", existing_summary or "结论已记录。", f"复核任务：{task_id}"])
+    review_text = build_material_capability_review_text(bundle, previous)
+    try:
+        finish_project_task(
+            bundle,
+            task_id,
+            "done",
+            "能力候选复核已完成。",
+            output_refs=[task_ref] if task_ref else [],
+            evidence_refs=as_list(previous.get("sourceMaterialRefs")) + ([str(previous.get("resultRef"))] if previous.get("resultRef") else []),
+            next_actions=["如确认有稳定提升价值，再进入 Skill / Tool / 规则 / 检查点变更评审。"],
+            executor_agent="agent.company-knowledge-core.knowledge-engineering",
+            tests_or_checks=["checked source summary", "checked behavior-change value", "kept system mutation boundary"],
+            open_risks=["当前只是候选复核，不代表已修改正式体系。"],
+        )
+    except Exception as exc:
+        create_audit_log(
+            bundle,
+            "agent.company-knowledge-core.knowledge-engineering",
+            "feishu.material_capability_review.finish_failed",
+            task_id,
+            after="failed",
+            policy_result="feishu_direct_reply",
+            details=f"{type(exc).__name__}: {exc}",
+        )
+    return "\n".join([review_text, "", f"复核任务：{task_id}"])
+
+
+def build_material_capability_review_text(bundle: Bundle, previous: dict[str, Any]) -> str:
+    title = str(previous.get("title") or previous.get("taskId") or "上一条资料")
+    summary = material_task_result_summary(bundle, previous)
+    combined = f"{title}\n{summary}".lower()
+    signals = {
+        "信息抓取/多源读取": ["read", "读取", "网页", "youtube", "github", "rss", "视频", "字幕", "资料"],
+        "失败回退/路由": ["fallback", "回退", "路由", "失败", "备用", "降级"],
+        "工具使用标准": ["tool", "工具", "cli", "api", "插件"],
+        "检查点/验收": ["checklist", "检查", "验收", "标准", "gate"],
+    }
+    matched = [name for name, words in signals.items() if any(word in combined for word in words)]
+    useful = bool(matched)
+    if useful:
+        usefulness = "有用，但还只是候选。"
+        better_than_current = f"它可能补强我们现在较弱的：{'、'.join(matched)}。"
+        suggestion = "进入能力候选池，后续用真实项目复用结果验证；验证稳定后再改 Skill / Tool / 规则 / 检查点。"
+    else:
+        usefulness = "暂时看不出能直接提升 Agent 团队。"
+        better_than_current = "还没有证明比现有工具、流程或设计理念更好。"
+        suggestion = "先只作为资料保存，不进入正式能力变更。"
+    return "\n".join(
+        [
+            "能力候选复核结果：",
+            f"- 是否有用：{usefulness}",
+            f"- 对比现有：{better_than_current}",
+            f"- 建议：{suggestion}",
+            "- 边界：这不是正式变更；不会直接改 Skill、Tool、Workflow、AGENTS、规则或权限。",
+        ]
+    )
+
+
+def process_research_material_task_inline(bundle: Bundle, task_id: str, runner_id: str) -> str:
+    from .feishu_material_processor import process_research_material_task
+
+    try:
+        result = process_research_material_task(
+            bundle,
+            task_id,
+            runner_id=runner_id,
+            notify_feishu=False,
+            publish_index=True,
+        )
+    except Exception as exc:
+        return "\n".join(
+            [
+                "已收到，资料已保存，但自动整理失败。",
+                f"任务编号：{task_id}",
+                f"原因：{exc}",
+            ]
+        )
+    detail = str(result.get("detail") or "").strip()
+    if detail:
+        return "\n".join([detail, "", f"任务编号：{task_id}"])
+    return "\n".join(["资料已整理完成。", f"任务编号：{task_id}"])
+
+
+def manual_runner_label(bundle: Bundle, runner_id: str = "") -> str:
+    runner_id = runner_id.strip() or default_manual_runner_id()
+    runner = load_runner_record(bundle, runner_id)
+    for key in ("displayName", "deviceDisplayName", "computerDisplayName", "machineDisplayName", "label"):
+        value = str(runner.get(key, "")).strip()
+        if value:
+            return value
+    configured = os.environ.get("FEISHU_MANUAL_RUNNER_LABEL", "").strip()
+    if configured and runner_id == default_manual_runner_id():
+        return configured
+    title = str(runner.get("title", "")).strip()
+    owner = str(runner.get("owner", "")).strip()
+    tool = str(runner.get("tool", "") or runner.get("client", "") or "Codex").strip()
+    if owner:
+        return f"{owner}的电脑上的 {tool}"
+    if "meimei" in runner_id.lower() or "meimei" in title.lower():
+        return f"梅梅的电脑上的 {tool}"
+    if title:
+        return title
+    return f"{runner_id} 上的 {tool}"
+
+
+def load_runner_record(bundle: Bundle, runner_id: str) -> dict[str, Any]:
+    direct = bundle.root / "runners" / f"{runner_id}.md"
+    if direct.exists():
+        return load_object(direct)
+    runners_dir = bundle.root / "runners"
+    if not runners_dir.exists():
+        return {}
+    for path in runners_dir.glob("*.md"):
+        try:
+            record = load_object(path)
+        except Exception:
+            continue
+        if str(record.get("runnerId", "")).strip() == runner_id:
+            return record
+    return {}
 
 
 def build_feishu_response(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings) -> dict[str, Any]:
@@ -1493,7 +2243,7 @@ def token_entry_text(incoming: dict[str, str]) -> str:
             "它不建议放在一级菜单里。普通员工需要工具时，优先走“申请工具/技能”；我会判断是否需要访问凭证。",
             "",
             "如果你确实需要接入本地工具、Agent Ring、模型 API 或项目服务，请私聊按这个格式发：",
-            "访问凭证申请：使用人 <姓名>，用途 <本地开发/自动化/项目接入>，默认项目 <项目名称>，接入对象 <Codex/Claude/Agent Ring/DeepSeek/其他>，凭证类型 <中央API/Runner注册/本地工具/模型API/项目服务>",
+            "访问凭证申请：使用人 <姓名>，用途 <本地开发/自动化/项目接入>，默认项目 <项目名称>，接入对象 <Codex/Claude/Agent Ring/模型API/其他>，凭证类型 <中央API/Runner注册/本地工具/模型API/项目服务>",
             "",
             "中央处理器只记录 secretRef、授权范围和审计；本地工具或项目服务 token 由 Secret Manager 或 Agent Ring 本地安全存储管理。",
         ]
@@ -1708,9 +2458,22 @@ def project_material_capture_card() -> dict[str, Any]:
     return interactive_card(
         "记录项目资料",
         [
-            {"tag": "markdown", "content": "我会保存原文并创建知识沉淀任务。总结、结构化知识和证据引用由后续 Agent Ring 任务处理。"},
+            {"tag": "markdown", "content": "我会保存原文并创建知识/能力处理任务。总结、结构化知识、Agent Skill、Workflow 或 Tool 建议由后续 Agent Ring 任务处理。"},
             card_input("projectName", "项目名称", "请输入项目名称"),
             card_input("content", "资料原文", "粘贴资料原文、链接说明或文件说明", multiline=True),
+            card_select(
+                "processingAction",
+                "处理方式",
+                "选择知识或 Agent 能力产出",
+                [
+                    ("沉淀知识", "knowledge_extract"),
+                    ("提炼 Agent Skill", "skill_extract"),
+                    ("提炼 Agent Workflow", "workflow_extract"),
+                    ("生成 Tool 注册建议", "tool_candidate"),
+                    ("创建能力发布草案", "capability_release_draft"),
+                ],
+                "knowledge_extract",
+            ),
             submit_button("material_capture_submit", "提交项目资料", {"scope": "project"}),
         ],
     )
@@ -1720,12 +2483,25 @@ def common_knowledge_capture_card() -> dict[str, Any]:
     return interactive_card(
         "记录公共知识",
         [
-            {"tag": "markdown", "content": "公共知识不绑定具体项目，会进入公司级知识工程处理。请尽量提供原文、来源链接、结论、适用范围和限制；我会保存原文并创建知识沉淀任务。"},
+            {"tag": "markdown", "content": "公共知识不绑定具体项目，会进入公司级知识工程处理。请尽量提供原文、来源链接、结论、适用范围和限制；我会保存原文并创建知识/能力处理任务。"},
             card_input("title", "标题，可选", "不填时由处理 Agent 从内容中提炼", required=False),
             card_input("content", "资料原文", "粘贴资料原文、链接说明或文件说明", multiline=True),
             card_input("sourceRef", "来源，可选", "例如：飞书文档链接、会议纪要链接、网页、聊天消息说明", required=False),
             card_input("scopeNote", "适用范围，可选", "例如：飞书卡片实现、Agent 工作流、知识工程通用规则", required=False),
-            submit_button("material_capture_submit", "提交公共知识", {"scope": "common"}),
+            card_select(
+                "processingAction",
+                "处理方式",
+                "选择知识或 Agent 能力产出",
+                [
+                    ("沉淀知识", "knowledge_extract"),
+                    ("提炼 Agent Skill", "skill_extract"),
+                    ("提炼 Agent Workflow", "workflow_extract"),
+                    ("生成 Tool 注册建议", "tool_candidate"),
+                    ("创建能力发布草案", "capability_release_draft"),
+                ],
+                "knowledge_extract",
+            ),
+            submit_button("material_capture_submit", "提交资料", {"scope": "common"}),
         ],
     )
 
@@ -1970,211 +2746,6 @@ def unique_retrieval_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return unique
 
 
-ROUTER_INTENTS = {
-    "create_project",
-    "knowledge_query",
-    "capture_material",
-    "credential_request",
-    "tool_or_skill_request",
-    "summon_agent",
-    "status_query",
-    "dangerous_request",
-    "clarify",
-}
-ROUTER_RISKS = {"L0", "L1", "L2", "L3"}
-SAFE_MODEL_TOOL_SUGGESTIONS = {"knowledge_search", "project_intake", "material_intake", "credential_request"}
-
-
-def deepseek_router_enabled() -> bool:
-    return os.environ.get("FEISHU_DEEPSEEK_ROUTER_ENABLED", "false").lower() == "true"
-
-
-def deepseek_router_payload(text: str, incoming: dict[str, str]) -> dict[str, Any]:
-    system = (
-        "You are the Feishu Agent Hub intent router. Return JSON only. "
-        "Do not execute actions. Classify user intent and extract fields for server validation."
-    )
-    schema = {
-        "intent": "create_project|knowledge_query|capture_material|credential_request|tool_or_skill_request|summon_agent|status_query|dangerous_request|clarify",
-        "confidence": 0.0,
-        "risk": "L0|L1|L2|L3",
-        "directHandle": False,
-        "taskType": "",
-        "requiredFields": {},
-        "missingFields": [],
-        "toolSuggestions": [],
-        "reason": "",
-    }
-    return {
-        "model": os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"),
-        "messages": [
-            {"role": "system", "content": system},
-            {
-                "role": "user",
-                "content": json.dumps(
-                    {
-                        "text": text,
-                        "chatType": incoming.get("chatType", ""),
-                        "schema": schema,
-                    },
-                    ensure_ascii=False,
-                ),
-            },
-        ],
-        "temperature": 0,
-        "response_format": {"type": "json_object"},
-    }
-
-
-def parse_router_decision(raw: str) -> dict[str, Any]:
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise KnowledgeError(f"invalid router JSON: {exc}") from exc
-    intent = str(data.get("intent", "clarify"))
-    if intent not in ROUTER_INTENTS:
-        raise KnowledgeError(f"unknown router intent: {intent}")
-    try:
-        confidence = float(data.get("confidence", 0))
-    except (TypeError, ValueError) as exc:
-        raise KnowledgeError("router confidence must be numeric") from exc
-    risk = str(data.get("risk", "L1"))
-    if risk not in ROUTER_RISKS:
-        raise KnowledgeError(f"unknown router risk: {risk}")
-    required_fields = data.get("requiredFields", {})
-    if not isinstance(required_fields, dict):
-        raise KnowledgeError("router requiredFields must be an object")
-    missing_fields = data.get("missingFields", [])
-    if not isinstance(missing_fields, list):
-        raise KnowledgeError("router missingFields must be a list")
-    tool_suggestions = data.get("toolSuggestions", [])
-    if not isinstance(tool_suggestions, list):
-        raise KnowledgeError("router toolSuggestions must be a list")
-    return {
-        "intent": intent,
-        "confidence": confidence,
-        "risk": risk,
-        "directHandle": bool(data.get("directHandle", False)),
-        "taskType": str(data.get("taskType", "")),
-        "requiredFields": required_fields,
-        "missingFields": [str(item) for item in missing_fields],
-        "toolSuggestions": [str(item) for item in tool_suggestions],
-        "reason": str(data.get("reason", "")),
-    }
-
-
-def call_deepseek_router(text: str, incoming: dict[str, str]) -> dict[str, Any] | None:
-    if not deepseek_router_enabled():
-        return None
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
-    if not api_key:
-        return None
-    endpoint = os.environ.get("DEEPSEEK_API_BASE", "https://api.deepseek.com/chat/completions").strip()
-    started = time.monotonic()
-    model = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
-    request = urllib.request.Request(
-        endpoint,
-        data=json.dumps(deepseek_router_payload(text, incoming), ensure_ascii=False).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=float(os.environ.get("DEEPSEEK_TIMEOUT_SECONDS", "8"))) as response:
-        payload = json.loads(response.read().decode("utf-8"))
-    content = payload.get("choices", [{}])[0].get("message", {}).get("content", "")
-    decision = parse_router_decision(str(content))
-    usage = payload.get("usage", {}) if isinstance(payload, dict) else {}
-    prompt_tokens = int(usage.get("prompt_tokens") or 0)
-    completion_tokens = int(usage.get("completion_tokens") or 0)
-    input_price = float(os.environ.get("DEEPSEEK_INPUT_PRICE_PER_1M", "0") or 0)
-    output_price = float(os.environ.get("DEEPSEEK_OUTPUT_PRICE_PER_1M", "0") or 0)
-    decision["_routerMetrics"] = {
-        "model": model,
-        "mode": "deepseek",
-        "latencyMs": int((time.monotonic() - started) * 1000),
-        "promptTokens": prompt_tokens,
-        "completionTokens": completion_tokens,
-        "totalTokens": int(usage.get("total_tokens") or prompt_tokens + completion_tokens),
-        "estimatedCostUSD": round((prompt_tokens * input_price + completion_tokens * output_price) / 1_000_000, 8),
-        "errorClass": "",
-        "fallback": False,
-    }
-    return decision
-
-
-def record_router_metric(bundle: Bundle, incoming: dict[str, str], metric: dict[str, Any]) -> None:
-    safe_metric = {
-        "model": str(metric.get("model", os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"))),
-        "mode": str(metric.get("mode", "deepseek")),
-        "latencyMs": int(metric.get("latencyMs") or 0),
-        "promptTokens": int(metric.get("promptTokens") or 0),
-        "completionTokens": int(metric.get("completionTokens") or 0),
-        "totalTokens": int(metric.get("totalTokens") or 0),
-        "estimatedCostUSD": float(metric.get("estimatedCostUSD") or 0),
-        "errorClass": str(metric.get("errorClass", "")),
-        "fallback": bool(metric.get("fallback", False)),
-        "chatScope": incoming.get("chatType", ""),
-        "messageId": incoming.get("messageId", ""),
-    }
-    create_audit_log(
-        bundle,
-        incoming.get("openId") or "feishu-user",
-        "feishu.router.metric",
-        incoming.get("messageId", ""),
-        after="fallback" if safe_metric["fallback"] else "recorded",
-        policy_result="model_router_observability",
-        details=json.dumps(safe_metric, ensure_ascii=False, sort_keys=True),
-    )
-
-
-def router_decision_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, decision: dict[str, Any]) -> str:
-    intent = decision["intent"]
-    if intent == "knowledge_query":
-        return ""
-    unsafe_tools = [tool for tool in decision.get("toolSuggestions", []) if tool not in SAFE_MODEL_TOOL_SUGGESTIONS]
-    if unsafe_tools:
-        create_audit_log(bundle, incoming.get("openId") or "feishu-user", "feishu.router.tool_rejected", incoming.get("messageId", ""), after="rejected", policy_result="model_router", details=",".join(unsafe_tools))
-        return "这个请求涉及未注册或高风险工具，我不会直接执行；可以先帮你生成申请，交给 owner 审批。"
-    if intent == "dangerous_request":
-        return handle_dangerous_intent(incoming, incoming.get("text", "")) or "这是高风险请求，我不会直接执行；需要先生成申请并交给 owner 审批。"
-    if decision["confidence"] < 0.65:
-        return ""
-    if intent == "credential_request":
-        return token_request_reply(bundle, incoming, settings)
-    if intent == "status_query":
-        fields = decision.get("requiredFields", {})
-        project_name = str(fields.get("projectName") or fields.get("project") or fields.get("projectQuery") or "").strip()
-        return render_project_status_text(project_status_summary(bundle, project_name))
-    if intent == "clarify":
-        if is_ambiguous_short_input(incoming.get("text", "")):
-            missing = "、".join(decision.get("missingFields", []))
-            return f"我需要补充信息：{missing or '目标、项目或负责人'}。"
-        return ""
-    return ""
-
-
-def deepseek_router_reply(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings) -> str:
-    started = time.monotonic()
-    try:
-        decision = call_deepseek_router(incoming.get("text", ""), incoming)
-    except (KnowledgeError, urllib.error.URLError, TimeoutError, ValueError, KeyError) as exc:
-        record_router_metric(
-            bundle,
-            incoming,
-            {
-                "latencyMs": int((time.monotonic() - started) * 1000),
-                "errorClass": exc.__class__.__name__,
-                "fallback": True,
-            },
-        )
-        create_audit_log(bundle, incoming.get("openId") or "feishu-user", "feishu.router.failed", incoming.get("messageId", ""), after="fallback", policy_result="model_router", details=compact_snippet(str(exc), 300))
-        return ""
-    if not decision:
-        return ""
-    record_router_metric(bundle, incoming, decision.get("_routerMetrics", {"fallback": False}))
-    create_audit_log(bundle, incoming.get("openId") or "feishu-user", "feishu.router.decision", incoming.get("messageId", ""), after=decision["intent"], policy_result="model_router", details=json.dumps({key: decision[key] for key in ["intent", "confidence", "risk", "directHandle", "taskType"]}, ensure_ascii=False))
-    return router_decision_reply(bundle, incoming, settings, decision)
-
-
 def credential_field(text: str, label: str) -> str:
     for pattern in [rf"{label}\s*[：:]\s*([^，,\n]+)", rf"{label}\s+([^，,\n]+)"]:
         match = re.search(pattern, text)
@@ -2188,7 +2759,7 @@ def credential_type_from_text(text: str) -> str:
     lowered = (explicit or text).lower()
     if "runner" in lowered or "agent ring" in lowered or "工作台" in text:
         return "runner_registration"
-    if "deepseek" in lowered or "模型" in text:
+    if "模型" in text or "model" in lowered or "llm" in lowered:
         return "model_api"
     if "codex" in lowered or "claude" in lowered or "本地工具" in text:
         return "local_tool"
@@ -2425,7 +2996,7 @@ def project_init_reply(bundle: Bundle, incoming: dict[str, str], settings: Feish
             f"启动清单：{launch_path.relative_to(bundle.root)}",
             "初始化任务：已创建，审批通过后会通知接管方式。",
             f"项目 Agent：{', '.join(path.stem for path in project_agents)}",
-            "Runner 状态：" + ("Agent Ring 已启用，等待自动调度。" if agent_ring_enabled() else "Agent Ring 未启用，审批通过后会提示本地 Codex / 临时 Runner 接管初始化任务。"),
+            "Runner 状态：" + ("Agent Ring 已启用，等待自动调度。" if agent_ring_enabled() else "Agent Ring 未启用，审批通过后会提示指定执行电脑接管初始化任务。"),
             project_launch_summary(project_intake),
             approval_line,
             "",
@@ -2523,30 +3094,31 @@ def submit_material_capture_card(bundle: Bundle, incoming: dict[str, str], setti
             "projectRaw": project_name,
             "sourceType": "project_material",
             "body": content,
+            "processingAction": form.get("processingAction", "knowledge_extract"),
         }
-        source_path, task_path, task_id, assignee = create_project_material_task(bundle, incoming, settings, material)
+        _source_path, _task_path, task_id, assignee = create_project_material_task(bundle, incoming, settings, material)
+        profile = material_processing_profile(material["processingAction"])
         return "\n".join(
             [
-                "已接收项目资料，并创建知识沉淀任务。",
-                f"项目: {project_name}",
-                f"任务编号: {task_id}",
-                f"负责人: {assignee}",
-                f"原始资料: {source_path}",
-                f"任务卡: {task_path}",
-                "状态: " + display_task_status("pending" if agent_ring_enabled() else "waiting_runner"),
-                "后续处理: " + ("Agent Ring Runner 会解析原文，生成总结、结构化知识和证据引用；Review 通过后才进入可复用知识。" if agent_ring_enabled() else "已通知负责人手动接管；本地 Codex/Claude 处理后写回 TaskResult 和 KnowledgeItem draft，再进入 Review。"),
+                "已接收项目资料，并创建企业 Agent 能力/知识处理任务。",
+                f"项目：{project_name}",
+                f"任务编号：{task_id}",
+                f"处理方式：{profile['taskType']}",
+                f"负责人：{assignee}",
+                "当前状态：" + display_task_status("pending" if agent_ring_enabled() else "waiting_runner"),
+                "后续处理：" + ("会解析原文，生成知识或 CapabilityCandidate；Review/Approval 通过后才进入企业 Agent 能力包。" if agent_ring_enabled() else "已通知负责人接管；处理完成后会回传结果并进入能力/知识 Review。"),
             ]
         )
-    source_path, task_path, task_id, assignee = create_common_knowledge_material_task(bundle, incoming, settings, form)
+    _source_path, _task_path, task_id, assignee = create_common_knowledge_material_task(bundle, incoming, settings, form)
+    profile = material_processing_profile(form.get("processingAction", ""))
     return "\n".join(
         [
-            "已接收公共知识资料，并创建知识沉淀任务。",
-            f"任务编号: {task_id}",
-            f"负责人: {assignee}",
-            f"原始资料: {source_path}",
-            f"任务卡: {task_path}",
-            "状态: " + display_task_status("pending" if agent_ring_enabled() else "waiting_runner"),
-            "后续处理: " + ("知识工程 Agent 会解析原文，生成总结、结构化知识和证据引用；Review 通过后才进入公司级可复用知识。" if agent_ring_enabled() else "已通知负责人手动接管；本地 Codex/Claude 处理后写回 TaskResult 和 KnowledgeItem draft，再进入 Review。"),
+            "已接收公共知识资料，并创建企业 Agent 能力/知识处理任务。",
+            f"任务编号：{task_id}",
+            f"处理方式：{profile['taskType']}",
+            f"负责人：{assignee}",
+            "当前状态：" + display_task_status("pending" if agent_ring_enabled() else "waiting_runner"),
+            "后续处理：" + ("知识工程 Agent 会解析原文，生成知识或 CapabilityCandidate；Review/Approval 通过后才进入公司级可复用知识或企业 Agent 能力包。" if agent_ring_enabled() else "已通知负责人接管；处理完成后会回传结果并进入能力/知识 Review。"),
         ]
     )
 
@@ -3474,7 +4046,7 @@ def display_task_status(status: str) -> str:
     raw = str(status or "")
     label = display_status(raw)
     if raw == "waiting_runner":
-        return f"{label}（Agent Ring 未启用，需要本地 Codex/临时 Runner 处理）"
+        return f"{label}（Agent Ring 未启用，需要指定执行电脑处理）"
     return label
 
 
@@ -4372,7 +4944,7 @@ def audit_ignored_approval_event(bundle: Bundle, payload: dict[str, Any], reason
             f"status: {status or '-'}",
             f"eventType: {extract_event_type(payload) or '-'}",
             f"approvalCodePresent: {bool(deep_find(payload, 'approval_code') or deep_find(payload, 'approvalCode'))}",
-            f"payloadKeys: {','.join(sorted(str(key) for key in payload.keys()))}",
+            f"payloadShape: {safe_payload_shape(payload)}",
         ]
     )
     create_audit_log(bundle, "feishu-approval", "feishu.approval.ignored", target, after="ignored", policy_result="approval_callback", details=details)
@@ -4579,7 +5151,7 @@ def notify_manual_runner_required(
                 failure_reason="missing Feishu app credentials",
             )
         return False
-    card = manual_runner_required_card(task, task_ref, assignee, source_ref)
+    card = manual_runner_required_card(bundle, task, task_ref, assignee, source_ref)
     sent_any = False
     for recipient in recipients:
         try:
@@ -4630,23 +5202,24 @@ def manual_runner_recipients(settings: FeishuSettings, incoming: dict[str, str],
     return recipients
 
 
-def manual_runner_required_card(task: dict[str, Any], task_ref: str, assignee: str, source_ref: str = "") -> dict[str, Any]:
+def manual_runner_required_card(bundle: Bundle, task: dict[str, Any], task_ref: str, assignee: str, source_ref: str = "") -> dict[str, Any]:
     task_id = str(task.get("taskId") or "")
     title = str(task.get("title") or task_id or "待处理任务")
     project_id = str(task.get("projectId") or "company-knowledge-core")
     task_type = str(task.get("taskType") or "")
     source_items = as_markdown_list(task.get("sourceMaterialRefs")) or (f"- {source_ref}" if source_ref else "- 无")
-    action_lines = manual_runner_action_lines(task, task_id)
+    executor_label = manual_runner_executor_label(bundle, task)
+    action_lines = manual_runner_action_lines(task, task_id, executor_label)
     if task_type == "project_initialization":
         content = "\n".join(
             [
-                "项目已立项，但 Agent Ring 还没启用。这个初始化任务需要在本地 Codex / Claude 里接管。",
+                f"项目已立项，但 Agent Ring 还没启用。这个初始化任务需要由 {executor_label} 接管。",
                 "",
                 f"**任务编号**：{task_id}",
                 f"**任务名称**：{title}",
                 f"**项目**：{project_id}",
                 f"**负责 Agent**：{assignee or task.get('assignee') or '待确认'}",
-                "**当前阶段**：等待本地接管",
+                "**当前阶段**：等待执行电脑接管",
                 "",
                 "**你现在要做**：",
                 *action_lines,
@@ -4656,16 +5229,16 @@ def manual_runner_required_card(task: dict[str, Any], task_ref: str, assignee: s
                 "- CLI/API token 由 Agent Ring 或临时 Runner 凭据提供，不要把 token 写进知识库。",
             ]
         )
-        return card_result("项目初始化需要本地接管", content, "orange")
+        return card_result("项目初始化需要执行电脑接管", content, "orange")
     content = "\n".join(
         [
-            "Agent Ring 还没启用，这个任务需要你在本地手动指挥 Codex / Claude 接管。",
+            f"Agent Ring 还没启用，这个任务需要由 {executor_label} 接管。",
             "",
             f"**任务编号**：{task_id}",
             f"**任务名称**：{title}",
             f"**项目**：{project_id}",
             f"**负责 Agent**：{assignee or task.get('assignee') or '待确认'}",
-            "**当前阶段**：等待本地接管",
+            "**当前阶段**：等待执行电脑接管",
             "",
             "**原始资料**：",
             source_items,
@@ -4681,18 +5254,25 @@ def manual_runner_required_card(task: dict[str, Any], task_ref: str, assignee: s
     return card_result("需要手动接管任务", content, "orange")
 
 
-def manual_runner_action_lines(task: dict[str, Any], task_id: str) -> list[str]:
+def manual_runner_executor_label(bundle: Bundle, task: dict[str, Any]) -> str:
+    runner_id = str(task.get("runnerId") or task.get("assignedRunner") or "").strip()
+    if runner_id:
+        return manual_runner_label(bundle, runner_id)
+    return "指定执行电脑上的 Codex / Claude"
+
+
+def manual_runner_action_lines(task: dict[str, Any], task_id: str, executor_label: str) -> list[str]:
     task_type = str(task.get("taskType") or "")
     if task_type == "project_initialization":
         return [
-            f"1. 在本地 Codex 里说：接管项目初始化任务 {task_id}",
+            f"1. 到 {executor_label} 对应会话里说：接管项目初始化任务 {task_id}",
             "2. 先从中央处理器拉取 task context pack；不要只读本地旧 bundle。",
             "3. 读取 launch.md、项目记录、任务说明、审批状态、仓库/项目群/Agent team/Runner 信息。",
             "4. 检查老仓库迁移或新仓库创建路径，补齐 README、AGENTS、Review 规则和项目上下文。",
             "5. 写回 TaskResult、AgentRun 或人工接管记录，列出风险、阻塞和首批 ProjectTask。",
         ]
     return [
-        f"1. 在本地 Codex 里说：接管知识工程任务 {task_id}",
+        f"1. 到 {executor_label} 对应会话里说：接管知识工程任务 {task_id}",
         "2. 先从中央处理器拉取 task context pack；不要只读本地旧 bundle。",
         "3. 让本地 Agent 读取任务卡、SourceMaterial 和原始资料。",
         "4. 生成 TaskResult、结构化 KnowledgeItem draft 和证据引用。",
@@ -4898,6 +5478,65 @@ def parse_intake(text: str) -> str:
         if text.startswith(prefix):
             return text.removeprefix(prefix).strip()
     return ""
+
+
+def extract_urls(text: str) -> list[str]:
+    urls: list[str] = []
+    for match in URL_PATTERN.finditer(text):
+        value = match.group(0).strip()
+        if value and value not in urls:
+            urls.append(value)
+    return urls
+
+
+def normalize_for_keyword_match(text: str) -> str:
+    return re.sub(r"\s+", "", text).lower()
+
+
+def is_system_change_request(text: str) -> bool:
+    normalized = normalize_for_keyword_match(text)
+    return any(keyword.replace(" ", "").lower() in normalized for keyword in SYSTEM_CHANGE_KEYWORDS)
+
+
+def parse_research_material(text: str) -> dict[str, str]:
+    stripped = text.strip()
+    if not stripped:
+        return {}
+    urls = extract_urls(stripped)
+    lowered = stripped.lower()
+    starts_with_research = any(stripped.startswith(prefix) for prefix in RESEARCH_INTAKE_PREFIXES)
+    contains_research = any(prefix in stripped for prefix in RESEARCH_INTAKE_PREFIXES)
+    if is_system_change_request(stripped):
+        return {}
+    if not urls and not starts_with_research:
+        return {}
+    content = stripped
+    for prefix in RESEARCH_INTAKE_PREFIXES:
+        if content.startswith(prefix):
+            content = content.removeprefix(prefix).strip(" ：:，,\n")
+            break
+    source_ref = urls[0] if urls else ""
+    title = "研究资料"
+    if urls:
+        try:
+            parsed = urllib.parse.urlparse(urls[0])
+            title = f"研究资料：{parsed.netloc or urls[0]}"
+        except ValueError:
+            title = "研究资料：外部链接"
+    elif content:
+        title = f"研究资料：{compact_snippet(content, 30)}"
+    reason = "local_url_material_pattern" if urls and not contains_research else "local_research_material_pattern"
+    return {"title": title, "content": content or stripped, "sourceRef": source_ref, "reason": reason}
+
+
+def system_change_request_reply() -> str:
+    return "\n".join(
+        [
+            "这是体系变更请求，不会直接改中枢。",
+            "我会按变更流程处理：先保存来源和问题，再生成 Skill / Workflow / 规则变更候选，经过评审后才能合入主体系。",
+            "如果只是发资料给我研究，请直接发链接或说“研究一下”。",
+        ]
+    )
 
 
 def create_intake_draft(bundle: Bundle, incoming: dict[str, str], content: str) -> str:
@@ -5230,16 +5869,82 @@ def normalize_project_id(project_raw: str) -> str:
         return f"project-{digest}"
 
 
+def material_processing_profile(action: str) -> dict[str, Any]:
+    normalized = action.strip() or "knowledge_extract"
+    if normalized != "knowledge_extract" and not capability_feature_flags()["FEISHU_CAPABILITY_ACTIONS_ENABLED"]:
+        normalized = "knowledge_extract"
+    profiles = {
+        "knowledge_extract": {
+            "taskType": "knowledge_capture",
+            "workSourceType": "knowledge_ingest",
+            "sourceReason": "Feishu material should become reviewed reusable knowledge.",
+            "expectedOutput": [
+                "Parse original material.",
+                "Create evidence-backed summary.",
+                "Create structured draft knowledge with source refs.",
+                "Return TaskResult with evidenceRefs and knowledgeDraft.",
+            ],
+        },
+        "skill_extract": {
+            "taskType": "skill_extract",
+            "workSourceType": "capability_intake",
+            "sourceReason": "Feishu material should become a reviewed Agent Skill candidate.",
+            "expectedOutput": [
+                "Extract a reusable Agent Skill candidate from the material.",
+                "Return TaskResult with capabilityCandidates including candidateType=skill, targetAgents, riskLevel, and evidenceRefs.",
+                "Do not publish the skill directly; route through capability review.",
+            ],
+        },
+        "workflow_extract": {
+            "taskType": "workflow_extract",
+            "workSourceType": "capability_intake",
+            "sourceReason": "Feishu material should become a reviewed Agent Workflow candidate.",
+            "expectedOutput": [
+                "Extract a reusable Agent Workflow candidate from the material.",
+                "Return TaskResult with capabilityCandidates including candidateType=workflow and evidenceRefs.",
+                "Do not activate the workflow directly; route through capability review.",
+            ],
+        },
+        "tool_candidate": {
+            "taskType": "tool_candidate",
+            "workSourceType": "capability_intake",
+            "sourceReason": "Feishu material should become a Tool registration candidate.",
+            "expectedOutput": [
+                "Assess whether a registered ToolAsset is needed.",
+                "Return TaskResult with capabilityCandidates including candidateType=tool, riskLevel, owner, and approvalRequired when appropriate.",
+                "Do not expose credentials or register high-risk tools without Tool Owner review.",
+            ],
+        },
+        "capability_release_draft": {
+            "taskType": "capability_update_proposal",
+            "workSourceType": "capability_intake",
+            "sourceReason": "Feishu material should become a capability release proposal.",
+            "expectedOutput": [
+                "Identify reusable Agent capability updates from the material.",
+                "Return TaskResult with capabilityCandidates and recommended next action to create CapabilityRelease.",
+                "Route every candidate through capability review before release.",
+            ],
+        },
+    }
+    profile = dict(profiles.get(normalized, profiles["knowledge_extract"]))
+    profile["action"] = normalized if normalized in profiles else "knowledge_extract"
+    return profile
+
+
 def create_project_material_task(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, material: dict[str, str]) -> tuple[str, str, str, str]:
     content = material["body"]
     if looks_like_secret(content):
         raise KnowledgeError("material looks like it contains a secret; refusing to store it")
     owner = incoming.get("openId") or incoming.get("userId") or "feishu-user"
     project_id = material["projectId"]
+    project_path = bundle.root / "projects" / slug(project_id) / "project.md"
+    if not project_path.exists():
+        make_project(bundle, project_id, material.get("projectRaw", project_id), owner, "")
     source_ref = f"feishu://message/{incoming.get('messageId')}"
     project_owner = project_owner_open_id(bundle, settings, project_id)
     assignee = project_owner or "梅晓华"
     title = "整理会议纪要" if material["sourceType"] == "meeting_notes" else "整理项目资料"
+    profile = material_processing_profile(material.get("processingAction", ""))
     result = create_source_material(
         bundle,
         title=f"{title}：{material['projectRaw']}",
@@ -5254,12 +5959,72 @@ def create_project_material_task(bundle: Bundle, incoming: dict[str, str], setti
         extraction_status="task_created",
         create_task_flag=True,
         assignee=assignee,
+        task_work_source_type=str(profile["workSourceType"]),
+        task_source_reason=str(profile["sourceReason"]),
+        task_extra_frontmatter={
+            "capabilityProcessingAction": str(profile["action"]),
+            "expectedOutput": profile["expectedOutput"],
+            "updatedAt": utc_now(),
+        },
+        task_type=str(profile["taskType"]),
     )
     task_path = bundle.root / result["taskRef"]
     task_fm, _ = parse_task_file(task_path)
     task_id = str(task_fm.get("taskId", task_path.stem))
     notify_manual_runner_required(bundle, settings, incoming, task_path, task_id, assignee, result["sourceRef"], project_id)
     return result["sourceRef"], result["taskRef"], task_id, assignee
+
+
+def create_research_material_task(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, material: dict[str, str]) -> dict[str, Any]:
+    content = material.get("content", "").strip()
+    if not content:
+        raise KnowledgeError("research material content is required")
+    if looks_like_secret(content):
+        raise KnowledgeError("material looks like it contains a secret; refusing to store it")
+    owner = incoming.get("openId") or incoming.get("userId") or "feishu-user"
+    source_ref = material.get("sourceRef", "").strip() or f"feishu://message/{incoming.get('messageId')}"
+    assignee = "agent.company-knowledge-core.knowledge-engineering"
+    processor_runner = os.environ.get("FEISHU_DIRECT_MATERIAL_RUNNER", "runner.feishu-direct-material-processor").strip()
+    result = create_source_material(
+        bundle,
+        title=material.get("title", "").strip() or "研究资料",
+        source_ref=source_ref,
+        submitter=owner,
+        project_id="company-knowledge-core",
+        material_type="research_reference",
+        storage_ref="",
+        content=content,
+        sensitivity="internal",
+        extraction_tool="feishu-bot-research-intake",
+        extraction_status="task_created",
+        create_task_flag=True,
+        assignee=assignee,
+        task_work_source_type="research",
+        task_research_question=content,
+        task_source_reason="Feishu research/reference material intake. Save and analyze first; do not mutate Skill, Workflow, AGENTS, policy, or operating rules without a separate system-change approval.",
+        task_extra_frontmatter={
+            "intakeSource": "feishu_research_material",
+            "processingMode": "feishu_direct_reply",
+            "feishuMessageId": incoming.get("messageId", ""),
+            "feishuChatId": incoming.get("chatId", ""),
+            "feishuChatType": incoming.get("chatType", ""),
+            "feishuOpenId": incoming.get("openId", ""),
+            "feishuUserId": incoming.get("userId", ""),
+            "approvalRequired": False,
+            "approvalReason": "Source material capture and research parsing do not require approval; system mutations require a separate reviewed change.",
+        },
+    )
+    task_path = bundle.root / result["taskRef"]
+    task_fm, _ = parse_task_file(task_path)
+    task_id = str(task_fm.get("taskId", task_path.stem))
+    return {
+        "sourceRef": result["sourceRef"],
+        "taskRef": result["taskRef"],
+        "taskId": task_id,
+        "assignee": assignee,
+        "runnerId": processor_runner,
+        "idempotent": bool(result.get("idempotent")),
+    }
 
 
 def create_common_knowledge_material_task(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, form: dict[str, str]) -> tuple[str, str, str, str]:
@@ -5274,6 +6039,7 @@ def create_common_knowledge_material_task(bundle: Bundle, incoming: dict[str, st
     if scope_note:
         content_with_scope = f"{content}\n\n适用范围：{scope_note}"
     assignee = "agent.company-knowledge-core.knowledge-engineering"
+    profile = material_processing_profile(form.get("processingAction", ""))
     result = create_source_material(
         bundle,
         title=f"公共知识沉淀：{title}",
@@ -5288,6 +6054,14 @@ def create_common_knowledge_material_task(bundle: Bundle, incoming: dict[str, st
         extraction_status="task_created",
         create_task_flag=True,
         assignee=assignee,
+        task_work_source_type=str(profile["workSourceType"]),
+        task_source_reason=str(profile["sourceReason"]),
+        task_extra_frontmatter={
+            "capabilityProcessingAction": str(profile["action"]),
+            "expectedOutput": profile["expectedOutput"],
+            "updatedAt": utc_now(),
+        },
+        task_type=str(profile["taskType"]),
     )
     task_path = bundle.root / result["taskRef"]
     task_fm, _ = parse_task_file(task_path)

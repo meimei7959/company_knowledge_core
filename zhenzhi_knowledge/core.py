@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import fcntl
 import math
 import os
 import re
@@ -106,6 +107,7 @@ STATUS_VALUES = {
     "accepted_with_assumptions",
     "needs_rework",
     "human_decision_required",
+    "migrated",
 }
 
 KNOWLEDGE_ENGINEERING_AGENT_ID = "agent.company-knowledge-core.knowledge-engineering"
@@ -117,9 +119,12 @@ PENDING_WORKSPACE_REF = "pending_confirmation"
 
 TYPE_VALUES = {
     "Project",
+    "ProjectInitializationPlan",
     "ProjectTask",
     "KnowledgeTask",
     "TaskResult",
+    "Evidence",
+    "RoutingDecision",
     "ReviewRecord",
     "NotificationRecord",
     "AgentRunner",
@@ -141,6 +146,10 @@ TYPE_VALUES = {
     "MetricsReport",
     "AgentImprovementProposal",
     "AgentCapabilityReport",
+    "CapabilityCandidate",
+    "CapabilityRelease",
+    "CapabilityFeedback",
+    "SkillUsageEvent",
     "PMControlLease",
     "ProjectPmParticipant",
     "PmLeaseTakeoverRecord",
@@ -184,6 +193,13 @@ TYPE_VALUES = {
     "V1AcceptanceRun",
     "RunnerInvitation",
     "ToolRegistrationRequest",
+    "ProjectGovernanceProfile",
+    "ProjectStageSnapshot",
+    "GovernanceEvent",
+    "KnowledgeCandidate",
+    "AgentCapabilityGap",
+    "ToolCapabilityGap",
+    "ProductCopyrightCase",
 }
 
 PRODUCT_STATUS_VALUES = {
@@ -252,7 +268,7 @@ CRITICAL_NOTIFICATION_TYPES = {
 SECRET_KEYS = ("token", "secret", "password", "passwd", "credential", "api_key", "apikey", "key")
 MATERIAL_RAW_TEXT_MAX_CHARS = 20_000
 CENTRAL_RECORD_MAX_BYTES = 64 * 1024
-COLLECTION_NAMES = {"index.md", "log.md", "decisions.md", "lessons.md", "agents.md", "tools.md"}
+COLLECTION_NAMES = {"index.md", "log.md", "decisions.md", "lessons.md", "agents.md", "tools.md", "AGENTS.md", "START_HERE.md"}
 OBJECT_ROOT_NAMES = ["projects", "agents", "tools", "knowledge", "runs", "tasks", "sources", "task-results", "runners", "runner-invitations", "tool-registration-requests", "credential-requests", "notifications", "graph", "discussions", "pm-reviews", "pm-actions", "outcome-slices", "role-reviews", "rule-issues", "actors", "requirements", "prd", "decisions", "reviews", "defects", "receiver-reviews"]
 SAFE_SECRET_METADATA_KEYS = {
     "actorkey",
@@ -270,8 +286,8 @@ RETRIEVAL_VECTOR_DIMS = 64
 DATABASE_URL_ENV = "DATABASE_URL"
 DATABASE_URL_ALIAS_ENV = "ZHENZHI_KNOWLEDGE_DATABASE_URL"
 POSTGRES_SCHEMES = {"postgres", "postgresql"}
-KNOWLEDGE_SYSTEM_CATEGORIES = {"policies", "audit", "evals", "eval-runs", "conflicts", "metrics", "reviews", "agent-improvements"}
-KNOWLEDGE_CONTENT_CATEGORIES = {"company", "engineering", "product", "business", "operations", "research", "customer"}
+KNOWLEDGE_SYSTEM_CATEGORIES = {"policies", "audit", "evals", "eval-runs", "conflicts", "metrics", "reviews", "review", "gaps", "agent-improvements"}
+KNOWLEDGE_CONTENT_CATEGORIES = {"company", "engineering", "product", "business", "operations", "research", "customer", "tooling", "agent-capability", "policy-candidates", "general"}
 KNOWLEDGE_ALLOWED_CATEGORIES = KNOWLEDGE_SYSTEM_CATEGORIES | KNOWLEDGE_CONTENT_CATEGORIES
 KNOWLEDGE_ITEM_REQUIRED_FIELDS = {"type", "title", "timestamp", "owner", "status", "scope", "sourceRef", "confidence"}
 AGENT_TEAM_GUIDE_REF = "docs/agent-team/company-agent-team-operating-guide.md"
@@ -373,7 +389,7 @@ TASK_ROUTING_STATUS_VALUES = {
 LEGACY_TASK_ROUTING_STATUS_VALUES = {
     "manual-runner-required",
 }
-WORK_SOURCE_TYPE_VALUES = {"feature", "bugfix", "project_setup", "research", "knowledge_ingest", "maintenance"}
+WORK_SOURCE_TYPE_VALUES = {"feature", "bugfix", "project_setup", "research", "knowledge_ingest", "capability_intake", "capability_governance", "maintenance"}
 DEFECT_STATUS_VALUES = {"open", "triaged", "in_progress", "fixed", "regression_required", "closed", "reopened", "rejected"}
 RECEIVER_REVIEW_STATUS_VALUES = {
     "accepted_for_work",
@@ -1063,7 +1079,13 @@ def scan_for_secret_values(path: Path) -> list[str]:
             continue
         if ":" not in line:
             continue
-        key, value = line.split(":", 1)
+        colon_index = line.find(":")
+        key = line[:colon_index]
+        if key.rstrip().lower().endswith(("http", "https")):
+            continue
+        if len(key.strip()) > 80 or re.search(r"[。！？；，、]", key):
+            continue
+        value = line[colon_index + 1 :]
         normalized_key = key.strip().lower()
         normalized_value = value.strip()
         if normalized_key in {"secretref", "secretrefs"} and (normalized_value.startswith("secretref://") or normalized_value in {"", "[]", "null"}):
@@ -1562,6 +1584,10 @@ def pm_control_lease_storage_dir(bundle: Bundle, project_id: str) -> Path:
     return pm_control_project_dir(bundle, project_id) / "pm-control-leases"
 
 
+def pm_control_lease_lock_path(bundle: Bundle, project_id: str) -> Path:
+    return bundle.zz_dir / "locks" / f"pm-control-lease-{slug(project_id)}.lock"
+
+
 def pm_participant_storage_dir(bundle: Bundle, project_id: str) -> Path:
     return pm_control_project_dir(bundle, project_id) / "pm-participants"
 
@@ -1783,6 +1809,35 @@ def acquire_pm_control_lease(
         raise KnowledgeError("lease seconds must be positive")
     pid = slug(project_id)
     agent = slug(pm_agent_id)
+    lock_path = pm_control_lease_lock_path(bundle, pid)
+    ensure_dir(lock_path.parent)
+    with lock_path.open("a+", encoding="utf-8") as lock_handle:
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+        try:
+            return _acquire_pm_control_lease_unlocked(
+                bundle,
+                pid,
+                agent,
+                runner_id=runner_id,
+                device_id=device_id,
+                lease_seconds=lease_seconds,
+                idempotency_key=idempotency_key,
+                source_channel=source_channel,
+            )
+        finally:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
+
+
+def _acquire_pm_control_lease_unlocked(
+    bundle: Bundle,
+    pid: str,
+    agent: str,
+    runner_id: str = "",
+    device_id: str = "",
+    lease_seconds: int = 900,
+    idempotency_key: str = "",
+    source_channel: str = "api",
+) -> dict[str, Any]:
     ensure_dir(pm_control_lease_storage_dir(bundle, pid))
     if idempotency_key:
         for path in pm_control_lease_paths(bundle, pid):
@@ -2728,7 +2783,7 @@ def make_project(bundle: Bundle, project_id: str, name: str, owner: str, workspa
     ensure_dir(project_dir)
     write_text(
         project_dir / "index.md",
-        f"# {name}\n\n- [Project](project.md)\n- [Decisions](decisions.md)\n- [Lessons](lessons.md)\n- [Agents](agents.md)\n- [Tools](tools.md)\n- [Tasks](tasks/index.md)\n- [Sources](sources/index.md)\n",
+        f"# {name}\n\n- [Project](project.md)\n- [Project Rules](AGENTS.md)\n- [Decisions](decisions.md)\n- [Lessons](lessons.md)\n- [Agents](agents.md)\n- [Tools](tools.md)\n- [Tasks](tasks/index.md)\n- [Sources](sources/index.md)\n",
     )
     write_text(project_dir / "log.md", f"# {name} Log\n\n")
     frontmatter = {
@@ -2749,6 +2804,22 @@ def make_project(bundle: Bundle, project_id: str, name: str, owner: str, workspa
     }
     body = "## Goal\n\nTBD.\n\n## Scope\n\nTBD.\n\n## Current Focus\n\nTBD.\n"
     write_text(project_dir / "project.md", render_doc(frontmatter, body))
+    write_text(
+        project_dir / "AGENTS.md",
+        (
+            f"# {name} Project Rules\n\n"
+            "This file is the canonical project-rule entrypoint for layered Agent work.\n\n"
+            "Before formal work, load the central layered operating rules and this project context:\n\n"
+            "- `docs/agent-team/company-agent-constitution.md`\n"
+            "- `docs/agent-team/agent-task-runtime-contract.md`\n"
+            "- `docs/agent-team/human-acceptance-policy.md`\n"
+            "- `docs/agent-team/role-operating-specs.json`\n"
+            f"- `projects/{pid}/project.md`\n"
+            f"- `projects/{pid}/tasks/index.md`\n"
+            "\n"
+            "Project-specific Agent roster remains in `agents.md`.\n"
+        )
+    )
     for name_file, heading in [("decisions.md", "Decisions"), ("lessons.md", "Lessons"), ("agents.md", "Agents"), ("tools.md", "Tools")]:
         write_text(project_dir / name_file, f"# {heading}\n\n")
     write_text(project_dir / "tasks" / "index.md", f"# {name} Tasks\n\n")
@@ -3523,6 +3594,860 @@ def make_tool(bundle: Bundle, tool_id: str, name: str, owner: str, repo: str, en
 
 def skill_storage_dir(bundle: Bundle) -> Path:
     return bundle.root / "skills"
+
+
+CAPABILITY_CANDIDATE_TYPES = {"skill", "tool", "prompt", "workflow", "playbook", "policy", "agent_profile", "release"}
+CAPABILITY_RISK_LEVELS = {"L1", "L2", "L3", "L4", "L5"}
+CAPABILITY_RELEASED_STATUSES = {"released", "active"}
+
+
+def capability_storage_dir(bundle: Bundle) -> Path:
+    return bundle.root / "capabilities"
+
+
+def capability_candidate_storage_dir(bundle: Bundle) -> Path:
+    return capability_storage_dir(bundle) / "candidates"
+
+
+def capability_release_storage_dir(bundle: Bundle) -> Path:
+    return capability_storage_dir(bundle) / "releases"
+
+
+def capability_usage_storage_dir(bundle: Bundle) -> Path:
+    return capability_storage_dir(bundle) / "usage"
+
+
+def capability_feedback_storage_dir(bundle: Bundle) -> Path:
+    return capability_storage_dir(bundle) / "feedback"
+
+
+def feature_flag(name: str, default: bool) -> bool:
+    value = os.environ.get(name, "")
+    if not value.strip():
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def capability_feature_flags() -> dict[str, bool]:
+    return {
+        "CAPABILITY_GOVERNANCE_ENABLED": feature_flag("CAPABILITY_GOVERNANCE_ENABLED", True),
+        "CAPABILITY_RELEASE_ENABLED": feature_flag("CAPABILITY_RELEASE_ENABLED", True),
+        "CAPABILITY_RELEASE_REQUIRE_APPROVAL": feature_flag("CAPABILITY_RELEASE_REQUIRE_APPROVAL", True),
+        "CAPABILITY_AUTO_PUBLISH_ENABLED": feature_flag("CAPABILITY_AUTO_PUBLISH_ENABLED", False),
+        "CAPABILITY_RUNNER_AUTO_PULL_ENABLED": feature_flag("CAPABILITY_RUNNER_AUTO_PULL_ENABLED", False),
+        "CAPABILITY_USAGE_FEEDBACK_ENABLED": feature_flag("CAPABILITY_USAGE_FEEDBACK_ENABLED", True),
+        "FEISHU_CAPABILITY_ACTIONS_ENABLED": feature_flag("FEISHU_CAPABILITY_ACTIONS_ENABLED", True),
+        "FEISHU_INLINE_PROCESSING_ENABLED": feature_flag("FEISHU_INLINE_PROCESSING_ENABLED", False),
+        "FEISHU_REQUIRE_TASK_ID_FOR_PROCESSING_REPLY": feature_flag("FEISHU_REQUIRE_TASK_ID_FOR_PROCESSING_REPLY", True),
+        "KNOWLEDGE_DISTILL_SIGNALS_ENABLED": feature_flag("KNOWLEDGE_DISTILL_SIGNALS_ENABLED", True),
+        "KNOWLEDGE_DRAFT_VISIBLE_TO_AGENTS": feature_flag("KNOWLEDGE_DRAFT_VISIBLE_TO_AGENTS", True),
+        "KNOWLEDGE_VERIFIED_REQUIRED_FOR_POLICY": feature_flag("KNOWLEDGE_VERIFIED_REQUIRED_FOR_POLICY", True),
+    }
+
+
+def normalize_capability_candidate_type(candidate_type: str) -> str:
+    normalized = candidate_type.strip().lower().replace("-", "_") or "skill"
+    if normalized not in CAPABILITY_CANDIDATE_TYPES:
+        raise KnowledgeError(f"unknown capability candidate type: {candidate_type}")
+    return normalized
+
+
+def normalize_capability_risk(risk_level: str) -> str:
+    normalized = risk_level.strip().upper() or "L2"
+    if normalized not in CAPABILITY_RISK_LEVELS:
+        raise KnowledgeError(f"unknown capability risk level: {risk_level}")
+    return normalized
+
+
+def capability_review_route(candidate_type: str, risk_level: str, approval_required: bool) -> str:
+    if candidate_type == "tool":
+        return "tool_owner_review"
+    if candidate_type == "policy" or approval_required or risk_level in {"L4", "L5"}:
+        return "human_approval"
+    return "capability_review"
+
+
+def create_capability_candidate(
+    bundle: Bundle,
+    title: str,
+    candidate_type: str = "skill",
+    owner: str = "system.capability-control",
+    summary: str = "",
+    source_material_refs: list[str] | None = None,
+    source_task_id: str = "",
+    source_result_ref: str = "",
+    target_agents: list[str] | None = None,
+    target_projects: list[str] | None = None,
+    risk_level: str = "L2",
+    evidence_refs: list[str] | None = None,
+    candidate_id: str = "",
+    review_required: bool = True,
+    approval_required: bool = False,
+    status: str = "pending_review",
+) -> dict[str, Any]:
+    if not title.strip():
+        raise KnowledgeError("capability candidate title is required")
+    normalized_type = normalize_capability_candidate_type(candidate_type)
+    normalized_risk = normalize_capability_risk(risk_level)
+    cid = slug(candidate_id) if candidate_id.strip() else unique_time_id(f"{normalized_type}-candidate")
+    ensure_dir(capability_candidate_storage_dir(bundle))
+    path = capability_candidate_storage_dir(bundle) / f"{cid}.md"
+    if path.exists():
+        existing = load_object(path)
+        return {
+            "apiVersion": "v0.1",
+            "kind": "CapabilityCandidate",
+            "candidateId": cid,
+            "candidateRef": rel(path, bundle.root),
+            "status": str(existing.get("status", "")),
+            "reused": True,
+        }
+    review_route = capability_review_route(normalized_type, normalized_risk, approval_required)
+    frontmatter = {
+        "type": "CapabilityCandidate",
+        "title": title.strip(),
+        "description": summary.strip() or f"{normalized_type} capability candidate.",
+        "timestamp": utc_now(),
+        "candidateId": cid,
+        "candidateType": normalized_type,
+        "owner": owner,
+        "status": status,
+        "riskLevel": normalized_risk,
+        "sourceMaterialRefs": source_material_refs or [],
+        "sourceTaskId": source_task_id,
+        "sourceResultRef": source_result_ref,
+        "evidenceRefs": evidence_refs or [],
+        "targetAgents": target_agents or [],
+        "targetProjects": [slug(item) for item in target_projects or []],
+        "reviewRequired": review_required,
+        "approvalRequired": approval_required or normalized_type in {"tool", "policy"} or normalized_risk in {"L4", "L5"},
+        "reviewRoute": review_route,
+        "releaseRefs": [],
+        "publishedAssetRefs": [],
+        "createdAt": utc_now(),
+        "updatedAt": utc_now(),
+    }
+    body = "\n".join(
+        [
+            "## Candidate Summary",
+            "",
+            summary.strip() or "TBD.",
+            "",
+            "## Enterprise Agent Capability Fit",
+            "",
+            "- This is a reusable Agent capability candidate, not verified company knowledge.",
+            "- Promotion requires the configured capability review route before release.",
+            "",
+            "## Evidence",
+            "",
+            "\n".join(f"- {item}" for item in evidence_refs or source_material_refs or []) or "- none",
+        ]
+    )
+    write_text(path, render_doc(frontmatter, body))
+    update_index(capability_candidate_storage_dir(bundle) / "index.md", str(frontmatter["title"]), path.name)
+    update_index(capability_storage_dir(bundle) / "index.md", str(frontmatter["title"]), rel(path, capability_storage_dir(bundle)))
+    create_audit_log(bundle, owner, "capability.candidate.create", rel(path, bundle.root), after=status, policy_result=review_route, details=summary[:1000])
+    append_log(bundle, f"created CapabilityCandidate {cid}")
+    return {
+        "apiVersion": "v0.1",
+        "kind": "CapabilityCandidate",
+        "candidateId": cid,
+        "candidateRef": rel(path, bundle.root),
+        "status": status,
+        "reviewRoute": review_route,
+        "reused": False,
+    }
+
+
+def create_capability_release(
+    bundle: Bundle,
+    title: str,
+    owner: str,
+    candidate_refs: list[str],
+    version: str = "0.1.0",
+    release_id: str = "",
+    status: str = "draft",
+    summary: str = "",
+    target_agents: list[str] | None = None,
+    target_projects: list[str] | None = None,
+) -> dict[str, Any]:
+    flags = capability_feature_flags()
+    if not flags["CAPABILITY_RELEASE_ENABLED"]:
+        raise KnowledgeError("capability release is disabled by CAPABILITY_RELEASE_ENABLED")
+    if not title.strip():
+        raise KnowledgeError("capability release title is required")
+    if not owner.strip():
+        raise KnowledgeError("capability release owner is required")
+    if not candidate_refs:
+        raise KnowledgeError("capability release requires at least one candidate ref")
+    rid = slug(release_id) if release_id.strip() else unique_time_id("capability-release")
+    ensure_dir(capability_release_storage_dir(bundle))
+    path = capability_release_storage_dir(bundle) / f"{rid}.md"
+    if path.exists():
+        raise KnowledgeError(f"capability release already exists: {rid}")
+    normalized_status = status.strip().lower() or "draft"
+    if normalized_status in CAPABILITY_RELEASED_STATUSES and flags["CAPABILITY_RELEASE_REQUIRE_APPROVAL"]:
+        raise KnowledgeError("capability release requires human approval before released/active status")
+    candidate_objects: list[tuple[str, Path, dict[str, Any]]] = []
+    release_approval_required = False
+    for candidate_ref in candidate_refs:
+        try:
+            candidate_path = resolve_object_ref(bundle, candidate_ref)
+            candidate = load_object(candidate_path)
+        except KnowledgeError:
+            candidate_path = bundle.root / candidate_ref
+            candidate = {}
+        candidate_objects.append((candidate_ref, candidate_path, candidate))
+        release_approval_required = release_approval_required or bool(candidate.get("approvalRequired")) or str(candidate.get("candidateType", "")) in {"tool", "policy"}
+    frontmatter = {
+        "type": "CapabilityRelease",
+        "title": title.strip(),
+        "description": summary.strip() or "Enterprise Agent capability release draft.",
+        "timestamp": utc_now(),
+        "releaseId": rid,
+        "version": version.strip() or "0.1.0",
+        "owner": owner,
+        "status": normalized_status,
+        "candidateRefs": candidate_refs,
+        "assetRefs": [],
+        "targetAgents": target_agents or [],
+        "targetProjects": [slug(item) for item in target_projects or []],
+        "reviewRequired": True,
+        "approvalRequired": release_approval_required,
+        "usageEventRefs": [],
+        "feedbackRefs": [],
+        "createdAt": utc_now(),
+        "updatedAt": utc_now(),
+    }
+    body = "\n".join(
+        [
+            "## Release Summary",
+            "",
+            summary.strip() or "TBD.",
+            "",
+            "## Candidates",
+            "",
+            "\n".join(f"- {item}" for item in candidate_refs),
+            "",
+            "## Rollout",
+            "",
+            "- Draft releases are not active Runner defaults.",
+            "- Published releases require capability review and any required human approval.",
+        ]
+    )
+    write_text(path, render_doc(frontmatter, body))
+    update_index(capability_release_storage_dir(bundle) / "index.md", str(frontmatter["title"]), path.name)
+    update_index(capability_storage_dir(bundle) / "index.md", str(frontmatter["title"]), rel(path, capability_storage_dir(bundle)))
+    for _, candidate_path, candidate in candidate_objects:
+        if candidate.get("type") == "CapabilityCandidate":
+            update_frontmatter_file(
+                candidate_path,
+                {
+                    "releaseRefs": append_unique(as_list(candidate.get("releaseRefs")), rel(path, bundle.root)),
+                    "updatedAt": utc_now(),
+                },
+            )
+    create_audit_log(bundle, owner, "capability.release.create", rel(path, bundle.root), after=normalized_status, policy_result="review_required", details=summary[:1000])
+    return {"apiVersion": "v0.1", "kind": "CapabilityRelease", "releaseId": rid, "releaseRef": rel(path, bundle.root), "status": normalized_status}
+
+
+def create_capability_review_task(
+    bundle: Bundle,
+    candidate_ref: str,
+    requester: str = "system.capability-control",
+    reviewer: str = "agent.core.capability-review",
+) -> dict[str, Any]:
+    candidate_path = resolve_object_ref(bundle, candidate_ref)
+    candidate = load_object(candidate_path)
+    if candidate.get("type") != "CapabilityCandidate":
+        raise KnowledgeError("capability review target must be CapabilityCandidate")
+    task_path = create_project_task(
+        bundle,
+        title=f"Review Agent capability candidate: {candidate.get('title', candidate_path.stem)}",
+        project_id=str(candidate.get("targetProjects", ["company-knowledge-core"])[0] if as_list(candidate.get("targetProjects")) else "company-knowledge-core"),
+        requester=requester,
+        assignee=reviewer,
+        task_type="capability_review",
+        task_id=followup_task_id(bundle, f"{candidate.get('candidateId', candidate_path.stem)}-review"),
+        priority="high" if candidate.get("approvalRequired") else "normal",
+        source_material_refs=append_unique(as_list(candidate.get("sourceMaterialRefs")), rel(candidate_path, bundle.root)),
+        expected_output=[
+            "Check reusable Agent capability structure, evidence, scope, risk, permissions, target agents, and rollout impact.",
+            "Route to capability approval when policy/tool/security/cross-team impact requires a human decision.",
+            "Do not publish or release the capability without review outcome recorded.",
+        ],
+        work_source_type="capability_governance",
+        source_reason="CapabilityCandidate requires review before enterprise Agent reuse.",
+    )
+    task_ref = rel(task_path, bundle.root)
+    update_frontmatter_file(
+        candidate_path,
+        {
+            "reviewTaskRef": task_ref,
+            "status": "reviewing",
+            "updatedAt": utc_now(),
+        },
+    )
+    create_audit_log(bundle, requester, "capability.review.task_create", rel(candidate_path, bundle.root), after="reviewing", policy_result=str(candidate.get("reviewRoute") or "capability_review"), details=f"reviewTaskRef={task_ref}")
+    return {"apiVersion": "v0.1", "kind": "CapabilityReviewTask", "candidateRef": rel(candidate_path, bundle.root), "reviewTaskRef": task_ref, "taskId": str(load_object(task_path).get("taskId", ""))}
+
+
+def capability_refs_from_review_task(bundle: Bundle, review_task: dict[str, Any], target_refs: list[str] | None = None) -> list[str]:
+    refs = list(target_refs or [])
+    if not refs:
+        refs = [item for item in as_list(review_task.get("sourceMaterialRefs")) if item.startswith("capabilities/candidates/")]
+    return refs
+
+
+def apply_capability_review_result(
+    bundle: Bundle,
+    review_task_id: str,
+    outcome: str,
+    reviewer: str,
+    summary: str,
+    target_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    allowed = {"approved_for_release", "needs_human_approval", "changes_requested", "reject"}
+    if outcome not in allowed:
+        raise KnowledgeError(f"unknown capability review outcome: {outcome}")
+    if not reviewer.strip():
+        raise KnowledgeError("reviewer is required")
+    if not summary.strip():
+        raise KnowledgeError("review summary is required")
+    if outcome in {"changes_requested", "reject"}:
+        validate_review_comment(summary)
+    review_task_path = find_project_task(bundle, review_task_id)
+    review_task = load_object(review_task_path)
+    if str(review_task.get("taskType", "")) != "capability_review":
+        raise KnowledgeError(f"task is not a capability_review task: {review_task_id}")
+    targets = capability_refs_from_review_task(bundle, review_task, target_refs)
+    if not targets:
+        raise KnowledgeError("capability review target refs are required")
+    followup_refs: list[str] = []
+    notification_refs: list[str] = []
+    reviewed_refs: list[str] = []
+    for target in targets:
+        candidate_path = resolve_object_ref(bundle, target)
+        candidate = load_object(candidate_path)
+        if candidate.get("type") != "CapabilityCandidate":
+            raise KnowledgeError("capability review target must be CapabilityCandidate")
+        reviewed_refs = append_unique(reviewed_refs, rel(candidate_path, bundle.root))
+        if outcome == "approved_for_release" and not candidate.get("approvalRequired"):
+            update_frontmatter_file(candidate_path, {"status": "approved", "reviewOutcome": outcome, "reviewedBy": reviewer, "reviewSummary": summary, "updatedAt": utc_now()})
+        elif outcome in {"approved_for_release", "needs_human_approval"}:
+            approval_path = create_project_task(
+                bundle,
+                title=f"Approve Agent capability candidate: {candidate.get('title', candidate_path.stem)}",
+                project_id=str(candidate.get("targetProjects", ["company-knowledge-core"])[0] if as_list(candidate.get("targetProjects")) else "company-knowledge-core"),
+                requester=str(review_task.get("requester") or "system.capability-control"),
+                assignee=str(candidate.get("humanOwner") or "meimei"),
+                task_type="capability_approval",
+                task_id=followup_task_id(bundle, f"{candidate.get('candidateId', candidate_path.stem)}-approval"),
+                priority="high",
+                source_material_refs=append_unique([rel(candidate_path, bundle.root)], rel(review_task_path, bundle.root)),
+                expected_output=[
+                    "Human owner approves or rejects enterprise Agent capability release impact.",
+                    "Approval may publish a CapabilityRelease as released; rejection creates revision work.",
+                ],
+                work_source_type="capability_governance",
+                source_reason="Capability review requires human approval before release.",
+            )
+            approval_ref = rel(approval_path, bundle.root)
+            followup_refs = append_unique(followup_refs, approval_ref)
+            update_frontmatter_file(candidate_path, {"status": "waiting_acceptance", "approvalTaskRef": approval_ref, "reviewOutcome": outcome, "reviewedBy": reviewer, "reviewSummary": summary, "updatedAt": utc_now()})
+            notification_path = create_task_notification(bundle, approval_path, load_object(approval_path), "capability_approval_required", recipient=str(candidate.get("humanOwner") or "meimei"), summary=f"Agent 能力候选需要人工审批：{candidate.get('title', '')}。{summary}", source_message_ref=rel(candidate_path, bundle.root))
+            notification_refs = append_unique(notification_refs, rel(notification_path, bundle.root))
+        elif outcome == "changes_requested":
+            retry_path = create_project_task(
+                bundle,
+                title=f"Revise Agent capability candidate: {candidate.get('title', candidate_path.stem)}",
+                project_id=str(candidate.get("targetProjects", ["company-knowledge-core"])[0] if as_list(candidate.get("targetProjects")) else "company-knowledge-core"),
+                requester=str(review_task.get("requester") or "system.capability-control"),
+                assignee=str(candidate.get("owner") or KNOWLEDGE_ENGINEERING_AGENT_ID),
+                task_type=f"{candidate.get('candidateType', 'skill')}_candidate_revision",
+                task_id=followup_task_id(bundle, f"{candidate.get('candidateId', candidate_path.stem)}-changes"),
+                priority="normal",
+                source_material_refs=append_unique([rel(candidate_path, bundle.root)], rel(review_task_path, bundle.root)),
+                expected_output=["Revise the capability candidate and resubmit to capability review."],
+                work_source_type="capability_governance",
+                source_reason=summary,
+            )
+            followup_refs = append_unique(followup_refs, rel(retry_path, bundle.root))
+            update_frontmatter_file(candidate_path, {"status": "changes_requested", "reviewOutcome": outcome, "reviewedBy": reviewer, "reviewSummary": summary, "updatedAt": utc_now()})
+        else:
+            update_frontmatter_file(candidate_path, {"status": "rejected", "reviewOutcome": outcome, "reviewedBy": reviewer, "reviewSummary": summary, "updatedAt": utc_now()})
+    review_record_path = create_review_record(bundle, {**review_task, "taskId": review_task_id}, outcome, reviewer, summary, reviewed_refs, followup_refs)
+    review_after = update_frontmatter_file(review_task_path, {"status": "done" if outcome == "approved_for_release" else ("rejected" if outcome == "reject" else "changes_requested" if outcome == "changes_requested" else "waiting_acceptance"), "reviewRecordRef": rel(review_record_path, bundle.root), "followupTaskRefs": followup_refs, "updatedAt": utc_now()})
+    create_audit_log(bundle, reviewer, "capability.review.apply", rel(review_task_path, bundle.root), after=outcome, policy_result="capability_review", details=f"targets={','.join(reviewed_refs)}")
+    return {"apiVersion": "v0.1", "kind": "CapabilityReviewOutcome", "reviewTaskId": str(review_after.get("taskId", review_task_id)), "outcome": outcome, "reviewRecordRef": rel(review_record_path, bundle.root), "targetRefs": reviewed_refs, "followupTaskRefs": followup_refs, "notificationRefs": notification_refs}
+
+
+def apply_capability_approval_result(
+    bundle: Bundle,
+    approval_task_id: str,
+    outcome: str,
+    approver: str,
+    summary: str,
+    target_refs: list[str] | None = None,
+    release_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    if outcome not in {"approved", "rejected"}:
+        raise KnowledgeError(f"unknown capability approval outcome: {outcome}")
+    if actor_is_agent(approver):
+        raise KnowledgeError("human approval required; Agent cannot self-approve this capability approval task")
+    if not summary.strip():
+        raise KnowledgeError("approval summary is required")
+    approval_task_path = find_project_task(bundle, approval_task_id)
+    approval_task = load_object(approval_task_path)
+    if str(approval_task.get("taskType", "")) != "capability_approval":
+        raise KnowledgeError(f"task is not a capability_approval task: {approval_task_id}")
+    targets = list(target_refs or [])
+    if not targets:
+        targets = [item for item in as_list(approval_task.get("sourceMaterialRefs")) if item.startswith("capabilities/candidates/")]
+    if not targets:
+        raise KnowledgeError("capability approval target refs are required")
+    published_refs: list[str] = []
+    followup_refs: list[str] = []
+    notification_refs: list[str] = []
+    if outcome == "approved":
+        for target in targets:
+            candidate_path = resolve_object_ref(bundle, target)
+            candidate = load_object(candidate_path)
+            update_frontmatter_file(candidate_path, {"status": "approved", "approvalOutcome": outcome, "approvedBy": approver, "approvalSummary": summary, "updatedAt": utc_now()})
+            published_refs = append_unique(published_refs, rel(candidate_path, bundle.root))
+        for release_ref in release_refs or []:
+            release_path = resolve_object_ref(bundle, release_ref)
+            release = load_object(release_path)
+            if release.get("type") != "CapabilityRelease":
+                raise KnowledgeError("release ref must point to CapabilityRelease")
+            if str(release.get("approvalOutcome", "")) == "rejected":
+                raise KnowledgeError("rejected capability release cannot be published")
+            update_frontmatter_file(release_path, {"status": "released", "approvedBy": approver, "approvalSummary": summary, "releasedAt": utc_now(), "updatedAt": utc_now()})
+            published_refs = append_unique(published_refs, rel(release_path, bundle.root))
+    else:
+        for target in targets:
+            candidate_path = resolve_object_ref(bundle, target)
+            candidate = load_object(candidate_path)
+            update_frontmatter_file(candidate_path, {"status": "changes_requested", "approvalOutcome": outcome, "approvedBy": approver, "approvalSummary": summary, "updatedAt": utc_now()})
+            retry_path = create_project_task(
+                bundle,
+                title=f"Revise rejected Agent capability candidate: {candidate.get('title', candidate_path.stem)}",
+                project_id=str(candidate.get("targetProjects", ["company-knowledge-core"])[0] if as_list(candidate.get("targetProjects")) else "company-knowledge-core"),
+                requester=str(approval_task.get("requester") or "system.capability-control"),
+                assignee=str(candidate.get("owner") or KNOWLEDGE_ENGINEERING_AGENT_ID),
+                task_type=f"{candidate.get('candidateType', 'skill')}_candidate_revision",
+                task_id=followup_task_id(bundle, f"{candidate.get('candidateId', candidate_path.stem)}-approval-rejected"),
+                priority="high",
+                source_material_refs=append_unique([rel(candidate_path, bundle.root)], rel(approval_task_path, bundle.root)),
+                expected_output=["Address human approval rejection and resubmit capability candidate."],
+                work_source_type="capability_governance",
+                source_reason=summary,
+            )
+            followup_refs = append_unique(followup_refs, rel(retry_path, bundle.root))
+        for release_ref in release_refs or []:
+            release_path = resolve_object_ref(bundle, release_ref)
+            release = load_object(release_path)
+            if release.get("type") != "CapabilityRelease":
+                raise KnowledgeError("release ref must point to CapabilityRelease")
+            update_frontmatter_file(release_path, {"status": "rejected", "approvalOutcome": outcome, "approvedBy": approver, "approvalSummary": summary, "updatedAt": utc_now()})
+    approval_record_path = create_approval_record(bundle, approval_task, outcome, approver, summary, targets, published_refs, followup_refs)
+    approval_after = update_frontmatter_file(approval_task_path, {"status": "done" if outcome == "approved" else "rejected", "approvalOutcome": outcome, "approvalRecordRef": rel(approval_record_path, bundle.root), "publishedRefs": published_refs, "followupTaskRefs": followup_refs, "updatedAt": utc_now()})
+    notification_path = create_task_notification(bundle, approval_task_path, approval_after, "capability_released" if outcome == "approved" else "capability_approval_rejected", recipient=str(approval_task.get("requester") or "system.capability-control"), summary=f"Agent 能力审批{('通过' if outcome == 'approved' else '未通过')}：{summary}", source_message_ref=rel(approval_task_path, bundle.root))
+    notification_refs = append_unique(notification_refs, rel(notification_path, bundle.root))
+    create_audit_log(bundle, approver, "capability.approval.apply", rel(approval_task_path, bundle.root), after=outcome, policy_result="human_capability_approval", details=f"targets={','.join(targets)}\nreleases={','.join(release_refs or []) or 'none'}")
+    return {"apiVersion": "v0.1", "kind": "CapabilityApprovalOutcome", "approvalTaskId": str(approval_after.get("taskId", approval_task_id)), "outcome": outcome, "approvalRecordRef": rel(approval_record_path, bundle.root), "publishedRefs": published_refs, "followupTaskRefs": followup_refs, "notificationRefs": notification_refs}
+
+
+def runner_capability_pull(
+    bundle: Bundle,
+    runner_id: str = "",
+    agent_id: str = "",
+    project_id: str = "",
+    include_drafts: bool = False,
+) -> dict[str, Any]:
+    flags = capability_feature_flags()
+    control = capability_control_read_model(bundle)
+    releases = [
+        item
+        for item in control["releases"]
+        if item.get("status") in {"released", "active"} and (not project_id or not as_list(item.get("targetProjects")) or slug(project_id) in as_list(item.get("targetProjects")))
+    ]
+    drafts = []
+    if include_drafts:
+        drafts = [
+            item
+            for item in control["candidates"]
+            if item.get("status") in {"pending_review", "reviewing", "approved"} and (not project_id or not as_list(item.get("targetProjects")) or slug(project_id) in as_list(item.get("targetProjects")))
+        ]
+    sync_status = "synced" if releases else "no_released_capabilities"
+    create_audit_log(bundle, agent_id or runner_id or "agent-ring", "capability.runner.pull", runner_id or agent_id or "capability-pull", after=f"releases={len(releases)}; syncStatus={sync_status}", policy_result="released_only" if not include_drafts else "includes_drafts")
+    return {
+        "apiVersion": "v0.1",
+        "kind": "RunnerCapabilityPackage",
+        "generatedAt": utc_now(),
+        "runnerId": slug(runner_id) if runner_id else "",
+        "agentId": slug(agent_id) if agent_id else "",
+        "projectId": slug(project_id) if project_id else "",
+        "syncStatus": sync_status,
+        "installStatus": "ready" if releases else "nothing_to_install",
+        "autoPullEnabled": flags["CAPABILITY_RUNNER_AUTO_PULL_ENABLED"],
+        "releases": releases,
+        "draftCandidates": drafts,
+        "skillAssets": control["skillAssets"],
+        "toolAssets": control["toolAssets"],
+        "policy": {
+            "releaseDefault": "released_only",
+            "draftUseRequiresExplicitFlag": True,
+            "runnerMustRecordSkillUsageEvent": True,
+            "autoPullEnabled": flags["CAPABILITY_RUNNER_AUTO_PULL_ENABLED"],
+        },
+    }
+
+
+def record_skill_usage_event(
+    bundle: Bundle,
+    skill_ref: str,
+    runner_id: str,
+    agent_id: str,
+    task_id: str = "",
+    result_ref: str = "",
+    release_ref: str = "",
+    outcome: str = "observed",
+    summary: str = "",
+    evidence_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    if not capability_feature_flags()["CAPABILITY_USAGE_FEEDBACK_ENABLED"]:
+        raise KnowledgeError("capability usage feedback is disabled by CAPABILITY_USAGE_FEEDBACK_ENABLED")
+    if not skill_ref.strip():
+        raise KnowledgeError("skill ref is required")
+    event_id = unique_time_id("skill-usage")
+    ensure_dir(capability_usage_storage_dir(bundle))
+    path = capability_usage_storage_dir(bundle) / f"{event_id}.md"
+    frontmatter = {
+        "type": "SkillUsageEvent",
+        "title": f"Skill usage {event_id}",
+        "description": summary.strip() or f"{skill_ref} used by {agent_id or runner_id}.",
+        "timestamp": utc_now(),
+        "usageEventId": event_id,
+        "skillRef": skill_ref,
+        "skillId": Path(skill_ref).stem,
+        "releaseRef": release_ref,
+        "releaseId": Path(release_ref).stem if release_ref else "",
+        "runnerId": runner_id,
+        "agentId": agent_id,
+        "taskId": task_id,
+        "resultRef": result_ref,
+        "outcome": outcome,
+        "status": "observed",
+        "evidenceRefs": evidence_refs or [],
+        "createdAt": utc_now(),
+    }
+    body = "## Usage Summary\n\n" + (summary.strip() or "TBD.") + "\n"
+    write_text(path, render_doc(frontmatter, body))
+    update_index(capability_usage_storage_dir(bundle) / "index.md", str(frontmatter["title"]), path.name)
+    create_audit_log(bundle, agent_id or runner_id or "system", "capability.usage.record", rel(path, bundle.root), after=outcome, details=summary[:1000])
+    return {"apiVersion": "v0.1", "kind": "SkillUsageEvent", "usageEventId": event_id, "usageEventRef": rel(path, bundle.root)}
+
+
+def create_capability_feedback(
+    bundle: Bundle,
+    capability_ref: str,
+    actor: str,
+    content: str,
+    rating: str = "",
+    feedback_type: str = "",
+    task_id: str = "",
+    result_ref: str = "",
+    evidence_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    if not capability_ref.strip():
+        raise KnowledgeError("capability ref is required")
+    if not actor.strip():
+        raise KnowledgeError("feedback actor is required")
+    if not content.strip():
+        raise KnowledgeError("feedback content is required")
+    feedback_id = unique_time_id("capability-feedback")
+    ensure_dir(capability_feedback_storage_dir(bundle))
+    path = capability_feedback_storage_dir(bundle) / f"{feedback_id}.md"
+    frontmatter = {
+        "type": "CapabilityFeedback",
+        "title": f"Capability feedback {feedback_id}",
+        "description": content[:160],
+        "timestamp": utc_now(),
+        "feedbackId": feedback_id,
+        "capabilityRef": capability_ref,
+        "actor": actor,
+        "rating": rating,
+        "feedbackType": feedback_type or "neutral",
+        "taskId": task_id,
+        "resultRef": result_ref,
+        "status": "feedback_loop" if (rating.lower() in {"bad", "negative", "poor"} or feedback_type == "negative") else "observed",
+        "evidenceRefs": evidence_refs or [],
+        "createdAt": utc_now(),
+    }
+    body = "## Feedback\n\n" + content.strip() + "\n"
+    write_text(path, render_doc(frontmatter, body))
+    update_index(capability_feedback_storage_dir(bundle) / "index.md", str(frontmatter["title"]), path.name)
+    create_audit_log(bundle, actor, "capability.feedback.ingest", rel(path, bundle.root), after=str(frontmatter["status"]), policy_result=str(frontmatter["feedbackType"]), details=content[:1000])
+    return {"apiVersion": "v0.1", "kind": "CapabilityFeedback", "feedbackId": feedback_id, "feedbackRef": rel(path, bundle.root)}
+
+
+def list_capability_objects(bundle: Bundle, root: Path, object_type: str = "", status: str = "") -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    if not root.exists():
+        return rows
+    for path in sorted(root.glob("*.md")):
+        if path.name in {"index.md", "log.md"}:
+            continue
+        obj = load_object(path)
+        if object_type and obj.get("type") != object_type:
+            continue
+        if status and str(obj.get("status", "")) != status:
+            continue
+        obj["path"] = rel(path, bundle.root)
+        rows.append(obj)
+    return rows
+
+
+def capability_control_read_model(bundle: Bundle, status: str = "", candidate_type: str = "") -> dict[str, Any]:
+    candidates = list_capability_objects(bundle, capability_candidate_storage_dir(bundle), "CapabilityCandidate", status)
+    if candidate_type:
+        normalized_type = normalize_capability_candidate_type(candidate_type)
+        candidates = [item for item in candidates if item.get("candidateType") == normalized_type]
+    releases = list_capability_objects(bundle, capability_release_storage_dir(bundle), "CapabilityRelease", status)
+    usage_events = list_capability_objects(bundle, capability_usage_storage_dir(bundle), "SkillUsageEvent")
+    feedback = list_capability_objects(bundle, capability_feedback_storage_dir(bundle), "CapabilityFeedback")
+    skill_assets = list_capability_objects(bundle, skill_storage_dir(bundle), "SkillAsset")
+    tool_assets = list_capability_objects(bundle, bundle.root / "tools", "ToolAsset")
+    return {
+        "apiVersion": "v0.1",
+        "kind": "CapabilityControlPlane",
+        "generatedAt": utc_now(),
+        "featureFlags": capability_feature_flags(),
+        "summary": {
+            "candidateCount": len(candidates),
+            "releaseCount": len(releases),
+            "skillAssetCount": len(skill_assets),
+            "toolAssetCount": len(tool_assets),
+            "usageEventCount": len(usage_events),
+            "feedbackCount": len(feedback),
+        },
+        "candidates": candidates,
+        "releases": releases,
+        "skillAssets": skill_assets,
+        "toolAssets": tool_assets,
+        "usageEvents": usage_events[-50:],
+        "feedback": feedback[-50:],
+    }
+
+
+TRACE_SECTION_TYPES = {
+    "sourceMaterials": {"SourceMaterial"},
+    "tasks": {"KnowledgeTask", "ProjectTask"},
+    "taskResults": {"TaskResult"},
+    "knowledgeCandidates": {"KnowledgeItem"},
+    "capabilityCandidates": {"CapabilityCandidate"},
+    "reviews": {"ReviewRecord"},
+    "approvals": {"ApprovalRecord"},
+    "capabilityReleases": {"CapabilityRelease"},
+    "notifications": {"NotificationRecord"},
+    "auditLogs": {"AuditLog"},
+    "runners": {"AgentRunner"},
+    "usageEvents": {"SkillUsageEvent"},
+    "feedback": {"CapabilityFeedback"},
+}
+
+
+def trace_record(path: Path, obj: dict[str, Any], extra: dict[str, Any] | None = None) -> dict[str, Any]:
+    row = {
+        "path": rel(path, path.parents[len(path.parents) - 1]) if False else "",
+        "type": str(obj.get("type") or ""),
+        "title": str(obj.get("title") or path.stem),
+        "status": str(obj.get("status") or obj.get("outcome") or ""),
+    }
+    for key in [
+        "sourceId",
+        "taskId",
+        "resultId",
+        "candidateId",
+        "releaseId",
+        "reviewRecordId",
+        "approvalRecordId",
+        "notificationId",
+        "auditId",
+        "runnerId",
+        "usageEventId",
+        "feedbackId",
+        "messageType",
+        "action",
+    ]:
+        if obj.get(key):
+            row[key] = obj.get(key)
+    if extra:
+        row.update(extra)
+    return row
+
+
+def iter_trace_objects(bundle: Bundle) -> list[tuple[Path, dict[str, Any], str]]:
+    rows: list[tuple[Path, dict[str, Any], str]] = []
+    for path in sorted(bundle.root.rglob("*.md")):
+        if any(part in {".git", "__pycache__", ".codegraph"} for part in path.parts):
+            continue
+        if path.name in COLLECTION_NAMES:
+            continue
+        try:
+            fm, body = parse_frontmatter(read_text(path))
+        except KnowledgeError:
+            continue
+        if fm:
+            rows.append((path, fm, body))
+    return rows
+
+
+def trace_add(sections: dict[str, list[dict[str, Any]]], bundle: Bundle, path: Path, obj: dict[str, Any], extra: dict[str, Any] | None = None) -> None:
+    object_type = str(obj.get("type") or "")
+    target_section = ""
+    if object_type == "ReviewRecord" and obj.get("approvalTaskId"):
+        target_section = "approvals"
+    for section, types in TRACE_SECTION_TYPES.items():
+        if target_section:
+            break
+        if object_type in types:
+            target_section = section
+            break
+    if not target_section:
+        return
+    row = trace_record(path, obj, extra)
+    row["path"] = rel(path, bundle.root)
+    if not any(existing.get("path") == row["path"] for existing in sections[target_section]):
+        sections[target_section].append(row)
+
+
+def value_mentions(value: Any, needle: str) -> bool:
+    if not needle:
+        return False
+    if isinstance(value, str):
+        return needle.lower() in value.lower()
+    if isinstance(value, list):
+        return any(value_mentions(item, needle) for item in value)
+    if isinstance(value, dict):
+        return any(value_mentions(item, needle) for item in value.values())
+    return False
+
+
+def empty_trace_sections() -> dict[str, list[dict[str, Any]]]:
+    sections = {section: [] for section in TRACE_SECTION_TYPES}
+    sections["inboundEvents"] = []
+    sections["intent"] = []
+    return sections
+
+
+def trace_read_model(bundle: Bundle, trace_type: str, identifier: str) -> dict[str, Any]:
+    normalized_type = trace_type.strip().lower().replace("_", "-")
+    value = identifier.strip()
+    if not value:
+        raise KnowledgeError("trace identifier is required")
+    sections = empty_trace_sections()
+    records = iter_trace_objects(bundle)
+    related_refs: set[str] = set()
+    related_task_ids: set[str] = set()
+    related_source_ids: set[str] = set()
+    related_release_ids: set[str] = set()
+    related_runner_ids: set[str] = set()
+
+    def mark_ref(ref_value: str) -> None:
+        if ref_value:
+            related_refs.add(ref_value)
+
+    if normalized_type == "feishu-message":
+        event_path = bundle.zz_dir / "feishu-message-events" / f"{slug(value)}.json"
+        if event_path.exists():
+            try:
+                event = json.loads(read_text(event_path))
+            except json.JSONDecodeError:
+                event = {"messageId": value, "status": "corrupt"}
+            sections["inboundEvents"].append(
+                {
+                    "path": rel(event_path, bundle.root),
+                    "messageId": str(event.get("messageId") or value),
+                    "status": str(event.get("status") or ""),
+                    "chatId": str(event.get("chatId") or ""),
+                    "duplicateCount": event.get("duplicateCount", 0),
+                    "lastStatus": str(event.get("lastStatus") or ""),
+                }
+            )
+            for update in event.get("statusUpdates") if isinstance(event.get("statusUpdates"), list) else []:
+                if isinstance(update, dict) and update.get("taskId"):
+                    related_task_ids.add(str(update.get("taskId")))
+            sections["intent"].append({"command": "feishu.message", "messageId": value, "status": str(event.get("status") or "")})
+        for path, obj, body in records:
+            obj_type = str(obj.get("type") or "")
+            if obj.get("feishuMessageId") == value or obj.get("sourceMessageRef") == f"feishu://message/{value}" or obj.get("sourceRef") == f"feishu://message/{value}" or value_mentions(body, f"messageId: {value}"):
+                trace_add(sections, bundle, path, obj)
+                mark_ref(rel(path, bundle.root))
+                if obj_type in {"KnowledgeTask", "ProjectTask"} and obj.get("taskId"):
+                    related_task_ids.add(str(obj.get("taskId")))
+                if obj_type == "SourceMaterial" and obj.get("sourceId"):
+                    related_source_ids.add(str(obj.get("sourceId")))
+    elif normalized_type == "task":
+        related_task_ids.add(value)
+    elif normalized_type == "material":
+        related_source_ids.add(value)
+        mark_ref(value)
+    elif normalized_type == "capability-release":
+        related_release_ids.add(value)
+        mark_ref(value)
+    elif normalized_type == "runner":
+        related_runner_ids.add(slug(value))
+    else:
+        raise KnowledgeError(f"unknown trace type: {trace_type}")
+
+    changed = True
+    while changed:
+        changed = False
+        for path, obj, body in records:
+            ref_value = rel(path, bundle.root)
+            before = (len(related_refs), len(related_task_ids), len(related_source_ids), len(related_release_ids), len(related_runner_ids))
+            matched = ref_value in related_refs
+            matched = matched or any(str(obj.get("taskId") or "").lower() == task_id.lower() for task_id in related_task_ids)
+            matched = matched or any(str(obj.get("sourceId") or "").lower() == source_id.lower() for source_id in related_source_ids)
+            matched = matched or any(str(obj.get("releaseId") or "").lower() == release_id.lower() for release_id in related_release_ids)
+            matched = matched or any(str(obj.get("runnerId") or obj.get("leaseOwner") or obj.get("assignedRunner") or "").lower() == runner_id.lower() for runner_id in related_runner_ids)
+            matched = matched or any(value_mentions(obj, ref_item) or value_mentions(body, ref_item) for ref_item in list(related_refs)[:200])
+            matched = matched or any(value_mentions(obj, task_id) or value_mentions(body, task_id) for task_id in related_task_ids)
+            matched = matched or any(value_mentions(obj, source_id) or value_mentions(body, source_id) for source_id in related_source_ids)
+            matched = matched or any(value_mentions(obj, release_id) or value_mentions(body, release_id) for release_id in related_release_ids)
+            matched = matched or any(value_mentions(obj, runner_id) or value_mentions(body, runner_id) for runner_id in related_runner_ids)
+            if not matched:
+                continue
+            trace_add(sections, bundle, path, obj)
+            related_refs.add(ref_value)
+            if obj.get("taskId"):
+                related_task_ids.add(str(obj.get("taskId")))
+            if obj.get("sourceId"):
+                related_source_ids.add(str(obj.get("sourceId")))
+            if obj.get("releaseId"):
+                related_release_ids.add(str(obj.get("releaseId")))
+            if obj.get("runnerId"):
+                related_runner_ids.add(str(obj.get("runnerId")))
+            for ref_field in ["taskRef", "resultRef", "sourceResultRef", "reviewTaskRef", "approvalTaskRef"]:
+                if obj.get(ref_field):
+                    related_refs.add(str(obj.get(ref_field)))
+            for ref_field in ["sourceMaterialRefs", "evidenceRefs", "outputRefs", "capabilityCandidateRefs", "capabilityFeedbackRefs", "releaseRefs", "publishedRefs", "notificationRefs", "reviewRefs", "approvalRefs", "usageEventRefs", "feedbackRefs", "candidateRefs"]:
+                for item in as_list(obj.get(ref_field)):
+                    related_refs.add(str(item))
+            after = (len(related_refs), len(related_task_ids), len(related_source_ids), len(related_release_ids), len(related_runner_ids))
+            changed = changed or after != before
+
+    return {
+        "apiVersion": "v0.1",
+        "kind": "TraceReadModel",
+        "generatedAt": utc_now(),
+        "traceType": normalized_type,
+        "identifier": value,
+        "summary": {key: len(items) for key, items in sections.items()},
+        **sections,
+    }
 
 
 def make_skill(
@@ -5620,6 +6545,10 @@ def infer_work_source_type(
         return "bugfix"
     if normalized_task_type in {"project_init", "project_setup", "project_management", "project_onboarding"}:
         return "project_setup"
+    if normalized_task_type in {"capability_review", "capability_approval"} or normalized_task_type.endswith("_candidate_revision"):
+        return "capability_governance"
+    if normalized_task_type in {"skill_extract", "workflow_extract", "tool_candidate", "capability_update_proposal"}:
+        return "capability_intake"
     if (normalized_task_type.startswith("knowledge_") or normalized_task_type in {"knowledge_capture", "knowledge_review", "knowledge_publish"}) and source_material_refs:
         return "knowledge_ingest"
     if "research" in normalized_task_type or research_question.strip():
@@ -8701,6 +9630,37 @@ def material_content_looks_sensitive(content: str) -> bool:
     return any(re.search(pattern, content) for pattern in token_like_patterns)
 
 
+def find_existing_source_material(bundle: Bundle, project_id: str, source_ref: str, content_hash: str) -> Path | None:
+    normalized_project = slug(project_id) if project_id else ""
+    roots = [source_material_storage_dir(bundle, normalized_project)]
+    if normalized_project:
+        roots.append(source_material_storage_dir(bundle, ""))
+    seen: set[Path] = set()
+    normalized_source_ref = source_ref.strip()
+    for root in roots:
+        if root in seen or not root.exists():
+            continue
+        seen.add(root)
+        for path in sorted(root.glob("*.md")):
+            if path.name in COLLECTION_NAMES:
+                continue
+            try:
+                record = load_object(path)
+            except KnowledgeError:
+                continue
+            if record.get("type") != "SourceMaterial":
+                continue
+            if normalized_project and str(record.get("projectId") or "") not in {normalized_project, ""}:
+                continue
+            existing_source_ref = str(record.get("sourceRef") or "").strip()
+            existing_content_hash = str(record.get("contentHash") or "").strip()
+            if normalized_source_ref and existing_source_ref == normalized_source_ref:
+                return path
+            if not normalized_source_ref and content_hash and existing_content_hash == content_hash:
+                return path
+    return None
+
+
 def create_source_material(
     bundle: Bundle,
     title: str,
@@ -8716,6 +9676,11 @@ def create_source_material(
     extraction_status: str = "registered",
     create_task_flag: bool = False,
     assignee: str = "agent.company-knowledge-core.knowledge-engineering",
+    task_work_source_type: str = "",
+    task_research_question: str = "",
+    task_source_reason: str = "",
+    task_extra_frontmatter: dict[str, Any] | None = None,
+    task_type: str = "knowledge_capture",
 ) -> dict[str, str]:
     if not title.strip() and not source_ref.strip():
         raise KnowledgeError("material title or source ref is required")
@@ -8724,20 +9689,70 @@ def create_source_material(
     material_title = title.strip() or source_ref.strip()
     material_id = unique_time_id("source")
     material_kind = infer_material_type(source_ref, material_type, material_title)
+    normalized_project_id = slug(project_id) if project_id else ""
+    if normalized_project_id:
+        project_path = bundle.root / "projects" / normalized_project_id / "project.md"
+        if not project_path.exists():
+            make_project(bundle, normalized_project_id, normalized_project_id, submitter, "")
     if material_content_looks_sensitive(content):
         raise KnowledgeError("material content appears to contain a secret; refusing to store it")
     if len(content) > MATERIAL_RAW_TEXT_MAX_CHARS and not storage_ref.strip():
         raise KnowledgeError("material content is too large for inline storage; provide storageRef")
-    path = source_material_storage_dir(bundle, project_id) / f"{material_id}.md"
     content_hash_source = "\n".join([source_ref, storage_ref, content])
     content_hash = hashlib.sha256(content_hash_source.encode("utf-8")).hexdigest()
+    existing_path = find_existing_source_material(bundle, project_id, source_ref, content_hash)
+    if existing_path is not None:
+        existing = load_object(existing_path)
+        task_ref = str(existing.get("taskRef") or "").strip()
+        task_path = bundle.root / task_ref if task_ref else None
+        if create_task_flag and (not task_ref or not task_path or not task_path.exists()):
+            task_path = create_project_task(
+                bundle,
+                f"Process source material: {existing.get('title') or material_title}",
+                project_id,
+                submitter,
+                assignee,
+                task_type,
+                "",
+                "normal",
+                "",
+                [rel(existing_path, bundle.root)],
+                [
+                    "Parse original material.",
+                    "Create evidence-backed summary.",
+                    "Create structured draft knowledge with source refs.",
+                    "Return TaskResult with evidenceRefs and knowledgeDraft.",
+                ],
+                work_source_type=task_work_source_type,
+                research_question=task_research_question,
+                source_reason=task_source_reason,
+            )
+            if task_extra_frontmatter:
+                update_frontmatter_file(task_path, task_extra_frontmatter)
+            task_ref = rel(task_path, bundle.root)
+            update_frontmatter_file(existing_path, {"taskRef": task_ref, "extractionStatus": "task_created"})
+        create_audit_log(
+            bundle,
+            submitter,
+            "material.ingest.duplicate",
+            rel(existing_path, bundle.root),
+            after=str(existing.get("status") or "draft"),
+            policy_result="idempotent",
+            details=f"sourceRef={source_ref}\ncontentHash={content_hash}\nexistingTaskRef={task_ref}",
+        )
+        append_log(bundle, f"duplicate SourceMaterial ignored {existing.get('sourceId') or existing_path.stem} project={project_id or 'none'}")
+        result = {"sourceRef": rel(existing_path, bundle.root), "sourceId": str(existing.get("sourceId") or existing_path.stem), "idempotent": True}
+        if task_ref:
+            result["taskRef"] = task_ref
+        return result
+    path = source_material_storage_dir(bundle, project_id) / f"{material_id}.md"
     frontmatter = {
         "type": "SourceMaterial",
         "title": material_title,
         "description": "Raw or referenced source material awaiting extraction and review.",
         "timestamp": utc_now(),
         "sourceId": material_id,
-        "projectId": slug(project_id) if project_id else "",
+        "projectId": normalized_project_id,
         "submitter": submitter,
         "owner": submitter,
         "status": "draft",
@@ -8791,7 +9806,7 @@ def create_source_material(
             project_id,
             submitter,
             assignee,
-            "knowledge_capture",
+            task_type,
             "",
             "normal",
             "",
@@ -8802,7 +9817,12 @@ def create_source_material(
                 "Create structured draft knowledge with source refs.",
                 "Return TaskResult with evidenceRefs and knowledgeDraft.",
             ],
+            work_source_type=task_work_source_type,
+            research_question=task_research_question,
+            source_reason=task_source_reason,
         )
+        if task_extra_frontmatter:
+            update_frontmatter_file(task_path, task_extra_frontmatter)
         update_frontmatter_file(path, {"taskRef": rel(task_path, bundle.root), "extractionStatus": "task_created"})
     append_log(bundle, f"ingested SourceMaterial {material_id} project={project_id or 'none'}")
     result = {"sourceRef": rel(path, bundle.root), "sourceId": material_id}
@@ -11995,6 +13015,8 @@ def finish_project_task(
     next_suggested_task: str = "",
     blockers: list[str] | None = None,
     approval_request: dict[str, Any] | None = None,
+    capability_candidates: list[dict[str, Any]] | None = None,
+    capability_feedback: list[dict[str, Any]] | None = None,
 ) -> Path:
     if not summary.strip():
         raise KnowledgeError("task summary is required")
@@ -12136,6 +13158,8 @@ def finish_project_task(
         "risks": open_risks or [],
         "blockers": blockers or [],
         "approvalRequest": normalized_approval_request,
+        "capabilityCandidateRefs": [],
+        "capabilityFeedbackRefs": [],
         "operatingRuleRefs": operating_rule_refs,
         "handoffContract": handoff_contract,
         "commonRulesEvaluation": common_rules_evaluation,
@@ -12237,6 +13261,54 @@ def finish_project_task(
     )
     write_text(result_path, render_doc(frontmatter, body))
     update_index(bundle.root / "task-results" / "index.md", str(frontmatter["title"]), rel(result_path, bundle.root))
+    capability_candidate_refs: list[str] = []
+    for candidate in capability_candidates or []:
+        if not isinstance(candidate, dict):
+            raise KnowledgeError("capability candidate must be an object")
+        candidate_result = create_capability_candidate(
+            bundle,
+            title=str(candidate.get("title") or candidate.get("name") or ""),
+            candidate_type=str(candidate.get("candidateType") or candidate.get("type") or "skill"),
+            owner=str(candidate.get("owner") or executor_agent or runner_id or task_fm.get("assignee") or "system.capability-control"),
+            summary=str(candidate.get("summary") or candidate.get("description") or summary),
+            source_material_refs=as_list(candidate.get("sourceMaterialRefs")) or source_refs,
+            source_task_id=str(task_fm.get("taskId", task_id)),
+            source_result_ref=rel(result_path, bundle.root),
+            target_agents=as_list(candidate.get("targetAgents")),
+            target_projects=as_list(candidate.get("targetProjects")),
+            risk_level=str(candidate.get("riskLevel") or candidate.get("risk") or "L2"),
+            evidence_refs=as_list(candidate.get("evidenceRefs")) or evidence_refs or [],
+            candidate_id=str(candidate.get("candidateId") or ""),
+            review_required=bool(candidate.get("reviewRequired", True)),
+            approval_required=bool(candidate.get("approvalRequired", False)),
+            status=str(candidate.get("status") or "pending_review"),
+        )
+        capability_candidate_refs = append_unique(capability_candidate_refs, str(candidate_result["candidateRef"]))
+    capability_feedback_refs: list[str] = []
+    for feedback_item in capability_feedback or []:
+        if not isinstance(feedback_item, dict):
+            raise KnowledgeError("capability feedback must be an object")
+        feedback_result = create_capability_feedback(
+            bundle,
+            capability_ref=str(feedback_item.get("capabilityRef") or feedback_item.get("candidateRef") or feedback_item.get("skillRef") or ""),
+            actor=str(feedback_item.get("actor") or executor_agent or runner_id or task_fm.get("assignee") or "system.capability-control"),
+            content=str(feedback_item.get("content") or feedback_item.get("summary") or ""),
+            rating=str(feedback_item.get("rating") or ""),
+            feedback_type=str(feedback_item.get("feedbackType") or feedback_item.get("type") or ""),
+            task_id=str(task_fm.get("taskId", task_id)),
+            result_ref=rel(result_path, bundle.root),
+            evidence_refs=as_list(feedback_item.get("evidenceRefs")) or evidence_refs or [],
+        )
+        capability_feedback_refs = append_unique(capability_feedback_refs, str(feedback_result["feedbackRef"]))
+    if capability_candidate_refs or capability_feedback_refs:
+        update_frontmatter_file(
+            result_path,
+            {
+                "capabilityCandidateRefs": capability_candidate_refs,
+                "capabilityFeedbackRefs": capability_feedback_refs,
+                "updatedAt": utc_now(),
+            },
+        )
     if frontmatter["workSourceType"] == "bugfix":
         update_defects_after_bugfix_result(
             bundle,
@@ -12465,6 +13537,7 @@ def list_project_tasks(
     assignee: str = "",
     project_id: str = "",
     task_type: str = "",
+    assigned_runner: str = "",
 ) -> list[dict[str, Any]]:
     tasks: list[dict[str, Any]] = []
     roots = [bundle.root / "tasks"]
@@ -12487,6 +13560,8 @@ def list_project_tasks(
             if project_id and fm.get("projectId") != slug(project_id):
                 continue
             if task_type and fm.get("taskType") != task_type:
+                continue
+            if assigned_runner and fm.get("assignedRunner") != assigned_runner:
                 continue
             fm["path"] = rel(path, bundle.root)
             tasks.append(fm)
@@ -16695,6 +17770,8 @@ def pm_delivery_gate_enabled(record: dict[str, Any]) -> bool:
     gate = record.get("pmDeliveryGate")
     if isinstance(gate, dict) and gate.get("enforce") is True:
         return True
+    if pm_closeout_scope(record) == "process_status_only":
+        return False
     return record.get("pmCanClose") is True
 
 
@@ -16840,7 +17917,7 @@ def validate_pm_action_runtime(records: list[tuple[str, dict[str, Any]]]) -> lis
         guardrail_reason = str(record.get("guardrailReason") or "").strip()
         if not any([next_action, blocker, terminal_decision]):
             problems.append(f"{rel_path}: ProjectManagerAction exit requires nextAction, blocker, or terminalDecision")
-        if strict_runtime and intent in PM_ACTION_OUTCOME_REQUIRED_INTENTS:
+        if strict_runtime and intent in PM_ACTION_OUTCOME_REQUIRED_INTENTS and pm_closeout_scope(record) != "process_status_only":
             if not outcome_slice_ref:
                 problems.append(f"{rel_path}: ProjectManagerAction intent {intent} requires outcomeSliceRef")
             elif outcome_slice_ref not in outcome_refs:
@@ -16870,7 +17947,7 @@ def validate_pm_action_runtime(records: list[tuple[str, dict[str, Any]]]) -> lis
         if exit_state == "closed_with_gate_passed":
             if not terminal_decision:
                 problems.append(f"{rel_path}: closed_with_gate_passed PM action requires terminalDecision")
-            if not pm_delivery_gate_enabled(record):
+            if not pm_delivery_gate_enabled(record) and pm_closeout_scope(record) != "process_status_only":
                 problems.append(f"{rel_path}: closed_with_gate_passed PM action requires pmDeliveryGate.enforce true")
         for record_ref in records_written:
             record_ref = str(record_ref).strip()
@@ -17061,7 +18138,7 @@ def validate_pm_delivery_gates(records: list[tuple[str, dict[str, Any]]]) -> lis
         task_type = str(linked_task.get("taskType") or result.get("taskType") or "")
         is_pm_result = str(result.get("executorAgent") or "") == "agent.company.project-manager"
         is_closeout = task_type in PM_DELIVERY_CLOSEOUT_TASK_TYPES or "closeout" in task_type or result.get("pmCanClose") is True
-        if is_pm_result and is_closeout and not pm_delivery_gate_enabled(result):
+        if is_pm_result and is_closeout and pm_closeout_scope(result) != "process_status_only" and not pm_delivery_gate_enabled(result):
             problems.append(f"{result_path}: PM closeout TaskResult requires pmDeliveryGate.enforce true")
     for rel_path, record in records:
         linked_task = tasks_by_id.get(str(record.get("taskId") or ""), {})
@@ -17746,6 +18823,38 @@ def is_retrieval_allowed(path: Path, fm: dict[str, Any]) -> bool:
     return True
 
 
+OFFICIAL_KNOWLEDGE_STATUSES = {"verified", "approved", "active"}
+REVIEWABLE_REFERENCE_STATUSES = {"draft", "observed", "testing", "pending_review", "submitted", "reviewing"}
+STALE_REFERENCE_STATUSES = {"stale_candidate", "stale", "deprecated", "superseded"}
+
+
+def retrieval_usage_classification(status: str) -> dict[str, str]:
+    normalized = str(status or "").strip()
+    if normalized in OFFICIAL_KNOWLEDGE_STATUSES:
+        return {
+            "truthStatus": "official_truth",
+            "usagePolicy": "usable_as_reusable_truth_with_citation",
+            "statusLabel": normalized,
+        }
+    if normalized in REVIEWABLE_REFERENCE_STATUSES:
+        return {
+            "truthStatus": "pending_reference",
+            "usagePolicy": "reference_only_not_verified_truth",
+            "statusLabel": normalized or "unreviewed",
+        }
+    if normalized in STALE_REFERENCE_STATUSES:
+        return {
+            "truthStatus": "stale_reference",
+            "usagePolicy": "show_only_with_stale_warning_and_review_before_use",
+            "statusLabel": normalized,
+        }
+    return {
+        "truthStatus": "unverified_or_nonreusable",
+        "usagePolicy": "do_not_present_as_reusable_truth",
+        "statusLabel": normalized or "unknown",
+    }
+
+
 def tokenize(text: str) -> list[str]:
     return re.findall(r"[a-zA-Z0-9_\-.]+|[\u4e00-\u9fff]", text.lower())
 
@@ -17998,6 +19107,7 @@ def search_retrieval(bundle: Bundle, query: str, project_id: str = "", scopes: l
         item = dict(row)
         item.pop("vector", None)
         item["score"] = score
+        item.update(retrieval_usage_classification(str(row.get("status") or "")))
         scored.append(item)
     scored.sort(key=lambda item: (-item["score"], item["path"], item["chunkId"]))
     return scored[:limit]
@@ -18242,6 +19352,74 @@ def improvement_reuse_scope(agent_id: str, project_id: str) -> str:
     return "project"
 
 
+def agent_improvement_target_skill_ref(bundle: Bundle, agent_id: str) -> str:
+    if not agent_id:
+        return ""
+    role_key = agent_id.split(".")[-1]
+    candidates = [
+        bundle.root / "agents" / f"{slug(agent_id)}.md",
+        bundle.root / "docs" / "agent-team" / f"{role_key}-agent-role-and-skill-pack.md",
+        bundle.root / "docs" / "agent-team" / f"{role_key}-agent-skill-pack.md",
+    ]
+    for path in candidates:
+        if path.exists():
+            return rel(path, bundle.root)
+    return agent_ref_for_id(bundle, agent_id)
+
+
+def agent_improvement_lifecycle_plan(
+    bundle: Bundle,
+    agent_id: str,
+    project_id: str,
+    reuse_scope: str,
+    eval_case_refs: list[str],
+) -> dict[str, Any]:
+    target_skill_ref = agent_improvement_target_skill_ref(bundle, agent_id)
+    guide_refs = ["docs/agent-team/company-agent-team-operating-guide.md"] if reuse_scope == "company" else []
+    return {
+        "skillUpdate": {
+            "status": "draft_isolated",
+            "targetSkillRef": target_skill_ref,
+            "changeBranchRequired": True,
+            "allowedBranches": ["feedback/*", "codex/*"],
+            "promotionAllowed": False,
+        },
+        "versionBump": {
+            "status": "blocked_until_eval_passes",
+            "required": True,
+            "fromVersion": "current",
+            "toVersion": "next_patch",
+            "promotionAllowed": False,
+        },
+        "guideUpdate": {
+            "status": "draft_required" if guide_refs else "not_required",
+            "required": bool(guide_refs),
+            "guideRefs": guide_refs,
+        },
+        "rolloutRecord": {
+            "status": "blocked_until_eval_passes",
+            "strategy": "controlled",
+            "initialAudience": project_id or "company-knowledge-core",
+            "successMetrics": ["eval pass", "no repeated failure for same reasons", "PM acceptance"],
+            "promotionAllowed": False,
+        },
+        "rollbackSafeguards": {
+            "status": "required",
+            "rollbackAllowed": True,
+            "rollbackTriggers": ["eval regression", "PM rejection", "repeated failure", "human safety or policy concern"],
+            "restoreTarget": target_skill_ref,
+        },
+        "promotionGate": {
+            "status": "waiting_eval",
+            "evalCaseRefs": eval_case_refs,
+            "evalRunRefs": [],
+            "requiresAllEvalCasesPass": True,
+            "blocksSkillMutation": True,
+            "blocksRollout": True,
+        },
+    }
+
+
 def create_agent_improvement_eval_case(
     bundle: Bundle,
     task: dict[str, Any],
@@ -18267,12 +19445,15 @@ def create_agent_improvement_eval_case(
         "sourceResultRef": rel(result_path, bundle.root),
         "taskId": task_id,
         "projectId": str(task.get("projectId") or result_fm.get("projectId") or ""),
+        "improvementLifecycleRole": "regression_guard_before_skill_update",
         "requires": [
             "summary",
             "evidence or artifact refs",
             "qualityEvaluation",
             "handoff or terminal reason",
             "next action",
+            "skill update remains isolated until this eval passes",
+            "rollout and rollback plan are recorded before promotion",
         ],
         "expected": expected,
     }
@@ -18295,6 +19476,11 @@ def create_agent_improvement_eval_case(
             "## Usage",
             "",
             "This EvalCase is a draft regression guard. The responsible Agent or Skill maintainer should refine it, run it against the improved workflow/skill, and only promote it after review.",
+            "",
+            "## Promotion Gate",
+            "",
+            "- Skill changes, version bumps, guide updates, and rollout records stay isolated until this EvalCase passes.",
+            "- A failed EvalRun blocks promotion and keeps rollback safeguards active.",
         ]
     )
     write_text(path, render_doc(frontmatter, body))
@@ -18323,10 +19509,12 @@ def create_agent_improvement_proposal(
     path = agent_improvement_storage_dir(bundle) / f"{proposal_id}.md"
     reuse_scope = improvement_reuse_scope(agent_id, project_id)
     recommended_actions = [
-        "Update the responsible Agent skill pack or workflow checklist when the failure is repeatable.",
-        "Keep the EvalCase as a regression guard before closing the improvement.",
+        "Draft the responsible Agent skill or workflow checklist update on feedback/* or codex/* only.",
+        "Run the linked EvalCase before any SkillAsset, guide, version, or rollout promotion.",
+        "Record a version bump, controlled rollout, metrics check, and rollback plan before closing the improvement.",
         "If the change affects company-level roles, skills, workflow, scheduler, Agent Ring, or knowledge policy, update the company Agent Team guide.",
     ]
+    lifecycle_plan = agent_improvement_lifecycle_plan(bundle, agent_id, project_id, reuse_scope, eval_case_refs)
     frontmatter = {
         "type": "AgentImprovementProposal",
         "title": f"Improve {agent_id or 'agent'} after {task_id}",
@@ -18344,6 +19532,12 @@ def create_agent_improvement_proposal(
         "reuseScope": reuse_scope,
         "evalCaseRefs": eval_case_refs,
         "recommendedActions": recommended_actions,
+        "skillUpdate": lifecycle_plan["skillUpdate"],
+        "versionBump": lifecycle_plan["versionBump"],
+        "guideUpdate": lifecycle_plan["guideUpdate"],
+        "rolloutRecord": lifecycle_plan["rolloutRecord"],
+        "rollbackSafeguards": lifecycle_plan["rollbackSafeguards"],
+        "promotionGate": lifecycle_plan["promotionGate"],
         "reviewOwner": project_manager_for_task(task),
     }
     body = "\n".join(
@@ -18369,6 +19563,13 @@ def create_agent_improvement_proposal(
             "## Recommended Actions",
             "",
             "\n".join(f"- {item}" for item in recommended_actions),
+            "",
+            "## Promotion Gate",
+            "",
+            "- Skill update status: draft_isolated.",
+            "- Version bump status: blocked_until_eval_passes.",
+            "- Rollout status: blocked_until_eval_passes.",
+            "- Rollback safeguards: required before rollout.",
             "",
             "## Reuse Policy",
             "",
@@ -18418,6 +19619,7 @@ def maybe_record_agent_improvement(
     eval_ref = rel(eval_path, bundle.root)
     proposal_path = create_agent_improvement_proposal(bundle, task, result_path, result_fm, reasons, agent_id, [eval_ref], trigger)
     proposal_ref = rel(proposal_path, bundle.root)
+    update_frontmatter_file(eval_path, {"proposalRef": proposal_ref, "updatedAt": utc_now()})
     improvement_refs = existing_improvement_refs
     improvement_refs = append_unique(improvement_refs, proposal_ref)
     eval_case_refs = existing_eval_case_refs
@@ -18618,6 +19820,60 @@ def evaluate_actual(case: dict[str, Any], actual: str) -> tuple[bool, list[str]]
     return not missing, missing
 
 
+def update_agent_improvement_gate_from_eval_run(bundle: Bundle, case: dict[str, Any], eval_run_path: Path, passed: bool) -> None:
+    proposal_ref = str(case.get("proposalRef") or "")
+    if not proposal_ref:
+        return
+    proposal_path = bundle.root / proposal_ref
+    if not proposal_path.exists():
+        return
+    proposal = load_object(proposal_path)
+    eval_run_ref = rel(eval_run_path, bundle.root)
+    promotion_gate = dict(proposal.get("promotionGate") or {})
+    promotion_gate["evalRunRefs"] = append_unique(as_list(promotion_gate.get("evalRunRefs")), eval_run_ref)
+    skill_update = dict(proposal.get("skillUpdate") or {})
+    version_bump = dict(proposal.get("versionBump") or {})
+    rollout_record = dict(proposal.get("rolloutRecord") or {})
+    rollback_safeguards = dict(proposal.get("rollbackSafeguards") or {})
+    if passed:
+        promotion_gate.update({"status": "eval_passed_ready_for_review", "blocksSkillMutation": False, "blocksRollout": False})
+        skill_update.update({"status": "eval_passed_ready_for_review", "promotionAllowed": True})
+        version_bump.update({"status": "ready_for_version_bump", "promotionAllowed": True})
+        rollout_record.update({"status": "ready_for_controlled_rollout", "promotionAllowed": True})
+        rollback_safeguards.update({"status": "ready", "lastPassingEvalRunRef": eval_run_ref})
+        proposal_status = "reviewing"
+        decision = "eval_passed"
+    else:
+        promotion_gate.update({"status": "blocked_eval_failed", "blocksSkillMutation": True, "blocksRollout": True})
+        skill_update.update({"status": "blocked_eval_failed", "promotionAllowed": False})
+        version_bump.update({"status": "blocked_eval_failed", "promotionAllowed": False})
+        rollout_record.update({"status": "blocked_eval_failed", "promotionAllowed": False})
+        rollback_safeguards.update({"status": "active", "lastFailingEvalRunRef": eval_run_ref})
+        proposal_status = "blocked"
+        decision = "eval_failed"
+    update_frontmatter_file(
+        proposal_path,
+        {
+            "status": proposal_status,
+            "skillUpdate": skill_update,
+            "versionBump": version_bump,
+            "rolloutRecord": rollout_record,
+            "rollbackSafeguards": rollback_safeguards,
+            "promotionGate": promotion_gate,
+            "updatedAt": utc_now(),
+        },
+    )
+    create_audit_log(
+        bundle,
+        str(proposal.get("owner") or "system.scheduler"),
+        "agent.improvement.promotion_gate.update",
+        proposal_ref,
+        after=proposal_status,
+        policy_result=decision,
+        details=f"evalRunRef={eval_run_ref}",
+    )
+
+
 def run_eval_case(bundle: Bundle, eval_id: str, actual: str, runner: str, severity: str = "high") -> Path:
     eval_path = bundle.root / "knowledge" / "evals" / f"{slug(eval_id)}.md"
     if not eval_path.exists():
@@ -18656,6 +19912,7 @@ def run_eval_case(bundle: Bundle, eval_id: str, actual: str, runner: str, severi
     write_text(path, render_doc(frontmatter, body))
     update_index(bundle.root / "knowledge" / "index.md", run_id, f"eval-runs/{run_id}.md")
     append_log(bundle, f"created EvalRun {run_id} result={'pass' if passed else 'fail'}")
+    update_agent_improvement_gate_from_eval_run(bundle, case, path, passed)
     if not passed:
         gap_path = bundle.root / "knowledge" / "engineering" / f"eval-failure-{run_id}.md"
         gap_fm = {

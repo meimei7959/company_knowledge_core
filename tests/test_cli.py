@@ -3,6 +3,7 @@ import threading
 import unittest
 import urllib.request
 import urllib.error
+import fcntl
 import json
 import contextlib
 import io
@@ -15,9 +16,10 @@ from dataclasses import replace
 from pathlib import Path
 
 import zhenzhi_knowledge.feishu as feishu_module
+import zhenzhi_knowledge.feishu_material_processor as feishu_material_processor_module
 import zhenzhi_knowledge.core as core_module
 from zhenzhi_knowledge.cli import main
-from zhenzhi_knowledge.core import Bundle, KnowledgeError, accept_project_task_result, append_log, apply_knowledge_approval_result, apply_knowledge_review_result, claim_project_task, create_audit_log, create_bugfix_task, create_defect, create_discussion_session, create_operations_feedback, create_outcome_slice, create_project_launch, create_project_manager_action, create_project_task, create_receiver_review, create_runner_invitation, create_task_notification, create_tool_registration_request, create_workbench_project, finalize_discussion_session, finish_project_task, heartbeat_agent_runner, list_notifications, list_review_queue, load_object, mark_notification_delivery, project_task_context_payload, publish_knowledge_bundle, pull_project_task, register_workbench_tool, schedule_project_tasks, search_index, search_retrieval, set_project_task_status, submit_discussion_turn, submit_runner_registration, update_frontmatter_file, validate_bundle, workbench_project_execution_read_model
+from zhenzhi_knowledge.core import Bundle, KnowledgeError, accept_project_task_result, append_log, apply_knowledge_approval_result, apply_knowledge_review_result, claim_project_task, create_audit_log, create_bugfix_task, create_defect, create_discussion_session, create_operations_feedback, create_outcome_slice, create_project_launch, create_project_manager_action, create_project_task, create_receiver_review, create_runner_invitation, create_task_notification, create_tool_registration_request, create_workbench_project, finalize_discussion_session, finish_project_task, heartbeat_agent_runner, list_notifications, list_project_tasks, list_review_queue, load_object, make_agent, make_project, mark_notification_delivery, project_task_context_payload, publish_knowledge_bundle, pull_project_task, register_workbench_tool, schedule_project_tasks, search_index, search_retrieval, set_project_task_status, submit_discussion_turn, submit_runner_registration, update_frontmatter_file, validate_bundle, workbench_project_execution_read_model
 from zhenzhi_knowledge.feishu import save_approval_request
 from zhenzhi_knowledge.operational_store import backup_readiness, compact_error, ensure_operational_schema, live_readiness_report, operational_store_status, redact_url, rollback_operational_schema
 from zhenzhi_knowledge.server import KnowledgeHTTPServer
@@ -239,6 +241,28 @@ class CliTests(unittest.TestCase):
             log_lines = (root / "log.md").read_text(encoding="utf-8").splitlines()
             self.assertTrue(log_lines[-1].endswith("handoff=agent.company.test"))
             self.assertTrue(all(line == line.rstrip(" \t") for line in log_lines))
+
+    def test_validate_bundle_accepts_migrated_software_copyright_records(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            product = root / "projects" / "software-copyright" / "products" / "picpeek.md"
+            product.parent.mkdir(parents=True, exist_ok=True)
+            product.write_text(
+                """---
+type: ProductCopyrightCase
+title: PicPeek soft copyright case
+status: migrated
+owner: agent.company.knowledge-engineering
+---
+
+Historical migrated software copyright material.
+""",
+                encoding="utf-8",
+            )
+
+            problems = validate_bundle(Bundle(root))
+            self.assertFalse([problem for problem in problems if "picpeek.md" in problem])
 
     def test_task_source_traceability_validation_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -579,6 +603,68 @@ evidenceRefs:
             )
             self.assertFalse([problem for problem in validate_bundle(bundle) if "pmDeliveryGate" in problem])
 
+    def test_pm_process_status_closeout_does_not_require_delivery_gate_or_outcome_slice(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            self.assertEqual(main(["--root", str(root), "project", "register", "--project-id", "core", "--name", "Core", "--owner", "meimei"]), 0)
+            closeout_task = create_project_task(
+                bundle,
+                "PM process status closeout",
+                "core",
+                "agent.company.project-manager",
+                "agent.company.project-manager",
+                task_type="project_management",
+                task_id="PM-PROCESS-CLOSEOUT",
+                work_source_type="maintenance",
+                source_reason="Close process-only triage without product delivery gate.",
+            )
+            result_path = finish_project_task(
+                bundle,
+                "PM-PROCESS-CLOSEOUT",
+                "done",
+                "Closed process-only PM triage.",
+                output_refs=["task-results/tr-process.md"],
+                evidence_refs=["audit/process.md"],
+                tests_or_checks=["process evidence checked"],
+                executor_agent="agent.company.project-manager",
+            )
+            update_frontmatter_file(
+                result_path,
+                {
+                    "pmCanClose": True,
+                    "pmCloseoutScope": "process_status_only",
+                    "pmDeliveryGate": {"enforce": False, "requirementRefs": [], "requireProductAcceptance": False},
+                    "updatedAt": "2026-06-28T00:00:00Z",
+                },
+            )
+            action = create_project_manager_action(
+                bundle,
+                "core",
+                "agent.company.project-manager",
+                "closeout",
+                "pending",
+                "close_with_task_result",
+                "closed_with_gate_passed",
+                "Process-only PM closeout.",
+                task_id="PM-PROCESS-CLOSEOUT",
+                records_written=[str(result_path.relative_to(root))],
+                evidence_refs=["audit/process.md"],
+                terminal_decision="process_status_only_closeout",
+                cost_summary="One bounded PM process closeout; no product delivery scope.",
+            )
+            update_frontmatter_file(
+                root / action["actionRef"],
+                {
+                    "pmCloseoutScope": "process_status_only",
+                    "pmDeliveryGate": {"enforce": False, "requirementRefs": [], "requireProductAcceptance": False},
+                    "updatedAt": "2026-06-28T00:00:00Z",
+                },
+            )
+            problems = validate_bundle(bundle)
+            self.assertFalse([problem for problem in problems if "pmDeliveryGate" in problem or "outcomeSliceRef" in problem])
+
     def test_pm_action_runtime_records_and_validates_state_transition(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -821,6 +907,339 @@ evidenceRefs:
             defect_fm = load_object(defect)
             self.assertEqual("fixed", defect_fm["status"])
             self.assertIn(str(result.relative_to(root)), defect_fm["regressionEvidenceRefs"])
+
+    def test_enterprise_agent_capability_control_plane_from_task_result(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            task = create_project_task(
+                bundle,
+                "Extract reusable webpage research skill",
+                "company-knowledge-core",
+                "agent.company.project-manager",
+                "agent.company-knowledge-core.knowledge-engineering",
+                task_type="skill_extract",
+                task_id="KT-CAPABILITY-001",
+                source_material_refs=["sources/webpage.md"],
+                expected_output=["Create a reviewable Agent skill candidate."],
+            )
+            result = finish_project_task(
+                bundle,
+                str(load_object(task)["taskId"]),
+                "done",
+                "Extracted a reusable webpage research workflow for enterprise Agents.",
+                output_refs=["artifacts/webpage-research-skill.md"],
+                evidence_refs=["sources/webpage.md"],
+                tests_or_checks=["candidate structure checked"],
+                executor_agent="agent.company-knowledge-core.knowledge-engineering",
+                capability_candidates=[
+                    {
+                        "candidateId": "webpage-research-skill",
+                        "title": "Webpage research to Agent Skill",
+                        "candidateType": "skill",
+                        "summary": "Reusable flow for turning webpages into reviewed Agent skills.",
+                        "targetAgents": ["agent.company-knowledge-core.knowledge-engineering"],
+                        "riskLevel": "L2",
+                    }
+                ],
+            )
+
+            result_fm = load_object(result)
+            self.assertEqual(["capabilities/candidates/webpage-research-skill.md"], result_fm["capabilityCandidateRefs"])
+            candidate = load_object(root / result_fm["capabilityCandidateRefs"][0])
+            self.assertEqual("CapabilityCandidate", candidate["type"])
+            self.assertEqual("skill", candidate["candidateType"])
+            self.assertEqual("capability_review", candidate["reviewRoute"])
+            self.assertEqual("pending_review", candidate["status"])
+            self.assertEqual(str(result.relative_to(root)), candidate["sourceResultRef"])
+
+            release = core_module.create_capability_release(
+                bundle,
+                "Enterprise Agent research skills 0.1",
+                "agent.company-knowledge-core.knowledge-engineering",
+                result_fm["capabilityCandidateRefs"],
+                summary="Draft release for local Runner pull after capability review.",
+            )
+            candidate_after_release = load_object(root / result_fm["capabilityCandidateRefs"][0])
+            self.assertEqual([release["releaseRef"]], candidate_after_release["releaseRefs"])
+
+            usage = core_module.record_skill_usage_event(
+                bundle,
+                result_fm["capabilityCandidateRefs"][0],
+                "runner.local.codex",
+                "agent.company-knowledge-core.knowledge-engineering",
+                task_id="KT-CAPABILITY-001",
+                result_ref=str(result.relative_to(root)),
+                outcome="helped",
+                summary="Runner used the candidate while processing a webpage.",
+            )
+            feedback = core_module.create_capability_feedback(
+                bundle,
+                result_fm["capabilityCandidateRefs"][0],
+                "agent.company.project-manager",
+                "Useful enough to keep in the next release review.",
+                rating="good",
+                result_ref=str(result.relative_to(root)),
+            )
+            control = core_module.capability_control_read_model(bundle)
+            self.assertEqual(1, control["summary"]["candidateCount"])
+            self.assertEqual(1, control["summary"]["releaseCount"])
+            self.assertEqual(1, control["summary"]["usageEventCount"])
+            self.assertEqual(1, control["summary"]["feedbackCount"])
+            self.assertEqual(usage["usageEventRef"], control["usageEvents"][0]["path"])
+            self.assertEqual(feedback["feedbackRef"], control["feedback"][0]["path"])
+            actions = audit_actions(root)
+            self.assertIn("capability.candidate.create", actions)
+            self.assertIn("capability.release.create", actions)
+            self.assertIn("capability.usage.record", actions)
+            self.assertIn("capability.feedback.ingest", actions)
+
+    def test_enterprise_agent_capability_review_approval_pull_and_feishu_intake(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            settings = minimal_feishu_settings()
+
+            reply = feishu_module.submit_material_capture_card(
+                bundle,
+                {"messageId": "om-capability", "openId": "ou_user", "userId": "user_1"},
+                settings,
+                {
+                    "scope": "common",
+                    "title": "Agent research workflow",
+                    "content": "A reusable webpage research method should become an Agent Skill.",
+                    "sourceRef": "https://example.com/research",
+                    "processingAction": "skill_extract",
+                },
+            )
+            self.assertIn("企业 Agent 能力", reply)
+            self.assertIn("skill_extract", reply)
+            source_files = [path for path in (root / "projects" / "company-knowledge-core" / "sources").glob("*.md") if path.name != "index.md"]
+            self.assertEqual(1, len(source_files))
+            source = load_object(source_files[0])
+            task = load_object(root / source["taskRef"])
+            self.assertEqual("skill_extract", task["taskType"])
+            self.assertEqual("capability_intake", task["workSourceType"])
+            self.assertEqual("skill_extract", task["capabilityProcessingAction"])
+            self.assertTrue(any("capabilityCandidates" in item for item in task["expectedOutput"]))
+
+            result = finish_project_task(
+                bundle,
+                str(task["taskId"]),
+                "done",
+                "Created reviewed skill candidate from Feishu material.",
+                evidence_refs=[str(source_files[0].relative_to(root))],
+                tests_or_checks=["candidate JSON checked"],
+                executor_agent="agent.company-knowledge-core.knowledge-engineering",
+                capability_candidates=[
+                    {
+                        "candidateId": "feishu-webpage-research-skill",
+                        "title": "Feishu webpage research Skill",
+                        "candidateType": "skill",
+                        "summary": "Reusable Agent skill extracted from Feishu material.",
+                        "targetAgents": ["agent.company-knowledge-core.knowledge-engineering"],
+                        "riskLevel": "L2",
+                    }
+                ],
+            )
+            candidate_ref = load_object(result)["capabilityCandidateRefs"][0]
+            review_task = core_module.create_capability_review_task(bundle, candidate_ref, requester="ou_user")
+            review = core_module.apply_capability_review_result(
+                bundle,
+                review_task["taskId"],
+                "needs_human_approval",
+                "agent.core.capability-review",
+                "Structure is acceptable; release still requires human approval.",
+                [candidate_ref],
+            )
+            self.assertEqual("needs_human_approval", review["outcome"])
+            self.assertEqual("waiting_acceptance", load_object(root / candidate_ref)["status"])
+            release = core_module.create_capability_release(
+                bundle,
+                "Feishu research skill release",
+                "agent.company-knowledge-core.knowledge-engineering",
+                [candidate_ref],
+                status="draft",
+            )
+            draft_package = core_module.runner_capability_pull(bundle, runner_id="runner.local.codex", agent_id="agent.company-knowledge-core.knowledge-engineering")
+            self.assertEqual([], draft_package["releases"])
+            self.assertEqual("nothing_to_install", draft_package["installStatus"])
+            approval_task = load_object(root / review["followupTaskRefs"][0])
+            approval = core_module.apply_capability_approval_result(
+                bundle,
+                str(approval_task["taskId"]),
+                "approved",
+                "meimei",
+                "Approved for controlled release.",
+                [candidate_ref],
+                [release["releaseRef"]],
+            )
+            self.assertEqual("approved", approval["outcome"])
+            self.assertEqual("released", load_object(root / release["releaseRef"])["status"])
+            package = core_module.runner_capability_pull(bundle, runner_id="runner.local.codex", agent_id="agent.company-knowledge-core.knowledge-engineering")
+            self.assertEqual("RunnerCapabilityPackage", package["kind"])
+            self.assertEqual([release["releaseRef"]], [item["path"] for item in package["releases"]])
+            self.assertEqual("released_only", package["policy"]["releaseDefault"])
+            self.assertEqual("synced", package["syncStatus"])
+            usage = core_module.record_skill_usage_event(
+                bundle,
+                candidate_ref,
+                "runner.local.codex",
+                "agent.company-knowledge-core.knowledge-engineering",
+                task_id=str(task["taskId"]),
+                result_ref=str(result.relative_to(root)),
+                release_ref=release["releaseRef"],
+                outcome="helped",
+                summary="Runner synced and used approved release.",
+            )
+            usage_fm = load_object(root / usage["usageEventRef"])
+            self.assertEqual(release["releaseRef"], usage_fm["releaseRef"])
+            self.assertEqual(str(task["taskId"]), usage_fm["taskId"])
+
+            high_risk = core_module.create_capability_candidate(
+                bundle,
+                "Tool candidate needs approval",
+                candidate_type="tool",
+                owner="agent.company-knowledge-core.knowledge-engineering",
+                summary="High risk tool candidate.",
+                risk_level="L4",
+                approval_required=True,
+            )
+            high_review_task = core_module.create_capability_review_task(bundle, high_risk["candidateRef"], requester="ou_user")
+            high_review = core_module.apply_capability_review_result(
+                bundle,
+                high_review_task["taskId"],
+                "needs_human_approval",
+                "agent.core.capability-review",
+                "Tool access changes require human approval.",
+                [high_risk["candidateRef"]],
+            )
+            self.assertTrue(high_review["followupTaskRefs"])
+            approval_task = load_object(root / high_review["followupTaskRefs"][0])
+            approval = core_module.apply_capability_approval_result(
+                bundle,
+                str(approval_task["taskId"]),
+                "approved",
+                "meimei",
+                "Approved for controlled release.",
+                [high_risk["candidateRef"]],
+            )
+            self.assertEqual("approved", approval["outcome"])
+            self.assertEqual("approved", load_object(root / high_risk["candidateRef"])["status"])
+
+    def test_agent_control_plane_trace_cli_and_release_boundaries(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            settings = minimal_feishu_settings()
+            incoming = {
+                "messageId": "om_trace_capability",
+                "chatId": "oc_trace",
+                "chatType": "group",
+                "text": "沉淀一个 workflow，可变成 Agent skill。",
+                "openId": "ou_trace",
+                "userId": "u_trace",
+            }
+            feishu_module.claim_feishu_message_event(bundle, incoming)
+            reply = feishu_module.submit_material_capture_card(
+                bundle,
+                incoming,
+                settings,
+                {
+                    "scope": "common",
+                    "title": "Traceable Agent workflow",
+                    "content": incoming["text"],
+                    "sourceRef": "feishu://message/om_trace_capability",
+                    "processingAction": "skill_extract",
+                },
+            )
+            self.assertIn("任务编号：", reply)
+            feishu_module.complete_feishu_message_event(bundle, incoming, reply, True, "")
+            source = next(path for path in (root / "projects" / "company-knowledge-core" / "sources").glob("*.md") if path.name != "index.md")
+            task = load_object(root / load_object(source)["taskRef"])
+            result = finish_project_task(
+                bundle,
+                str(task["taskId"]),
+                "done",
+                "Traceable workflow candidate.",
+                evidence_refs=[str(source.relative_to(root))],
+                tests_or_checks=["trace checked"],
+                executor_agent="agent.company-knowledge-core.knowledge-engineering",
+                capability_candidates=[
+                    {
+                        "candidateId": "traceable-agent-workflow",
+                        "title": "Traceable Agent workflow",
+                        "candidateType": "skill",
+                        "summary": "Candidate must pass review and approval before release.",
+                        "riskLevel": "L2",
+                    }
+                ],
+            )
+            candidate_ref = load_object(result)["capabilityCandidateRefs"][0]
+            with self.assertRaises(KnowledgeError):
+                core_module.create_capability_release(
+                    bundle,
+                    "Unsafe direct release",
+                    "agent.company-knowledge-core.knowledge-engineering",
+                    [candidate_ref],
+                    status="released",
+                )
+            release = core_module.create_capability_release(
+                bundle,
+                "Traceable release",
+                "agent.company-knowledge-core.knowledge-engineering",
+                [candidate_ref],
+                status="draft",
+            )
+            self.assertEqual([], core_module.runner_capability_pull(bundle, runner_id="runner.trace")["releases"])
+            review_task = core_module.create_capability_review_task(bundle, candidate_ref, requester="ou_trace")
+            review = core_module.apply_capability_review_result(
+                bundle,
+                review_task["taskId"],
+                "needs_human_approval",
+                "agent.core.capability-review",
+                "Human approval required before release.",
+                [candidate_ref],
+            )
+            approval_task = load_object(root / review["followupTaskRefs"][0])
+            core_module.apply_capability_approval_result(
+                bundle,
+                str(approval_task["taskId"]),
+                "rejected",
+                "meimei",
+                "Reject before gray release.",
+                [candidate_ref],
+                [release["releaseRef"]],
+            )
+            self.assertEqual("rejected", load_object(root / release["releaseRef"])["status"])
+            with self.assertRaises(KnowledgeError):
+                core_module.apply_capability_approval_result(
+                    bundle,
+                    str(approval_task["taskId"]),
+                    "approved",
+                    "meimei",
+                    "Cannot approve rejected release.",
+                    [candidate_ref],
+                    [release["releaseRef"]],
+                )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                self.assertEqual(main(["--root", str(root), "trace", "feishu-message", "om_trace_capability"]), 0)
+            trace = json.loads(stdout.getvalue())
+            self.assertEqual("TraceReadModel", trace["kind"])
+            self.assertTrue(trace["inboundEvents"])
+            self.assertTrue(trace["sourceMaterials"])
+            self.assertTrue(trace["tasks"])
+            self.assertTrue(trace["taskResults"])
+            self.assertTrue(trace["capabilityCandidates"])
+            self.assertTrue(trace["reviews"])
+            self.assertTrue(trace["approvals"])
+            self.assertTrue(trace["capabilityReleases"])
+            self.assertTrue(trace["notifications"])
+            self.assertTrue(trace["auditLogs"])
 
     def test_project_health_reports_traceability_receiver_review_and_defect_risks(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1387,6 +1806,61 @@ evidenceRefs:
             self.assertEqual("已记录防旧写入代际", model["currentLease"]["leaseGenerationLabel"])
             self.assertIn("pm_control_lease.denied", audit_actions(root))
             self.assertFalse([problem for problem in validate_bundle(bundle) if "pm-control-leases" in problem and "possible secret value" in problem])
+
+    def test_pm_control_lease_concurrent_acquire_allows_single_primary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            self.assertEqual(main(["--root", str(root), "project", "register", "--project-id", "qa", "--name", "QA", "--owner", "meimei"]), 0)
+            start = threading.Barrier(3)
+            results: list[tuple[str, str, dict | str]] = []
+            results_lock = threading.Lock()
+
+            def acquire(pm_agent_id: str) -> None:
+                start.wait(timeout=5)
+                try:
+                    result = core_module.acquire_pm_control_lease(
+                        bundle,
+                        "qa",
+                        pm_agent_id,
+                        runner_id=f"runner.{pm_agent_id.rsplit('.', 1)[-1]}",
+                        device_id=f"device.{pm_agent_id.rsplit('.', 1)[-1]}",
+                        lease_seconds=900,
+                        source_channel="test",
+                    )
+                    row: tuple[str, str, dict | str] = ("success", pm_agent_id, result)
+                except core_module.PMControlLeaseError as exc:
+                    row = ("error", pm_agent_id, exc.error_code)
+                with results_lock:
+                    results.append(row)
+
+            threads = [
+                threading.Thread(target=acquire, args=("agent.company.project-manager",)),
+                threading.Thread(target=acquire, args=("agent.company.product-manager",)),
+            ]
+            for thread in threads:
+                thread.start()
+            start.wait(timeout=5)
+            for thread in threads:
+                thread.join(timeout=5)
+
+            successes = [row for row in results if row[0] == "success"]
+            errors = [row for row in results if row[0] == "error"]
+            self.assertEqual(2, len(results))
+            self.assertEqual(1, len(successes))
+            self.assertEqual(1, len(errors))
+            self.assertEqual("pm_control_lease_already_active", errors[0][2])
+            current_path, current = core_module.current_pm_control_lease(bundle, "qa")
+            self.assertIsNotNone(current_path)
+            self.assertEqual(successes[0][1], current["primaryPmAgentId"])
+            active_leases = [
+                load_object(path)
+                for path in core_module.pm_control_lease_paths(bundle, "qa")
+                if str(load_object(path).get("status") or "") in {"active", "expiring"}
+            ]
+            self.assertEqual(1, len(active_leases))
+            self.assertIn("pm_control_lease.denied", audit_actions(root))
 
     def test_pm_control_lease_api_routes_and_protected_task_create(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -4152,9 +4626,35 @@ Product package complete.
             self.assertEqual(proposal["type"], "AgentImprovementProposal")
             self.assertEqual(proposal["agentId"], "agent.company.development")
             self.assertEqual(proposal["reuseScope"], "company")
+            self.assertEqual(proposal["skillUpdate"]["status"], "draft_isolated")
+            self.assertFalse(proposal["skillUpdate"]["promotionAllowed"])
+            self.assertEqual(proposal["versionBump"]["status"], "blocked_until_eval_passes")
+            self.assertEqual(proposal["rolloutRecord"]["status"], "blocked_until_eval_passes")
+            self.assertTrue(proposal["rollbackSafeguards"]["rollbackAllowed"])
+            self.assertEqual(proposal["promotionGate"]["status"], "waiting_eval")
+            self.assertTrue(proposal["promotionGate"]["blocksSkillMutation"])
             eval_case = load_object(root / result["evalCaseRefs"][0])
             self.assertEqual(eval_case["type"], "EvalCase")
             self.assertEqual(eval_case["status"], "draft")
+            self.assertEqual(eval_case["proposalRef"], result["improvementRefs"][0])
+            failed_run = core_module.run_eval_case(bundle, eval_case["evalId"], "still incomplete", "agent.company.test")
+            self.assertEqual(load_object(failed_run)["result"], "fail")
+            proposal = load_object(root / result["improvementRefs"][0])
+            self.assertEqual(proposal["status"], "blocked")
+            self.assertEqual(proposal["promotionGate"]["status"], "blocked_eval_failed")
+            self.assertFalse(proposal["versionBump"]["promotionAllowed"])
+            passing_actual = "\n".join([eval_case["expected"], *eval_case["requires"]])
+            passed_run = core_module.run_eval_case(bundle, eval_case["evalId"], passing_actual, "agent.company.test")
+            self.assertEqual(load_object(passed_run)["result"], "pass")
+            proposal = load_object(root / result["improvementRefs"][0])
+            self.assertEqual(proposal["status"], "reviewing")
+            self.assertEqual(proposal["promotionGate"]["status"], "eval_passed_ready_for_review")
+            self.assertFalse(proposal["promotionGate"]["blocksSkillMutation"])
+            self.assertEqual(proposal["versionBump"]["status"], "ready_for_version_bump")
+            self.assertTrue(proposal["versionBump"]["promotionAllowed"])
+            self.assertEqual(proposal["rolloutRecord"]["status"], "ready_for_controlled_rollout")
+            self.assertEqual(proposal["rollbackSafeguards"]["status"], "ready")
+            self.assertIn("agent.improvement.promotion_gate.update", audit_actions(root))
             notifications = [load_object(path) for path in (root / "notifications").glob("*.md") if path.name != "index.md"]
             message_types = [item["messageType"] for item in notifications]
             self.assertIn("agent_improvement_proposal_created", message_types)
@@ -4689,7 +5189,7 @@ Product package complete.
                         "type": "Policy",
                         "title": "Policy",
                         "writePermissions": ["knowledge:draft", "toolAsset:draft"],
-                        "requiredSecretRefs": ["secretref://stub/deepseek"],
+                        "requiredSecretRefs": ["secretref://stub/model-api"],
                     },
                     "## Notes\n\nList scalar parsing should preserve colon-bearing values.\n",
                 ),
@@ -4699,7 +5199,7 @@ Product package complete.
             parsed = load_object(path)
 
             self.assertEqual(parsed["writePermissions"], ["knowledge:draft", "toolAsset:draft"])
-            self.assertEqual(parsed["requiredSecretRefs"], ["secretref://stub/deepseek"])
+            self.assertEqual(parsed["requiredSecretRefs"], ["secretref://stub/model-api"])
             self.assertNotIn('{"secretref"', path.read_text(encoding="utf-8"))
 
     def test_permission_merge_accepts_legacy_single_key_permission_dicts(self) -> None:
@@ -4959,6 +5459,11 @@ Product package complete.
             with self.assertRaises(KnowledgeError):
                 feishu_module.handle_feishu_event(Bundle(root), payload, minimal_feishu_settings())
             self.assertIn("feishu.event.rejected", audit_actions(root))
+            audit_text = "\n".join(path.read_text(encoding="utf-8") for path in (root / "knowledge" / "audit").glob("*.md"))
+            self.assertNotIn("suppliedToken", audit_text)
+            self.assertNotIn("expectedToken", audit_text)
+            self.assertNotIn("payloadKeys", audit_text)
+            self.assertIn("verificationMatched: False", audit_text)
             events = _FAKE_POSTGRES_DATABASES[self._test_database_url]["operational_events"]
             rejected = [row for row in events if row["status"] == "rejected" and row["targetRef"] == "om_bad_token"]
             self.assertEqual(len(rejected), 1)
@@ -5009,6 +5514,604 @@ Product package complete.
             self.assertIn("飞书应用缺少发消息/发卡片权限", text)
             attempts = _FAKE_POSTGRES_DATABASES[self._test_database_url]["feishu_delivery_attempts"]
             self.assertTrue(any(row["messageId"] == "om_scope_fail" and row["finalStatus"] == "failed" and row["errorClass"] == "missing_send_scope" for row in attempts))
+
+    def test_feishu_task_status_notification_updates_task_and_event(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            incoming = {
+                "messageId": "om_research_status",
+                "chatId": "oc_research_status",
+                "chatType": "p2p",
+                "openId": "ou_submitter",
+                "userId": "u_submitter",
+                "text": "研究一下 https://example.com/article",
+            }
+            feishu_module.claim_feishu_message_event(bundle, incoming)
+            feishu_module.complete_feishu_message_event(bundle, incoming, "已创建资料处理任务。", True, "")
+            material_task = feishu_module.create_research_material_task(
+                bundle,
+                incoming,
+                minimal_feishu_settings(),
+                {"title": "研究资料", "content": "https://example.com/article", "sourceRef": "https://example.com/article"},
+            )
+            task_ref = material_task["taskRef"]
+            task_id = material_task["taskId"]
+            calls: list[tuple[dict[str, str], dict[str, object]]] = []
+            original_send = feishu_module.send_feishu_incoming_response
+            try:
+                feishu_module.send_feishu_incoming_response = lambda _settings, status_incoming, response: calls.append((status_incoming, response)) is None or True
+                result = feishu_module.notify_feishu_task_status(
+                    bundle,
+                    task_id,
+                    "processing",
+                    actor="feishu-status-notifier",
+                    settings=minimal_feishu_settings(app_id="cli_app", app_secret="secret-ref", reply_enabled=True),
+                )
+            finally:
+                feishu_module.send_feishu_incoming_response = original_send
+
+            self.assertTrue(result["sent"])
+            self.assertEqual(calls[0][0]["messageId"], "om_research_status")
+            self.assertIn("已开始解析资料", str(calls[0][1]["reply"]))
+            task = load_object(root / task_ref)
+            self.assertNotIn("codexThreadId", task)
+            event = feishu_module.load_feishu_message_event(bundle, "om_research_status")
+            self.assertEqual(event["lastStatus"], "processing")
+            self.assertTrue(event["lastStatusSent"])
+            self.assertNotIn("codexThreadId", event["statusUpdates"][-1])
+            notifications = list((root / "notifications").glob("notification*.md"))
+            self.assertTrue(any("status: sent" in path.read_text(encoding="utf-8") and task_id in path.read_text(encoding="utf-8") for path in notifications))
+
+    def test_feishu_task_status_notification_failure_is_traceable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            incoming = {
+                "messageId": "om_research_status_fail",
+                "chatId": "oc_research_status_fail",
+                "chatType": "p2p",
+                "openId": "ou_submitter",
+                "userId": "u_submitter",
+                "text": "研究一下 https://example.com/article",
+            }
+            feishu_module.claim_feishu_message_event(bundle, incoming)
+            feishu_module.complete_feishu_message_event(bundle, incoming, "已创建资料处理任务。", True, "")
+            material_task = feishu_module.create_research_material_task(
+                bundle,
+                incoming,
+                minimal_feishu_settings(),
+                {"title": "研究资料", "content": "https://example.com/article", "sourceRef": "https://example.com/article"},
+            )
+            task_id = material_task["taskId"]
+            original_send = feishu_module.send_feishu_incoming_response
+
+            def fail_send(_settings, _incoming, _response):
+                raise urllib.error.HTTPError(
+                    "https://open.feishu.cn/open-apis/im/v1/messages",
+                    400,
+                    "Bad Request",
+                    {},
+                    io.BytesIO(b'{"code":230002,"msg":"Bot/User can NOT be out of the chat."}'),
+                )
+
+            try:
+                feishu_module.send_feishu_incoming_response = fail_send
+                result = feishu_module.notify_feishu_task_status(
+                    bundle,
+                    task_id,
+                    "processing",
+                    actor="feishu-status-notifier",
+                    settings=minimal_feishu_settings(app_id="cli_app", app_secret="secret-ref", reply_enabled=True),
+                )
+            finally:
+                feishu_module.send_feishu_incoming_response = original_send
+
+            self.assertFalse(result["sent"])
+            self.assertIn("Bot/User can NOT be out of the chat", result["error"])
+            event = feishu_module.load_feishu_message_event(bundle, "om_research_status_fail")
+            self.assertFalse(event["lastStatusSent"])
+            self.assertIn("Bot/User can NOT be out of the chat", event["lastStatusError"])
+            notifications = list((root / "notifications").glob("notification*.md"))
+            self.assertTrue(any("status: failed" in path.read_text(encoding="utf-8") and task_id in path.read_text(encoding="utf-8") for path in notifications))
+
+    def test_feishu_research_link_duplicate_reuses_existing_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            settings = minimal_feishu_settings()
+            first = feishu_module.build_reply(
+                bundle,
+                {
+                    "messageId": "om_link_first",
+                    "chatId": "oc_link",
+                    "chatType": "group",
+                    "text": "研究一下 https://example.com/research/a",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                    "mentionedOpenIds": "",
+                    "mentionedUserIds": "",
+                },
+                settings,
+            )
+            second = feishu_module.build_reply(
+                bundle,
+                {
+                    "messageId": "om_link_second",
+                    "chatId": "oc_link",
+                    "chatType": "group",
+                    "text": "这个也研究一下 https://example.com/research/a",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                    "mentionedOpenIds": "",
+                    "mentionedUserIds": "",
+                },
+                settings,
+            )
+
+            self.assertIn("资料整理结果：", first)
+            self.assertIn("之前已经保存过", second)
+            self.assertIn("不会重复解析或切片", second)
+            self.assertIn("当前状态：已完成", second)
+            self.assertNotIn("cancelled", second)
+            self.assertEqual(feishu_module.human_task_status_label("cancelled"), "已取消重复处理")
+            sources = list((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
+            tasks = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("taskType") == "knowledge_capture"]
+            self.assertEqual(len(sources), 1)
+            self.assertEqual(len(tasks), 1)
+            self.assertIn("material.ingest.duplicate", audit_actions(root))
+
+    def test_secret_scan_allows_article_title_discussing_api_key_with_url(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "article.md"
+            path.write_text(
+                "已整理资料《GitHub 上 13 万星的爬虫神器，不要 API Key 就能用了。》。 原始链接：https://example.com/article\n"
+                "api_key: should-still-be-rejected\n",
+                encoding="utf-8",
+            )
+            problems = core_module.scan_for_secret_values(path)
+            self.assertEqual(len(problems), 1)
+            self.assertIn("api_key", problems[0])
+
+    def test_feishu_research_material_returns_readable_result_directly(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            agent_path = make_agent(
+                bundle,
+                "agent.company-knowledge-core.knowledge-engineering",
+                "Knowledge Engineering Agent",
+                "owner",
+                "codex",
+                "Process research materials.",
+            )
+            update_frontmatter_file(agent_path, {"writePermissions": ["knowledge:draft"]})
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            try:
+                feishu_material_processor_module.extract_external_material_text = lambda _url: {
+                    "ok": True,
+                    "kind": "webpage",
+                    "title": "AI 工程实践文章",
+                    "text": "这篇文章包含 workflow、tool、checklist 和验收实践，可用于改进 Agent 任务判断和检查点。",
+                    "error": "",
+                }
+                reply = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_direct_material",
+                        "chatId": "oc_direct_material",
+                        "chatType": "group",
+                        "text": "研究一下 https://example.com/research/direct",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertIn("资料整理结果：", reply)
+            self.assertIn("对 Agent 团队提升：", reply)
+            self.assertIn("初步判断：有潜在作用", reply)
+            self.assertIn("可能优化点：", reply)
+            self.assertIn("任务编号：", reply)
+            self.assertNotIn("等待", reply)
+            self.assertNotIn("Codex", reply)
+            self.assertNotIn("融入体系", reply)
+            tasks = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("intakeSource") == "feishu_research_material"]
+            self.assertEqual(len(tasks), 1)
+            task_text = (root / tasks[0]["path"]).read_text(encoding="utf-8")
+            self.assertIn("processingMode: feishu_direct_reply", task_text)
+            self.assertNotIn("dispatchTarget:", task_text)
+            self.assertNotIn("primaryControlRunner:", task_text)
+            self.assertNotIn("codexThreadId:", task_text)
+            self.assertTrue(tasks[0]["resultRef"])
+
+    def test_feishu_business_material_does_not_force_agent_capability_judgment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            agent_path = make_agent(
+                bundle,
+                "agent.company-knowledge-core.knowledge-engineering",
+                "Knowledge Engineering Agent",
+                "owner",
+                "codex",
+                "Process research materials.",
+            )
+            update_frontmatter_file(agent_path, {"writePermissions": ["knowledge:draft"]})
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            try:
+                feishu_material_processor_module.extract_external_material_text = lambda _url: {
+                    "ok": True,
+                    "kind": "feishu",
+                    "title": "投屏用户评论与需求洞察报告（应用市场 + 社交媒体）",
+                    "text": (
+                        "核心结论：用户不是为了投屏技术本身，而是为了把手机、平板、电脑里的视频、"
+                        "屏幕、会议资料、PPT/PDF/Word 文件搬到更大的屏幕。应用市场评论覆盖投屏助手、"
+                        "TV Cast、Smart Mirror 等竞品。"
+                    ),
+                    "error": "",
+                }
+                reply = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_business_material",
+                        "chatId": "oc_business_material",
+                        "chatType": "group",
+                        "text": "整理一下 https://example.com/research/business",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertIn("资料整理结果：", reply)
+            self.assertIn("知识归类：", reply)
+            self.assertIn("业务/产品/市场知识", reply)
+            self.assertIn("沉淀为企业知识", reply)
+            self.assertIn("任务编号：", reply)
+            self.assertNotIn("对 Agent 团队提升：", reply)
+            self.assertNotIn("进入能力候选复核", reply)
+            self.assertNotIn("融入体系", reply)
+
+    def test_feishu_research_material_duplicate_does_not_process_again(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            agent_path = make_agent(
+                bundle,
+                "agent.company-knowledge-core.knowledge-engineering",
+                "Knowledge Engineering Agent",
+                "owner",
+                "codex",
+                "Process research materials.",
+            )
+            update_frontmatter_file(agent_path, {"writePermissions": ["knowledge:draft"]})
+            calls = 0
+            original_extract = feishu_material_processor_module.extract_external_material_text
+
+            def fake_extract(_url):
+                nonlocal calls
+                calls += 1
+                return {"ok": True, "kind": "webpage", "title": "重复资料", "text": "workflow checklist", "error": ""}
+
+            try:
+                feishu_material_processor_module.extract_external_material_text = fake_extract
+                first = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_dup_1",
+                        "chatId": "oc_dup",
+                        "chatType": "group",
+                        "text": "研究一下 https://example.com/research/duplicate",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+                second = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_dup_2",
+                        "chatId": "oc_dup",
+                        "chatType": "group",
+                        "text": "分析和整理一下 https://example.com/research/duplicate",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertIn("资料整理结果：", first)
+            self.assertIn("之前已经保存过", second)
+            self.assertIn("当前状态：已完成", second)
+            self.assertEqual(calls, 1)
+
+    def test_feishu_material_followup_creates_candidate_review_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            agent_path = make_agent(
+                bundle,
+                "agent.company-knowledge-core.knowledge-engineering",
+                "Knowledge Engineering Agent",
+                "owner",
+                "codex",
+                "Process research materials.",
+            )
+            update_frontmatter_file(agent_path, {"writePermissions": ["knowledge:draft"]})
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            try:
+                feishu_material_processor_module.extract_external_material_text = lambda _url: {
+                    "ok": True,
+                    "kind": "webpage",
+                    "title": "可复用 Agent 实践",
+                    "text": "workflow checklist example tool acceptance，可用于改进 Agent 检查点。",
+                    "error": "",
+                }
+                first = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_followup_1",
+                        "chatId": "oc_followup",
+                        "chatType": "group",
+                        "text": "研究一下 https://example.com/research/followup",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+                second = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_followup_2",
+                        "chatId": "oc_followup",
+                        "chatType": "group",
+                        "text": "进入能力候选复核",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertIn("资料整理结果：", first)
+            self.assertIn("能力候选复核结果：", second)
+            self.assertIn("是否有用：", second)
+            self.assertIn("对比现有：", second)
+            self.assertIn("不会直接改 Skill、Tool、Workflow、AGENTS、规则或权限", second)
+            followups = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("intakeSource") == "feishu_material_followup"]
+            self.assertEqual(len(followups), 1)
+            self.assertEqual(followups[0]["processingMode"], "capability_candidate_review_queue")
+            self.assertTrue(followups[0]["upstreamTaskId"])
+            self.assertNotEqual(followups[0]["status"], "pending")
+            self.assertTrue(followups[0]["resultRef"])
+
+    def test_feishu_material_status_followup_uses_latest_material_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            agent_path = make_agent(
+                bundle,
+                "agent.company-knowledge-core.knowledge-engineering",
+                "Knowledge Engineering Agent",
+                "owner",
+                "codex",
+                "Process research materials.",
+            )
+            update_frontmatter_file(agent_path, {"writePermissions": ["knowledge:draft"]})
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            try:
+                feishu_material_processor_module.extract_external_material_text = lambda _url: {
+                    "ok": True,
+                    "kind": "webpage",
+                    "title": "Agent 协作经验",
+                    "text": "workflow checklist acceptance，可用于改进 Agent 任务判断。",
+                    "error": "",
+                }
+                first = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_status_followup_1",
+                        "chatId": "oc_status_followup",
+                        "chatType": "group",
+                        "text": "研究一下 https://example.com/research/status-followup",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+                second = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_status_followup_2",
+                        "chatId": "oc_status_followup",
+                        "chatType": "group",
+                        "text": "怎么没有结果？",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertIn("资料整理结果：", first)
+            self.assertIn("上一条资料已经整理完成", second)
+            self.assertIn("进入能力候选复核", second)
+            self.assertNotIn("没有找到已审核答案", second)
+            self.assertNotIn("没有找到可靠答案", second)
+            followups = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("intakeSource") == "feishu_material_followup"]
+            self.assertEqual(followups, [])
+
+    def test_feishu_material_status_followup_without_context_does_not_query_knowledge(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            reply = feishu_module.build_reply(
+                bundle,
+                {
+                    "messageId": "om_status_no_context",
+                    "chatId": "oc_status_no_context",
+                    "chatType": "group",
+                    "text": "结果呢？",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                    "mentionedOpenIds": "",
+                    "mentionedUserIds": "",
+                },
+                minimal_feishu_settings(),
+            )
+
+            self.assertIn("没有找到上一条资料任务", reply)
+            self.assertIn("请先发链接或资料", reply)
+            self.assertNotIn("没有找到已审核答案", reply)
+
+    def test_feishu_reply_no_longer_uses_remote_model_router_as_active_fallback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            reply = feishu_module.build_reply(
+                bundle,
+                {
+                    "messageId": "om_no_router",
+                    "chatId": "oc_no_router",
+                    "chatType": "private",
+                    "text": "这个体系怎么用",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                    "mentionedOpenIds": "",
+                    "mentionedUserIds": "",
+                },
+                minimal_feishu_settings(),
+            )
+
+            self.assertTrue(reply.strip())
+
+    def test_feishu_material_processor_extracts_general_webpage_body(self) -> None:
+        html_body = b"""
+        <html><head><title>AI Engineering</title><script>ignore()</script></head>
+        <body><article><h1>Readable Title</h1><p>First useful paragraph.</p><p>Second useful paragraph.</p></article></body></html>
+        """
+
+        class FakeResponse:
+            headers = {"Content-Type": "text/html; charset=utf-8"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit=-1):
+                return html_body
+
+        original = feishu_material_processor_module.urllib.request.urlopen
+        feishu_material_processor_module.urllib.request.urlopen = lambda *_args, **_kwargs: FakeResponse()
+        try:
+            result = feishu_material_processor_module.extract_external_material_text("https://example.com/article")
+        finally:
+            feishu_material_processor_module.urllib.request.urlopen = original
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["kind"], "webpage")
+        self.assertIn("First useful paragraph", result["text"])
+        self.assertNotIn("ignore()", result["text"])
+
+    def test_feishu_material_processor_extracts_wechat_article_body(self) -> None:
+        html_body = """
+        <html><body>
+        <h1 id="activity-name"> 公众号标题 </h1>
+        <div id="js_content"><p>公众号正文第一段。</p><div><p>公众号正文第二段。</p></div></div>
+        <div>页面噪音</div>
+        </body></html>
+        """.encode("utf-8")
+
+        class FakeResponse:
+            headers = {"Content-Type": "text/html; charset=utf-8"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit=-1):
+                return html_body
+
+        original = feishu_material_processor_module.urllib.request.urlopen
+        feishu_material_processor_module.urllib.request.urlopen = lambda *_args, **_kwargs: FakeResponse()
+        try:
+            result = feishu_material_processor_module.extract_external_material_text("https://mp.weixin.qq.com/s/example")
+        finally:
+            feishu_material_processor_module.urllib.request.urlopen = original
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["kind"], "wechat_article")
+        self.assertIn("公众号标题", result["title"])
+        self.assertIn("公众号正文第一段", result["text"])
+        self.assertIn("公众号正文第二段", result["text"])
+        self.assertNotIn("页面噪音", result["text"])
+
+    def test_feishu_material_processor_extracts_feishu_docx_body(self) -> None:
+        original_token = feishu_material_processor_module.feishu_module.get_tenant_access_token
+        original_settings = feishu_material_processor_module.feishu_module.load_feishu_settings
+        original_request = feishu_material_processor_module.feishu_module.feishu_json_request
+        feishu_material_processor_module.feishu_module.load_feishu_settings = lambda: minimal_feishu_settings(app_id="app", app_secret="secret")
+        feishu_material_processor_module.feishu_module.get_tenant_access_token = lambda _settings: "tenant-token"
+
+        def fake_request(method, url, token, body=None):
+            self.assertEqual(method, "GET")
+            self.assertEqual(token, "tenant-token")
+            if "/children" in url:
+                return {"data": {"items": [{"block_type": 2, "text": {"elements": [{"text_run": {"content": "飞书文档正文"}}]}}]}}
+            return {"data": {"document": {"title": "飞书文档标题"}}}
+
+        feishu_material_processor_module.feishu_module.feishu_json_request = fake_request
+        try:
+            result = feishu_material_processor_module.extract_external_material_text("https://example.feishu.cn/docx/AbCdEf")
+        finally:
+            feishu_material_processor_module.feishu_module.get_tenant_access_token = original_token
+            feishu_material_processor_module.feishu_module.load_feishu_settings = original_settings
+            feishu_material_processor_module.feishu_module.feishu_json_request = original_request
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["kind"], "feishu")
+        self.assertIn("飞书文档正文", result["text"])
 
     def test_start_degrades_when_runtime_retrieval_database_is_unavailable(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -5390,6 +6493,12 @@ Product package complete.
             self.assertEqual(review_task["taskType"], "knowledge_review")
             self.assertEqual(review_task["parentTaskId"], task_id)
             self.assertIn("knowledge.draftFromTaskResult", audit_actions(root))
+            draft_hits = search_retrieval(bundle, "资料沉淀链路 Runner 读取原文", project_id="agent-hub", scopes=["engineering"])
+            draft_hit = next(row for row in draft_hits if row["path"] == draft_ref)
+            self.assertEqual(draft_hit["status"], "draft")
+            self.assertEqual(draft_hit["truthStatus"], "pending_reference")
+            self.assertEqual(draft_hit["usagePolicy"], "reference_only_not_verified_truth")
+            self.assertEqual(draft_hit["sourceRef"], source_ref)
 
     def test_cli_material_ingest_to_task_finish_writes_knowledge_draft(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -5484,6 +6593,71 @@ Product package complete.
             self.assertEqual(draft["sourceRef"], source_ref)
             self.assertIn(result["knowledgeRefs"][0], [item["path"] for item in list_review_queue(bundle)])
 
+    def test_knowledge_task_without_source_evidence_routes_to_retry_not_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            self.grant_agent_write_policy(root, "agent.company-knowledge-core.knowledge-engineering")
+            self.assertEqual(main(["--root", str(root), "project", "register", "--project-id", "agent-hub", "--name", "Agent Hub", "--owner", "meimei"]), 0)
+            self.assertEqual(
+                main(
+                    [
+                        "--root",
+                        str(root),
+                        "runner",
+                        "register",
+                        "--runner-id",
+                        "runner.no-source",
+                        "--name",
+                        "No Source Runner",
+                        "--capability",
+                        "knowledge_capture",
+                        "--project",
+                        "agent-hub",
+                    ]
+                ),
+                0,
+            )
+            task_path = create_project_task(
+                bundle,
+                "Extract unsourced note",
+                "agent-hub",
+                "ou_submitter",
+                "runner.no-source",
+                task_type="knowledge_capture",
+                task_id="KT-NO-SOURCE-EVIDENCE",
+                expected_output=["Create sourced draft knowledge."],
+            )
+            claim = claim_project_task(bundle, "KT-NO-SOURCE-EVIDENCE", "runner.no-source")
+            result_path = finish_project_task(
+                bundle,
+                "KT-NO-SOURCE-EVIDENCE",
+                "done",
+                "Draft exists but source evidence was omitted.",
+                runner_id="runner.no-source",
+                lease_token=claim["leaseToken"],
+                executor_agent="agent.company-knowledge-core.knowledge-engineering",
+                knowledge_draft={
+                    "title": "Unsourced governance draft",
+                    "summary": "This draft intentionally lacks source evidence.",
+                    "structured": "A reusable knowledge claim without source evidence must not reach review.",
+                    "confidence": "low",
+                    "scope": "engineering",
+                },
+            )
+            result = load_object(result_path)
+            self.assertEqual(result["qualityEvaluation"]["status"], "failed")
+            self.assertEqual(result["qualityEvaluation"]["decision"], "retry_required")
+            self.assertIn("missing source evidence", result["qualityEvaluation"]["reasons"])
+            self.assertEqual(result["sourceMaterialRefs"], [])
+            self.assertEqual(result["evidenceRefs"], [])
+            retry_ref = result["followupTaskRefs"][0]
+            retry_task = load_object(root / retry_ref)
+            self.assertEqual(retry_task["taskType"], "knowledge_retry")
+            self.assertEqual(retry_task["retryOf"], "KT-NO-SOURCE-EVIDENCE")
+            self.assertFalse((root / "projects" / "agent-hub" / "tasks" / "kt-no-source-evidence-review.md").exists())
+
     def test_blocked_knowledge_task_creates_repair_followup(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -5576,7 +6750,12 @@ Product package complete.
             indexed = search_index(bundle, {"type": "KnowledgeItem", "status": "observed"})
             self.assertIn(draft_ref, [row["path"] for row in indexed])
             retrieved = search_retrieval(bundle, "Structured knowledge PASS")
-            self.assertIn(draft_ref, [row["path"] for row in retrieved])
+            retrieved_by_path = {row["path"]: row for row in retrieved}
+            self.assertIn(draft_ref, retrieved_by_path)
+            self.assertEqual(retrieved_by_path[draft_ref]["status"], "observed")
+            self.assertEqual(retrieved_by_path[draft_ref]["truthStatus"], "pending_reference")
+            self.assertEqual(retrieved_by_path[draft_ref]["usagePolicy"], "reference_only_not_verified_truth")
+            self.assertEqual(retrieved_by_path[draft_ref]["sourceRef"], f"projects/review-pass/sources/source.md")
             self.assertIn("knowledge.publish", audit_actions(root))
             notifications = [load_object(root / ref) for ref in review_task["notificationRefs"]]
             self.assertIn("knowledge_indexed", [item["messageType"] for item in notifications])
@@ -5682,7 +6861,11 @@ Product package complete.
             indexed = search_index(bundle, {"type": "KnowledgeItem", "status": "verified"})
             self.assertIn(draft_ref, [row["path"] for row in indexed])
             retrieved = search_retrieval(bundle, "Structured knowledge APPROVE")
-            self.assertIn(draft_ref, [row["path"] for row in retrieved])
+            retrieved_by_path = {row["path"]: row for row in retrieved}
+            self.assertIn(draft_ref, retrieved_by_path)
+            self.assertEqual(retrieved_by_path[draft_ref]["truthStatus"], "official_truth")
+            self.assertEqual(retrieved_by_path[draft_ref]["usagePolicy"], "usable_as_reusable_truth_with_citation")
+            self.assertEqual(retrieved_by_path[draft_ref]["sourceRef"], "projects/review-approve/sources/source.md")
             self.assertIn("knowledge.publish", audit_actions(root))
             notifications = [load_object(root / ref) for ref in approval_task_after["notificationRefs"]]
             self.assertIn("knowledge_published", [item["messageType"] for item in notifications])
@@ -6315,8 +7498,8 @@ sensitivity: internal
             sent_text = json.dumps([item[1]["card"] for item in sent_cards], ensure_ascii=False)
             self.assertIn("项目立项审批已通过", sent_text)
             self.assertIn("你负责的项目已立项", sent_text)
-            self.assertIn("项目初始化需要本地接管", sent_text)
-            self.assertIn("等待本地接管", sent_text)
+            self.assertIn("项目初始化需要执行电脑接管", sent_text)
+            self.assertIn("等待执行电脑接管", sent_text)
             self.assertNotIn("状态：verified", sent_text)
             self.assertNotIn("waiting_runner", sent_text)
             self.assertNotIn("任务卡", sent_text)
@@ -6444,7 +7627,7 @@ sensitivity: internal
             self.assertIn("Role Rules", context_text)
             self.assertIn("role-operating-specs.json", context_text)
             self.assertIn("Project Rules", context_text)
-            self.assertIn("projects/agent-hub/project.md", context_text)
+            self.assertIn("projects/agent-hub/AGENTS.md", context_text)
 
             result_path = finish_project_task(
                 Bundle(root),
@@ -6461,7 +7644,7 @@ sensitivity: internal
             self.assertEqual(result["operatingRuleRefs"]["taskRuntimeContract"], "docs/agent-team/agent-task-runtime-contract.md")
             self.assertEqual(result["operatingRuleRefs"]["humanAcceptancePolicy"], "docs/agent-team/human-acceptance-policy.md")
             self.assertEqual(result["operatingRuleRefs"]["roleRules"], "docs/agent-team/role-operating-specs.json")
-            self.assertEqual(result["operatingRuleRefs"]["projectRules"], "projects/agent-hub/project.md")
+            self.assertEqual(result["operatingRuleRefs"]["projectRules"], "projects/agent-hub/AGENTS.md")
             self.assertEqual(result["commonRulesEvaluation"]["status"], "passed")
             self.assertIn("operating_rule_refs", result["commonRulesEvaluation"]["checkedRules"])
             self.assertTrue(result["qualityEvaluation"]["passed"])
@@ -7125,7 +8308,7 @@ This file was added after the previous retrieval index build.
             rows = search_retrieval(Bundle(root), "Auto Rebuild Fresh Knowledge", limit=10)
             self.assertTrue([row for row in rows if row.get("title") == "Auto Rebuild Fresh Knowledge"])
 
-    def test_deepseek_router_clarify_does_not_block_fast_knowledge_query(self) -> None:
+    def test_feishu_knowledge_query_uses_local_retrieval_without_model_router(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             write_minimal_bundle(root)
@@ -7151,42 +8334,22 @@ confidence: high
                 encoding="utf-8",
             )
             self.assertEqual(main(["--root", str(root), "rag", "rebuild"]), 0)
-            original_router = feishu_module.call_deepseek_router
-
-            def clarify_router(_text, _incoming):
-                return {
-                    "intent": "clarify",
-                    "confidence": 0.9,
-                    "risk": "L1",
-                    "directHandle": False,
-                    "taskType": "",
-                    "requiredFields": {},
-                    "missingFields": ["项目"],
-                    "toolSuggestions": [],
-                    "reason": "test router should not block knowledge search",
-                    "_routerMetrics": {"fallback": False},
-                }
-
-            feishu_module.call_deepseek_router = clarify_router
-            try:
-                reply = feishu_module.build_reply(
-                    Bundle(root),
-                    {
-                        "messageId": "om_router_clarify_kq",
-                        "chatId": "oc_test",
-                        "chatType": "group",
-                        "text": "会议纪要为什么不能直接入知识库？",
-                        "openId": "ou_alice",
-                        "userId": "alice",
-                        "mentionedOpenIds": "",
-                        "mentionedUserIds": "",
-                    },
-                    minimal_feishu_settings(),
-                )
-                self.assertIn("Meeting Notes Review Rule [verified]", reply)
-                self.assertNotIn("我需要补充信息", reply)
-            finally:
-                feishu_module.call_deepseek_router = original_router
+            reply = feishu_module.build_reply(
+                Bundle(root),
+                {
+                    "messageId": "om_local_kq",
+                    "chatId": "oc_test",
+                    "chatType": "group",
+                    "text": "会议纪要为什么不能直接入知识库？",
+                    "openId": "ou_alice",
+                    "userId": "alice",
+                    "mentionedOpenIds": "",
+                    "mentionedUserIds": "",
+                },
+                minimal_feishu_settings(),
+            )
+            self.assertIn("Meeting Notes Review Rule [verified]", reply)
+            self.assertNotIn("我需要补充信息", reply)
 
     def test_install_writes_local_agent_entrypoints(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -7324,7 +8487,7 @@ projectId: core
 repositories:
   - localPath: /Users/alice/projects/core
 secrets:
-  - ref: secretref://zhenzhi/model/deepseek
+  - ref: secretref://zhenzhi/model/default
 """,
                 encoding="utf-8",
             )
@@ -7854,7 +9017,7 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                 missing_secret_task.write_text(
                     missing_secret_task.read_text(encoding="utf-8").replace(
                         "resultRef:",
-                        "requiredSecretRefs:\n  - secretref://stub/deepseek\nresultRef:",
+                        "requiredSecretRefs:\n  - secretref://stub/model-api\nresultRef:",
                     ),
                     encoding="utf-8",
                 )
@@ -7866,15 +9029,15 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                 feishu_module.create_access_credential_request(
                     Bundle(root),
                     requester="ou_alice",
-                    purpose="stub deepseek readiness",
+                    purpose="stub model api readiness",
                     credential_type="model_api",
-                    request_id="credential.stub.deepseek",
+                    request_id="credential.stub.model-api",
                 )
                 ready = post(
                     "/v0/credentials/ready",
                     {
-                        "requestId": "credential.stub.deepseek",
-                        "secretRef": "secretref://stub/deepseek",
+                        "requestId": "credential.stub.model-api",
+                        "secretRef": "secretref://stub/model-api",
                         "actor": "runner.macbook",
                     },
                 )
@@ -7904,7 +9067,7 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                 ready_secret_task.write_text(
                     ready_secret_task.read_text(encoding="utf-8").replace(
                         "resultRef:",
-                        "requiredSecretRefs:\n  - secretref://stub/deepseek\nresultRef:",
+                        "requiredSecretRefs:\n  - secretref://stub/model-api\nresultRef:",
                     ),
                     encoding="utf-8",
                 )
@@ -8735,7 +9898,27 @@ Use parser.
                     method="POST",
                 )
                 intake_result = json.load(urllib.request.urlopen(feishu_intake))
-                self.assertIn("KnowledgeItem", (root / "knowledge" / "engineering" / Path(intake_result["reply"].split("：", 1)[1].splitlines()[0]).name).read_text(encoding="utf-8"))
+                self.assertIn("资料整理结果：", intake_result["reply"])
+                self.assertIn("对 Agent 团队提升：", intake_result["reply"])
+                self.assertNotIn("分析任务", intake_result["reply"])
+                self.assertNotIn("正在分析", intake_result["reply"])
+                self.assertIn("任务编号", intake_result["reply"])
+                self.assertNotIn("本机 Codex", intake_result["reply"])
+                self.assertNotIn("是否需要你操作", intake_result["reply"])
+                self.assertNotIn("说明", intake_result["reply"])
+                self.assertNotIn("内部追踪", intake_result["reply"])
+                self.assertNotIn("原始资料", intake_result["reply"])
+                self.assertNotIn("任务卡", intake_result["reply"])
+                self.assertTrue(list((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md")))
+                research_tasks = list((root / "tasks").glob("kt-*.md")) + list((root / "projects" / "company-knowledge-core" / "tasks").glob("kt-*.md"))
+                self.assertTrue(research_tasks)
+                research_task_text = research_tasks[0].read_text(encoding="utf-8")
+                self.assertIn("workSourceType: research", research_task_text)
+                self.assertIn("processingMode: feishu_direct_reply", research_task_text)
+                self.assertNotIn("dispatchTarget:", research_task_text)
+                self.assertNotIn("primaryControlRunner:", research_task_text)
+                self.assertNotIn("codexThreadId:", research_task_text)
+                self.assertIn("approvalRequired: false", research_task_text)
                 feishu_material = urllib.request.Request(
                     base + "/integrations/feishu/events",
                     data=json.dumps(
@@ -8902,7 +10085,7 @@ Use parser.
                     method="POST",
                 )
                 self.assertIn("待审核队列", json.load(urllib.request.urlopen(review_list))["reply"])
-                target = str(list((root / "knowledge" / "engineering").glob("feishu-intake.*.md"))[0].relative_to(root))
+                target = str(draft_path.relative_to(root))
                 review_approve = urllib.request.Request(
                     base + "/integrations/feishu/events",
                     data=json.dumps(
@@ -8927,7 +10110,7 @@ Use parser.
                 approve_result = json.load(urllib.request.urlopen(review_approve))
                 self.assertIn("状态: verified", approve_result["reply"])
                 self.assertIn("status: verified", (root / target).read_text(encoding="utf-8"))
-                callback_target = list((root / "knowledge" / "engineering").glob("feishu-intake.*.md"))[0]
+                callback_target = draft_path
                 save_approval_request(
                     Bundle(root),
                     "approval_test",
@@ -9170,7 +10353,7 @@ Use parser.
                     "messageId": "om_credential",
                     "chatId": "ou_alice",
                     "chatType": "p2p",
-                    "text": "申请知识工程 token：使用人 Alice，用途 本地开发，默认项目 Core，使用工具 Codex，凭证类型 DeepSeek模型",
+                    "text": "申请知识工程 token：使用人 Alice，用途 本地开发，默认项目 Core，使用工具 Codex，凭证类型 模型API",
                     "openId": "ou_alice",
                     "userId": "alice",
                     "mentionedOpenIds": "",
@@ -9187,65 +10370,6 @@ Use parser.
             self.assertNotIn("prod-token", request_text)
             self.assertNotIn("sk-", request_text)
             self.assertEqual(main(["--root", str(root), "validate"]), 0)
-
-    def test_deepseek_router_payload_and_json_validation(self) -> None:
-        payload = feishu_module.deepseek_router_payload(
-            "我想申请 DeepSeek 凭证",
-            {"chatType": "p2p"},
-        )
-        self.assertEqual(payload["model"], os.environ.get("DEEPSEEK_MODEL", "deepseek-chat"))
-        self.assertEqual(payload["temperature"], 0)
-        valid = feishu_module.parse_router_decision(
-            json.dumps(
-                {
-                    "intent": "credential_request",
-                    "confidence": 0.91,
-                    "risk": "L2",
-                    "directHandle": True,
-                    "taskType": "credential_request",
-                    "requiredFields": {"credentialType": "model_api"},
-                    "missingFields": [],
-                    "toolSuggestions": ["credential_request"],
-                }
-            )
-        )
-        self.assertEqual(valid["intent"], "credential_request")
-        with self.assertRaises(feishu_module.KnowledgeError):
-            feishu_module.parse_router_decision("{bad json")
-        with self.assertRaises(feishu_module.KnowledgeError):
-            feishu_module.parse_router_decision(json.dumps({"intent": "delete_everything", "confidence": 1, "risk": "L3"}))
-
-    def test_deepseek_router_eval_fixtures_cover_supported_intents(self) -> None:
-        fixtures = [
-            ("create_project", "L1", False, "project_init", {"projectName": "Agent Hub"}, []),
-            ("knowledge_query", "L0", True, "none", {"question": "Agent Ring 是什么"}, []),
-            ("capture_material", "L1", False, "knowledge_capture", {"projectName": "Agent Hub"}, []),
-            ("credential_request", "L2", True, "credential_request", {"credentialType": "model_api"}, []),
-            ("tool_or_skill_request", "L2", False, "tool_request", {"toolName": "Feishu Doc"}, []),
-            ("summon_agent", "L1", True, "none", {"agentRole": "product-agent"}, []),
-            ("status_query", "L0", True, "none", {"projectName": "Agent Hub"}, []),
-            ("dangerous_request", "L3", False, "approval_task", {}, []),
-            ("clarify", "L1", False, "", {}, ["项目名称"]),
-        ]
-        for intent, risk, direct, task_type, fields, missing in fixtures:
-            with self.subTest(intent=intent):
-                decision = feishu_module.parse_router_decision(
-                    json.dumps(
-                        {
-                            "intent": intent,
-                            "confidence": 0.9,
-                            "risk": risk,
-                            "directHandle": direct,
-                            "taskType": task_type,
-                            "requiredFields": fields,
-                            "missingFields": missing,
-                            "toolSuggestions": ["knowledge_search"] if intent == "knowledge_query" else [],
-                        }
-                    )
-                )
-                self.assertEqual(decision["intent"], intent)
-                self.assertEqual(decision["risk"], risk)
-                self.assertEqual(decision["directHandle"], direct)
 
     def test_skill_asset_registration_cli_and_feishu_card(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -9302,164 +10426,26 @@ Use parser.
             self.assertEqual(card_skill["sourceRef"], "feishu://card/om_skill_card")
             self.assertIn("skill.register", audit_actions(root))
 
-    def test_deepseek_router_mocked_credential_and_tool_safety(self) -> None:
+    def test_feishu_system_change_request_does_not_enter_research_intake(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             write_minimal_bundle(root)
-            settings = feishu_module.FeishuSettings(
-                app_id="",
-                app_secret="",
-                verification_token="",
-                reply_enabled=False,
-                token_auto_approve=False,
-                approval_enabled=False,
-                approval_code_project="",
-                approval_code_common="",
-                approval_code_security="",
-                approval_node_approver_key="",
-                common_reviewer_open_ids=[],
-                security_reviewer_open_ids=[],
-                project_reviewer_open_ids={},
-                token_send_on_approval=False,
-                approval_doc_folder_token="",
-                approval_doc_folder_tokens={},
-                approval_doc_domain="",
-                approval_doc_share_names=[],
-                user_open_id_map={},
-            )
-            original_router = feishu_module.call_deepseek_router
-            try:
-                feishu_module.call_deepseek_router = lambda _text, _incoming: {
-                    "intent": "credential_request",
-                    "confidence": 0.88,
-                    "risk": "L2",
-                    "directHandle": True,
-                    "taskType": "credential_request",
-                    "requiredFields": {"credentialType": "model_api"},
-                    "missingFields": [],
-                    "toolSuggestions": ["credential_request"],
-                    "reason": "needs model key",
-                }
-                reply = feishu_module.build_reply(
-                    Bundle(root),
-                    {
-                        "messageId": "om_router_credential",
-                        "chatId": "ou_alice",
-                        "chatType": "p2p",
-                        "text": "我需要 DeepSeek 模型访问凭证",
-                        "openId": "ou_alice",
-                        "userId": "alice",
-                        "mentionedOpenIds": "",
-                    },
-                    settings,
-                )
-                self.assertIn("访问凭证申请", reply)
-                self.assertTrue([path for path in (root / "credential-requests").glob("*.md") if path.name != "index.md"])
-                metric_logs = [
-                    path.read_text(encoding="utf-8")
-                    for path in (root / "knowledge" / "audit").glob("*.md")
-                    if "feishu.router.metric" in path.read_text(encoding="utf-8")
-                ]
-                self.assertTrue(metric_logs)
-                self.assertIn("model_router_observability", metric_logs[-1])
-                self.assertIn('"fallback": false', metric_logs[-1])
-                self.assertNotIn("我需要 DeepSeek 模型访问凭证", metric_logs[-1])
-
-                feishu_module.call_deepseek_router = lambda _text, _incoming: {
-                    "intent": "tool_or_skill_request",
-                    "confidence": 0.92,
-                    "risk": "L3",
-                    "directHandle": True,
-                    "taskType": "tool_call",
-                    "requiredFields": {},
-                    "missingFields": [],
-                    "toolSuggestions": ["delete_all_data"],
-                    "reason": "unsafe tool",
-                }
-                unsafe_reply = feishu_module.build_reply(
-                    Bundle(root),
-                    {
-                        "messageId": "om_router_unsafe",
-                        "chatId": "ou_alice",
-                        "chatType": "p2p",
-                        "text": "帮我调用一个内部超级工具处理一下",
-                        "openId": "ou_alice",
-                        "userId": "alice",
-                        "mentionedOpenIds": "",
-                    },
-                    settings,
-                )
-                self.assertIn("未注册或高风险工具", unsafe_reply)
-            finally:
-                feishu_module.call_deepseek_router = original_router
-
-    def test_deepseek_router_low_confidence_falls_back_to_local_flow(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            write_minimal_bundle(root)
-            reply = feishu_module.router_decision_reply(
+            reply = feishu_module.build_reply(
                 Bundle(root),
-                {"messageId": "om_low", "text": "搞一下", "openId": "ou_alice"},
-                feishu_module.load_feishu_settings(),
                 {
-                    "intent": "create_project",
-                    "confidence": 0.2,
-                    "risk": "L1",
-                    "directHandle": False,
-                    "taskType": "",
-                    "requiredFields": {},
-                    "missingFields": ["项目名称", "负责人"],
-                    "toolSuggestions": [],
-                    "reason": "too short",
+                    "messageId": "om_system_change",
+                    "chatId": "oc_system",
+                    "chatType": "group",
+                    "text": "把这篇文章融入体系，更新 Skill https://example.com/skill",
+                    "openId": "ou_alice",
+                    "userId": "alice",
+                    "mentionedOpenIds": "",
                 },
-            )
-            self.assertEqual(reply, "")
-            self.assertFalse(list((root / "projects").glob("*/project.md")))
-
-    def test_deepseek_router_status_query_uses_project_status_flow(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            write_minimal_bundle(root)
-            self.assertEqual(main(["--root", str(root), "project", "register", "--project-id", "agent-hub", "--name", "Agent Hub", "--owner", "meimei"]), 0)
-            reply = feishu_module.router_decision_reply(
-                Bundle(root),
-                {"messageId": "om_model_status", "text": "这个项目现在怎么样", "openId": "ou_alice"},
                 feishu_module.load_feishu_settings(),
-                {
-                    "intent": "status_query",
-                    "confidence": 0.91,
-                    "risk": "L0",
-                    "directHandle": True,
-                    "taskType": "none",
-                    "requiredFields": {"projectName": "Agent Hub"},
-                    "missingFields": [],
-                    "toolSuggestions": [],
-                    "reason": "project status query",
-                },
             )
-            self.assertIn("项目：Agent Hub", reply)
-            self.assertIn("当前状态：草稿", reply)
-
-    def test_deepseek_router_failure_records_metric_and_falls_back(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            write_minimal_bundle(root)
-            original_router = feishu_module.call_deepseek_router
-            try:
-                feishu_module.call_deepseek_router = lambda _text, _incoming: (_ for _ in ()).throw(feishu_module.KnowledgeError("invalid router JSON"))
-                reply = feishu_module.deepseek_router_reply(
-                    Bundle(root),
-                    {"messageId": "om_router_fail", "chatType": "p2p", "text": "删掉所有知识库", "openId": "ou_alice"},
-                    feishu_module.load_feishu_settings(),
-                )
-                self.assertEqual(reply, "")
-                audit_text = "\n".join(path.read_text(encoding="utf-8") for path in (root / "knowledge" / "audit").glob("*.md"))
-                self.assertIn("feishu.router.metric", audit_text)
-                self.assertIn('"fallback": true', audit_text)
-                self.assertIn('"errorClass": "KnowledgeError"', audit_text)
-                self.assertNotIn("删掉所有知识库", audit_text)
-            finally:
-                feishu_module.call_deepseek_router = original_router
+            self.assertIn("体系变更请求", reply)
+            self.assertIn("评审", reply)
+            self.assertFalse(list((root / "tasks").glob("kt-*.md")) + list((root / "projects" / "company-knowledge-core" / "tasks").glob("kt-*.md")))
 
     def test_project_owner_onboarding_uses_project_name_not_required_project_id(self) -> None:
         message = feishu_module.project_owner_onboarding_message(
@@ -10166,9 +11152,9 @@ Use parser.
         guide = (REPO_ROOT / "docs/guides/agent-hub-user-guide.md").read_text(encoding="utf-8")
         workflow = (REPO_ROOT / "docs/agent-team/agent-hub-product-workflows.md").read_text(encoding="utf-8")
         protocol = (REPO_ROOT / "docs/protocols/agent-ring-communication-protocol.md").read_text(encoding="utf-8")
-        self.assertIn("桢知 Agent Hub 是公司项目入口、中央调度器入口和知识沉淀入口", guide)
+        self.assertIn("桢知 Agent Hub 是公司知识工程、Agent 能力治理、工具治理和项目采用入口", guide)
         self.assertIn("飞书自定义菜单不能按私聊和群聊分别配置", guide)
-        self.assertIn("中央调度器会把任务分配给具备能力和权限的 Agent Ring Runner", guide)
+        self.assertIn("普通业务工作默认在项目本地执行", guide)
         self.assertIn("已有仓库接入", guide)
         self.assertIn("从头创建新项目", guide)
         self.assertIn("菜单地图", guide)
@@ -10176,7 +11162,7 @@ Use parser.
         self.assertIn("Agent Ring 是外部 Agent 工作台", guide)
         self.assertIn("This repository does not implement Agent Ring", protocol)
         self.assertIn("flowchart", guide)
-        self.assertIn("Creating a project means starting a real project", workflow)
+        self.assertIn("Creating a project in central means registering that a real project adopts company Agent capability", workflow)
         self.assertIn("repoMode", workflow)
 
     def test_feishu_menu_shortcuts_return_guided_next_steps(self) -> None:
@@ -10581,7 +11567,7 @@ Use parser.
                 feishu_module.send_feishu_direct_response = original_direct
             self.assertIn("公共知识资料", reply)
             self.assertIn("任务编号", reply)
-            self.assertIn("原始资料", reply)
+            self.assertIn("后续处理", reply)
             self.assertIn("等待执行电脑接管", reply)
             self.assertNotIn("状态: waiting_runner", reply)
             sources = [path for path in (root / "projects" / "company-knowledge-core" / "sources").glob("*.md") if path.name != "index.md"]
@@ -10603,7 +11589,7 @@ Use parser.
             sent_card_text = json.dumps(sent_cards[0][1], ensure_ascii=False)
             self.assertIn(str(task["taskId"]), sent_card_text)
             self.assertIn("需要手动接管任务", sent_card_text)
-            self.assertIn("本地 Codex", sent_card_text)
+            self.assertIn("指定执行电脑上的 Codex / Claude", sent_card_text)
             notifications = [
                 load_object(path)
                 for path in (root / "notifications").glob("*.md")
@@ -10614,6 +11600,7 @@ Use parser.
 
     def test_manual_runner_card_uses_project_initialization_instructions(self) -> None:
         project_card = feishu_module.manual_runner_required_card(
+            Bundle(REPO_ROOT),
             {
                 "taskId": "project-init-agent-hub",
                 "title": "Agent Hub 项目初始化",
@@ -10628,14 +11615,15 @@ Use parser.
         project_text = json.dumps(project_card, ensure_ascii=False)
         self.assertIn("接管项目初始化任务 project-init-agent-hub", project_text)
         self.assertIn("首批 ProjectTask", project_text)
-        self.assertIn("项目初始化需要本地接管", project_text)
-        self.assertIn("等待本地接管", project_text)
+        self.assertIn("项目初始化需要执行电脑接管", project_text)
+        self.assertIn("等待执行电脑接管", project_text)
         self.assertNotIn("waiting_runner", project_text)
         self.assertNotIn("任务卡", project_text)
         self.assertNotIn("接管知识工程任务", project_text)
         self.assertNotIn("KnowledgeItem draft", project_text)
 
         knowledge_card = feishu_module.manual_runner_required_card(
+            Bundle(REPO_ROOT),
             {
                 "taskId": "KT-001",
                 "title": "知识沉淀",
