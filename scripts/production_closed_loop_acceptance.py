@@ -18,10 +18,12 @@ from zhenzhi_knowledge.core import (
     graph_impact,
     load_object,
     make_agent,
+    make_policy,
     make_project,
     project_task_context_payload,
     register_agent_runner,
     set_project_task_status,
+    update_frontmatter_file,
     validate_bundle,
 )
 
@@ -56,6 +58,17 @@ def main() -> int:
 
         make_project(bundle, "acceptance-core", "Acceptance Core", "meimei")
         make_agent(bundle, "agent.acceptance.knowledge", "Acceptance Knowledge Agent", "meimei", "codex", "Process intake material.")
+        policy_path = make_policy(
+            bundle,
+            "policy.agent-acceptance-knowledge",
+            "Acceptance Knowledge Write Policy",
+            "agent.acceptance.knowledge",
+            "meimei",
+            ["acceptance-core"],
+            ["engineering"],
+            ["L1"],
+        )
+        update_frontmatter_file(policy_path, {"status": "active"})
         register_agent_runner(
             bundle,
             "runner.acceptance.local-codex",
@@ -76,6 +89,7 @@ def main() -> int:
             "meimei",
             project_id="acceptance-core",
             material_type="document",
+            storage_ref="workspace://acceptance/feishu-card-callback-lesson.md",
             content="Feishu interactive card callbacks must reply immediately, then update or send result asynchronously.",
             create_task_flag=True,
             assignee="agent.acceptance.knowledge",
