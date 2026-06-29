@@ -4266,6 +4266,44 @@ def release_is_expired(release: dict[str, Any]) -> bool:
     return bool(expires_at and expires_at <= datetime.now(timezone.utc).replace(microsecond=0))
 
 
+CAPABILITY_LIFECYCLE_STATES = ["draft", "review", "approved", "active", "degraded", "deprecated", "expired"]
+RUNNER_EXECUTION_CONTRACT_ACTIONS = ["claim", "execute", "report", "heartbeat"]
+
+
+def capability_lifecycle_state(item: dict[str, Any], evaluation: dict[str, Any] | None = None) -> str:
+    status = str(item.get("status") or "").strip().lower()
+    object_type = str(item.get("type") or "")
+    if object_type == "CapabilityRelease" and release_is_expired(item):
+        return "expired"
+    if status in {"draft", "pending", ""}:
+        return "draft"
+    if status in {"pending_review", "reviewing", "waiting_acceptance", "changes_requested"}:
+        return "review"
+    if status in {"approved"}:
+        return "approved"
+    if status in {"deprecated", "disabled", "rejected"}:
+        return "deprecated"
+    if status in {"released", "active"}:
+        recommendation = str((evaluation or {}).get("recommendation") or "")
+        if recommendation in {"require_review", "deprecate_candidate"}:
+            return "degraded"
+        return "active"
+    return "draft"
+
+
+def runner_execution_contract_state(runner: dict[str, Any]) -> str:
+    status = str(runner.get("status") or "").strip().lower()
+    if runner.get("heartbeatStale"):
+        return "heartbeat_stale"
+    if as_list(runner.get("failedLeases")):
+        return "report_failed"
+    if as_list(runner.get("currentLeases")):
+        return "executing"
+    if status in {"online", "idle", "busy"}:
+        return "ready"
+    return "offline"
+
+
 def rating_to_score(value: str) -> float:
     normalized = str(value or "").strip().lower()
     if normalized in {"excellent", "great", "good", "positive", "5"}:
@@ -4320,11 +4358,13 @@ def capability_evaluation_read_model(bundle: Bundle) -> dict[str, Any]:
             recommendation = "stabilize_candidate"
         else:
             recommendation = "monitor"
+        lifecycle_state = capability_lifecycle_state(release, {"recommendation": recommendation})
         evaluations.append(
             {
                 "releaseRef": release_ref,
                 "releaseId": release.get("releaseId", ""),
                 "status": release.get("status", ""),
+                "lifecycleState": lifecycle_state,
                 "usageMetric": release.get("usageMetric", ""),
                 "expiresAt": release.get("expiresAt", ""),
                 "expired": expired,
@@ -4359,6 +4399,12 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
     skill_assets = list_capability_objects(bundle, skill_storage_dir(bundle), "SkillAsset")
     tool_assets = list_capability_objects(bundle, bundle.root / "tools", "ToolAsset")
     evaluations = capability_evaluation_read_model(bundle)["evaluations"]
+    evaluation_by_release = {str(item.get("releaseRef") or ""): item for item in evaluations}
+    for candidate in candidates:
+        candidate["lifecycleState"] = capability_lifecycle_state(candidate)
+    for release in releases:
+        release["expired"] = release_is_expired(release)
+        release["lifecycleState"] = capability_lifecycle_state(release, evaluation_by_release.get(str(release.get("path") or "")))
     return {
         "apiVersion": "v0.1",
         "kind": "CapabilityControlPlane",
@@ -4374,6 +4420,7 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
             "expiredReleaseCount": sum(1 for item in releases if release_is_expired(item)),
             "releaseNeedingUsageDataCount": sum(1 for item in evaluations if item.get("recommendation") == "needs_usage_data"),
             "releaseReviewRequiredCount": sum(1 for item in evaluations if item.get("recommendation") in {"require_review", "deprecate_candidate"}),
+            "lifecycleCounts": status_counts([{"status": item.get("lifecycleState")} for item in releases + candidates]),
         },
         "candidates": candidates,
         "releases": releases,
@@ -4385,22 +4432,78 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
     }
 
 
+def control_plane_simulation(status_model: dict[str, Any]) -> dict[str, Any]:
+    capability = dict(status_model.get("capability") or {})
+    runner = dict(status_model.get("runner") or {})
+    task = dict(status_model.get("task") or {})
+    risks: list[str] = []
+    if capability.get("expiredReleases"):
+        risks.append("expired_release_present")
+    if any(item.get("lifecycleState") == "degraded" for item in capability.get("releases", [])):
+        risks.append("degraded_capability_present")
+    if int(runner.get("staleHeartbeatCount") or 0) > 0:
+        risks.append("runner_heartbeat_stale")
+    if int(runner.get("failedTaskCount") or 0) > 0:
+        risks.append("runner_failed_tasks")
+    stuck_count = len(task.get("stuckTasks") or [])
+    active_runner_count = int(runner.get("activeCount") or 0)
+    overload_risk = stuck_count > max(active_runner_count * 3, 3)
+    if overload_risk:
+        risks.append("task_queue_overload")
+    erroneous_publish_risk = bool(capability.get("expiredReleases")) or any(item.get("lifecycleState") == "degraded" and item.get("status") in {"released", "active"} for item in capability.get("releases", []))
+    if erroneous_publish_risk:
+        risks.append("erroneous_publish_risk")
+    return {
+        "kind": "ControlPlaneSimulation",
+        "stable": not risks,
+        "overloadRisk": overload_risk,
+        "erroneousPublishRisk": erroneous_publish_risk,
+        "risks": risks,
+    }
+
+
 def control_plane_status_read_model(bundle: Bundle) -> dict[str, Any]:
     capabilities = capability_control_read_model(bundle)
     runners = runner_registry_for_workbench(bundle)
+    for runner in runners:
+        runner["executionContract"] = {
+            "actions": RUNNER_EXECUTION_CONTRACT_ACTIONS,
+            "state": runner_execution_contract_state(runner),
+        }
     tasks = list_project_tasks(bundle)
     knowledge = search_index(bundle, {"type": "KnowledgeItem"})
     failed_task_statuses = {"blocked", "failed", "rejected", "changes_requested"}
     stuck_task_statuses = {"waiting_runner", "processing", "running", "blocked"}
-    return {
+    model = {
         "apiVersion": "v0.1",
         "kind": "ControlPlaneStatus",
         "generatedAt": utc_now(),
+        "singleReadModel": True,
+        "coreModels": {
+            "capabilityLifecycle": {
+                "states": CAPABILITY_LIFECYCLE_STATES,
+                "rules": [
+                    "expired releases are not active runner defaults",
+                    "evaluation recommendations can degrade active releases",
+                    "deprecated/rejected capabilities are not executable",
+                ],
+            },
+            "runnerExecutionContract": {
+                "actions": RUNNER_EXECUTION_CONTRACT_ACTIONS,
+                "rule": "Runner execution is claim -> execute -> report with heartbeat during lease.",
+            },
+            "controlPlaneReadModel": {
+                "publicEndpoint": "GET /v0/control-plane/status",
+                "contains": ["capability", "runner", "task", "knowledge", "simulation"],
+            },
+        },
         "capability": {
             "statusCounts": status_counts(capabilities["releases"]),
+            "lifecycleCounts": capabilities["summary"].get("lifecycleCounts", {}),
             "candidateStatusCounts": status_counts(capabilities["candidates"]),
             "pendingApproval": [item for item in capabilities["candidates"] if item.get("status") in {"waiting_acceptance", "reviewing"}],
             "expiredReleases": [item for item in capabilities["releases"] if release_is_expired(item)],
+            "releases": capabilities["releases"],
             "evaluation": capabilities["evaluations"],
         },
         "runner": {
@@ -4422,6 +4525,8 @@ def control_plane_status_read_model(bundle: Bundle) -> dict[str, Any]:
             "activeCount": sum(1 for item in knowledge if item.get("status") in {"verified", "approved", "active"}),
         },
     }
+    model["simulation"] = control_plane_simulation(model)
+    return model
 
 
 TRACE_SECTION_TYPES = {
