@@ -21,7 +21,7 @@ Agent Work compose project: lighthouse
 Agent Work app port: 127.0.0.1:8089
 Knowledge compose project: zhenzhi_knowledge
 Knowledge API port: 127.0.0.1:8765
-Public route: http://124.221.138.151/knowledge-api
+Public route: https://124.221.138.151/knowledge-api
 Remote path: /opt/projects/company_knowledge_core/repo
 ```
 
@@ -49,7 +49,7 @@ Publish behavior:
 Client profile:
 
 ```bash
-export ZHENZHI_KNOWLEDGE_API_PROD=http://124.221.138.151/knowledge-api
+export ZHENZHI_KNOWLEDGE_API_PROD=https://124.221.138.151/knowledge-api
 export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<token>
 zhenzhi-knowledge profile use production
 zhenzhi-knowledge api export

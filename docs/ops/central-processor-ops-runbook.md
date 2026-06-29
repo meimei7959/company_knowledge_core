@@ -66,7 +66,7 @@ python3 -m zhenzhi_knowledge --root /Users/meimei/Documents/company_knowledge_co
 Production health URL:
 
 ```txt
-http://124.221.138.151/knowledge-api/health
+https://124.221.138.151/knowledge-api/health
 ```
 
 Healthy response:

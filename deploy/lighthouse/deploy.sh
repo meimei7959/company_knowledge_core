@@ -231,7 +231,7 @@ wait_health() {
   url="$1"
   label="$2"
   for attempt in $(seq 1 30); do
-    if curl -fsS "$url"; then
+    if curl -k -fsSL "$url"; then
       echo ""
       echo "${label} healthy"
       return 0
@@ -262,4 +262,4 @@ curl -fsS \
 echo ""
 REMOTE
 echo ""
-echo "deployed: http://${HOST}/knowledge-api"
+echo "deployed: https://${HOST}/knowledge-api"
