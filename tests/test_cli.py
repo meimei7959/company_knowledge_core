@@ -1023,11 +1023,14 @@ evidenceRefs:
             self.assertEqual(12.0, evaluation["timeSavedMinutes"])
             self.assertEqual(5.0, evaluation["userFeedbackScore"])
             self.assertEqual("stabilize_candidate", evaluation["recommendation"])
+            self.assertEqual("continue", evaluation["failureGovernance"]["isolationState"])
+            self.assertEqual("eligible", evaluation["failureGovernance"]["runnerEligibility"])
             status = core_module.control_plane_status_read_model(bundle)
             self.assertEqual("ControlPlaneStatus", status["kind"])
             self.assertTrue(status["singleReadModel"])
             self.assertEqual(["draft", "review", "approved", "active", "degraded", "deprecated", "expired"], status["coreModels"]["capabilityLifecycle"]["states"])
             self.assertEqual(["claim", "execute", "report", "heartbeat"], status["coreModels"]["runnerExecutionContract"]["actions"])
+            self.assertIn("failureGovernance", status)
             self.assertIn("capability", status)
             self.assertIn("runner", status)
             self.assertIn("task", status)
@@ -1042,11 +1045,105 @@ evidenceRefs:
             cli_status = json.loads(stdout.getvalue())
             self.assertEqual("ControlPlaneStatus", cli_status["kind"])
             self.assertEqual("GET /v0/control-plane/status", cli_status["coreModels"]["controlPlaneReadModel"]["publicEndpoint"])
+            self.assertIn("failureGovernance", cli_status)
             actions = audit_actions(root)
             self.assertIn("capability.candidate.create", actions)
             self.assertIn("capability.release.create", actions)
             self.assertIn("capability.usage.record", actions)
             self.assertIn("capability.feedback.ingest", actions)
+
+    def test_control_plane_failure_governance_quarantines_bad_capability_runner_and_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            candidate = core_module.create_capability_candidate(
+                bundle,
+                "Failure prone skill",
+                candidate_id="failure-prone-skill",
+                candidate_type="skill",
+                owner="agent.company-knowledge-core.knowledge-engineering",
+                summary="Skill used to verify failure governance.",
+            )
+            release = core_module.create_capability_release(
+                bundle,
+                "Failure prone skill release",
+                "agent.company-knowledge-core.knowledge-engineering",
+                [candidate["candidateRef"]],
+                status="draft",
+                **release_discipline(),
+            )
+            update_frontmatter_file(root / release["releaseRef"], {"status": "released"})
+            core_module.record_skill_usage_event(
+                bundle,
+                candidate["candidateRef"],
+                "runner.failure",
+                "agent.company-knowledge-core.knowledge-engineering",
+                task_id="KT-FAILURE-001",
+                release_ref=release["releaseRef"],
+                outcome="failed",
+                summary="Capability produced an unusable result.",
+            )
+            core_module.create_capability_feedback(
+                bundle,
+                release["releaseRef"],
+                "agent.company.project-manager",
+                "Do not propagate until fixed.",
+                rating="bad",
+                feedback_type="negative",
+            )
+
+            evaluation = core_module.capability_evaluation_read_model(bundle)["evaluations"][0]
+            self.assertEqual("quarantine", evaluation["recommendation"])
+            self.assertEqual("quarantined", evaluation["failureGovernance"]["isolationState"])
+            self.assertEqual("blocked", evaluation["failureGovernance"]["runnerEligibility"])
+            control = core_module.capability_control_read_model(bundle)
+            self.assertEqual("degraded", control["releases"][0]["lifecycleState"])
+            self.assertEqual(1, control["summary"]["quarantinedReleaseCount"])
+            package = core_module.runner_capability_pull(bundle, runner_id="runner.failure")
+            self.assertEqual([], package["releases"])
+            self.assertEqual("nothing_to_install", package["installStatus"])
+
+            runner_path = core_module.register_agent_runner(
+                bundle,
+                "runner.failure",
+                "Failure runner",
+                mode="online",
+                agents=["agent.company-knowledge-core.knowledge-engineering"],
+            )
+            update_frontmatter_file(
+                runner_path,
+                {
+                    "failedLeases": [
+                        {"taskId": "KT-FAILURE-001"},
+                        {"taskId": "KT-FAILURE-002"},
+                        {"taskId": "KT-FAILURE-003"},
+                    ]
+                },
+            )
+            failed_task = create_project_task(
+                bundle,
+                "Repair failed capability execution",
+                "company-knowledge-core",
+                "agent.company.project-manager",
+                "agent.company-knowledge-core.knowledge-engineering",
+                task_type="capability_repair",
+                task_id="KT-FAILURE-REPAIR",
+                expected_output=["Repair or hand off failure."],
+            )
+            update_frontmatter_file(failed_task, {"status": "failed", "retryCount": 3})
+
+            status = core_module.control_plane_status_read_model(bundle)
+            self.assertIn("capability_quarantine_present", status["simulation"]["risks"])
+            self.assertIn("runner_quarantine_present", status["simulation"]["risks"])
+            self.assertIn("task_quarantine_present", status["simulation"]["risks"])
+            self.assertFalse(status["simulation"]["stable"])
+            runner_governance = status["runner"]["runners"][0]["failureGovernance"]
+            self.assertEqual("quarantined", runner_governance["isolationState"])
+            self.assertFalse(runner_governance["eligibleForClaim"])
+            task_governance = status["task"]["failedTasks"][0]["failureGovernance"]
+            self.assertEqual("quarantined", task_governance["isolationState"])
+            self.assertFalse(task_governance["retryAllowed"])
 
     def test_enterprise_agent_capability_review_approval_pull_and_feishu_intake(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -4118,7 +4118,11 @@ def runner_capability_pull(
     releases = [
         item
         for item in control["releases"]
-        if item.get("status") in {"released", "active"} and not release_is_expired(item) and (not project_id or not as_list(item.get("targetProjects")) or slug(project_id) in as_list(item.get("targetProjects")))
+        if item.get("status") in {"released", "active"}
+        and item.get("lifecycleState") == "active"
+        and dict(item.get("failureGovernance") or {}).get("runnerEligibility") == "eligible"
+        and not release_is_expired(item)
+        and (not project_id or not as_list(item.get("targetProjects")) or slug(project_id) in as_list(item.get("targetProjects")))
     ]
     drafts = []
     if include_drafts:
@@ -4268,6 +4272,147 @@ def release_is_expired(release: dict[str, Any]) -> bool:
 
 CAPABILITY_LIFECYCLE_STATES = ["draft", "review", "approved", "active", "degraded", "deprecated", "expired"]
 RUNNER_EXECUTION_CONTRACT_ACTIONS = ["claim", "execute", "report", "heartbeat"]
+FAILURE_GOVERNANCE_THRESHOLDS = {
+    "capabilityDegradeFailureRate": 0.3,
+    "capabilityQuarantineFailureRate": 0.5,
+    "capabilityQuarantineRejectionRate": 0.5,
+    "capabilityLowFeedbackScore": 2.5,
+    "runnerQuarantineFailedLeaseCount": 3,
+    "taskMaxAutomaticRetries": 3,
+    "taskRetryBackoffBaseMinutes": 15,
+}
+
+
+def capability_failure_governance(release: dict[str, Any], evaluation: dict[str, Any] | None = None) -> dict[str, Any]:
+    evaluation = evaluation or {}
+    failure_rate = float(evaluation.get("failureRate") or 0)
+    rejection_rate = float(evaluation.get("rejectionRate") or 0)
+    feedback_score = float(evaluation.get("userFeedbackScore") or 0)
+    usage_count = int(evaluation.get("usageCount") or 0)
+    expired = bool(evaluation.get("expired")) or release_is_expired(release)
+    status = str(release.get("status") or "").strip().lower()
+    thresholds = FAILURE_GOVERNANCE_THRESHOLDS
+    if expired:
+        isolation_state = "quarantined"
+        runner_eligibility = "blocked"
+        lifecycle_transition = "expired"
+        rule = "expired capability release is isolated and cannot be pulled by runners"
+        recovery_mode = "manual_release_review"
+        required_signals = ["fresh approval", "new release or extended ttl", "rollback plan still valid"]
+    elif failure_rate >= thresholds["capabilityQuarantineFailureRate"] or rejection_rate >= thresholds["capabilityQuarantineRejectionRate"]:
+        isolation_state = "quarantined"
+        runner_eligibility = "blocked"
+        lifecycle_transition = "degraded"
+        rule = "high failure or rejection rate quarantines the capability from runner pull"
+        recovery_mode = "manual_recovery_review"
+        required_signals = ["owner review", "corrective task result", "successful post-fix usage evidence"]
+    elif failure_rate >= thresholds["capabilityDegradeFailureRate"] or (feedback_score and feedback_score < thresholds["capabilityLowFeedbackScore"]):
+        isolation_state = "manual_review"
+        runner_eligibility = "blocked"
+        lifecycle_transition = "degraded"
+        rule = "degraded capability requires review before more runner propagation"
+        recovery_mode = "evaluation_based_recovery"
+        required_signals = ["review outcome", "failure rate below threshold", "positive feedback evidence"]
+    elif usage_count == 0 and status in {"released", "active"}:
+        isolation_state = "continue"
+        runner_eligibility = "eligible"
+        lifecycle_transition = "active"
+        rule = "released capability may run but must collect usage metric evidence"
+        recovery_mode = "usage_monitoring"
+        required_signals = ["usage event linked to release", "feedback score when available"]
+    else:
+        isolation_state = "continue"
+        runner_eligibility = "eligible"
+        lifecycle_transition = "active" if status in {"released", "active"} else capability_lifecycle_state(release)
+        rule = "healthy capability remains eligible for controlled runner pull"
+        recovery_mode = "not_required"
+        required_signals = []
+    return {
+        "failureDomain": "capability",
+        "isolationState": isolation_state,
+        "runnerEligibility": runner_eligibility,
+        "lifecycleTransition": lifecycle_transition,
+        "failurePropagationRule": rule,
+        "recoveryPolicy": {
+            "mode": recovery_mode,
+            "requiredSignals": required_signals,
+        },
+    }
+
+
+def runner_failure_governance(runner: dict[str, Any]) -> dict[str, Any]:
+    failed_count = len(as_list(runner.get("failedLeases")))
+    heartbeat_stale = bool(runner.get("heartbeatStale"))
+    threshold = FAILURE_GOVERNANCE_THRESHOLDS["runnerQuarantineFailedLeaseCount"]
+    if heartbeat_stale or failed_count >= threshold:
+        isolation_state = "quarantined"
+        eligible_for_claim = False
+        rule = "stale heartbeat or repeated failed leases quarantine the runner from new claims"
+        recovery_mode = "operator_review"
+        required_signals = ["fresh heartbeat", "failed lease repair", "owner restore decision"]
+    elif failed_count:
+        isolation_state = "manual_review"
+        eligible_for_claim = False
+        rule = "runner with failed lease needs review before additional work"
+        recovery_mode = "lease_repair"
+        required_signals = ["finish, retry, or handoff failed lease", "next heartbeat"]
+    else:
+        isolation_state = "continue"
+        eligible_for_claim = str(runner.get("status") or "").strip().lower() in {"online", "idle", "busy"}
+        rule = "healthy runner can claim tasks through the execution contract"
+        recovery_mode = "not_required"
+        required_signals = []
+    return {
+        "failureDomain": "runner",
+        "isolationState": isolation_state,
+        "eligibleForClaim": eligible_for_claim,
+        "failurePropagationRule": rule,
+        "recoveryPolicy": {
+            "mode": recovery_mode,
+            "requiredSignals": required_signals,
+        },
+    }
+
+
+def task_failure_governance(task: dict[str, Any]) -> dict[str, Any]:
+    status = str(task.get("status") or "").strip().lower()
+    attempt_count = int(task.get("retryCount") or task.get("leaseAttempt") or task.get("attemptCount") or 0)
+    max_retries = int(FAILURE_GOVERNANCE_THRESHOLDS["taskMaxAutomaticRetries"])
+    retry_allowed = status in {"blocked", "failed", "running", "processing", "waiting_runner"} and attempt_count < max_retries
+    backoff = int(FAILURE_GOVERNANCE_THRESHOLDS["taskRetryBackoffBaseMinutes"]) * (2 ** max(0, attempt_count))
+    if status in {"rejected", "changes_requested"}:
+        isolation_state = "manual_review"
+        retry_allowed = False
+        rule = "human rejection or requested changes must not auto retry"
+        recovery_mode = "human_review"
+        required_signals = ["review summary", "revised task scope"]
+    elif status in {"blocked", "failed"} and not retry_allowed:
+        isolation_state = "quarantined"
+        rule = "task exceeded automatic retry budget and is isolated for repair or handoff"
+        recovery_mode = "manual_repair_or_handoff"
+        required_signals = ["failure diagnosis", "owner handoff or retry approval"]
+    elif retry_allowed:
+        isolation_state = "retry_backoff"
+        rule = "task may retry after exponential backoff without duplicating side effects"
+        recovery_mode = "automatic_retry"
+        required_signals = ["lease release", "audit-linked retry attempt"]
+    else:
+        isolation_state = "continue"
+        rule = "task remains in normal execution flow"
+        recovery_mode = "not_required"
+        required_signals = []
+    return {
+        "failureDomain": "task",
+        "isolationState": isolation_state,
+        "retryAllowed": retry_allowed,
+        "backoffMinutes": backoff if retry_allowed else 0,
+        "maxAutomaticRetries": max_retries,
+        "failurePropagationRule": rule,
+        "recoveryPolicy": {
+            "mode": recovery_mode,
+            "requiredSignals": required_signals,
+        },
+    }
 
 
 def capability_lifecycle_state(item: dict[str, Any], evaluation: dict[str, Any] | None = None) -> str:
@@ -4285,7 +4430,8 @@ def capability_lifecycle_state(item: dict[str, Any], evaluation: dict[str, Any] 
         return "deprecated"
     if status in {"released", "active"}:
         recommendation = str((evaluation or {}).get("recommendation") or "")
-        if recommendation in {"require_review", "deprecate_candidate"}:
+        governance = dict((evaluation or {}).get("failureGovernance") or {})
+        if recommendation in {"require_review", "deprecate_candidate", "quarantine"} or governance.get("isolationState") in {"manual_review", "quarantined"}:
             return "degraded"
         return "active"
     return "draft"
@@ -4358,7 +4504,19 @@ def capability_evaluation_read_model(bundle: Bundle) -> dict[str, Any]:
             recommendation = "stabilize_candidate"
         else:
             recommendation = "monitor"
-        lifecycle_state = capability_lifecycle_state(release, {"recommendation": recommendation})
+        base_evaluation = {
+            "recommendation": recommendation,
+            "expired": expired,
+            "usageCount": usage_count,
+            "failureRate": round(failure_rate, 4),
+            "rejectionRate": round(rejection_rate, 4),
+            "userFeedbackScore": round(feedback_score, 2),
+        }
+        failure_governance = capability_failure_governance(release, base_evaluation)
+        if failure_governance["isolationState"] == "quarantined":
+            recommendation = "quarantine"
+            base_evaluation["recommendation"] = recommendation
+        lifecycle_state = capability_lifecycle_state(release, {**base_evaluation, "failureGovernance": failure_governance})
         evaluations.append(
             {
                 "releaseRef": release_ref,
@@ -4375,6 +4533,7 @@ def capability_evaluation_read_model(bundle: Bundle) -> dict[str, Any]:
                 "userFeedbackScore": round(feedback_score, 2),
                 "rejectionRate": round(rejection_rate, 4),
                 "recommendation": recommendation,
+                "failureGovernance": failure_governance,
             }
         )
     return {"apiVersion": "v0.1", "kind": "CapabilityEvaluationReadModel", "generatedAt": utc_now(), "evaluations": evaluations}
@@ -4404,7 +4563,9 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
         candidate["lifecycleState"] = capability_lifecycle_state(candidate)
     for release in releases:
         release["expired"] = release_is_expired(release)
-        release["lifecycleState"] = capability_lifecycle_state(release, evaluation_by_release.get(str(release.get("path") or "")))
+        release_evaluation = evaluation_by_release.get(str(release.get("path") or "")) or {}
+        release["failureGovernance"] = capability_failure_governance(release, release_evaluation)
+        release["lifecycleState"] = capability_lifecycle_state(release, {**release_evaluation, "failureGovernance": release["failureGovernance"]})
     return {
         "apiVersion": "v0.1",
         "kind": "CapabilityControlPlane",
@@ -4419,7 +4580,8 @@ def capability_control_read_model(bundle: Bundle, status: str = "", candidate_ty
             "feedbackCount": len(feedback),
             "expiredReleaseCount": sum(1 for item in releases if release_is_expired(item)),
             "releaseNeedingUsageDataCount": sum(1 for item in evaluations if item.get("recommendation") == "needs_usage_data"),
-            "releaseReviewRequiredCount": sum(1 for item in evaluations if item.get("recommendation") in {"require_review", "deprecate_candidate"}),
+            "releaseReviewRequiredCount": sum(1 for item in evaluations if item.get("recommendation") in {"require_review", "deprecate_candidate", "quarantine"}),
+            "quarantinedReleaseCount": sum(1 for item in releases if dict(item.get("failureGovernance") or {}).get("isolationState") == "quarantined"),
             "lifecycleCounts": status_counts([{"status": item.get("lifecycleState")} for item in releases + candidates]),
         },
         "candidates": candidates,
@@ -4441,10 +4603,16 @@ def control_plane_simulation(status_model: dict[str, Any]) -> dict[str, Any]:
         risks.append("expired_release_present")
     if any(item.get("lifecycleState") == "degraded" for item in capability.get("releases", [])):
         risks.append("degraded_capability_present")
+    if any(dict(item.get("failureGovernance") or {}).get("isolationState") == "quarantined" for item in capability.get("releases", [])):
+        risks.append("capability_quarantine_present")
     if int(runner.get("staleHeartbeatCount") or 0) > 0:
         risks.append("runner_heartbeat_stale")
     if int(runner.get("failedTaskCount") or 0) > 0:
         risks.append("runner_failed_tasks")
+    if any(dict(item.get("failureGovernance") or {}).get("isolationState") == "quarantined" for item in runner.get("runners", [])):
+        risks.append("runner_quarantine_present")
+    if any(dict(item.get("failureGovernance") or {}).get("isolationState") == "quarantined" for item in task.get("failedTasks", [])):
+        risks.append("task_quarantine_present")
     stuck_count = len(task.get("stuckTasks") or [])
     active_runner_count = int(runner.get("activeCount") or 0)
     overload_risk = stuck_count > max(active_runner_count * 3, 3)
@@ -4470,10 +4638,14 @@ def control_plane_status_read_model(bundle: Bundle) -> dict[str, Any]:
             "actions": RUNNER_EXECUTION_CONTRACT_ACTIONS,
             "state": runner_execution_contract_state(runner),
         }
+        runner["failureGovernance"] = runner_failure_governance(runner)
     tasks = list_project_tasks(bundle)
     knowledge = search_index(bundle, {"type": "KnowledgeItem"})
     failed_task_statuses = {"blocked", "failed", "rejected", "changes_requested"}
     stuck_task_statuses = {"waiting_runner", "processing", "running", "blocked"}
+    for task in tasks:
+        if task.get("status") in failed_task_statuses or task.get("status") in stuck_task_statuses:
+            task["failureGovernance"] = task_failure_governance(task)
     model = {
         "apiVersion": "v0.1",
         "kind": "ControlPlaneStatus",
@@ -4485,17 +4657,28 @@ def control_plane_status_read_model(bundle: Bundle) -> dict[str, Any]:
                 "rules": [
                     "expired releases are not active runner defaults",
                     "evaluation recommendations can degrade active releases",
+                    "failure governance can quarantine releases from runner pull",
                     "deprecated/rejected capabilities are not executable",
                 ],
             },
             "runnerExecutionContract": {
                 "actions": RUNNER_EXECUTION_CONTRACT_ACTIONS,
-                "rule": "Runner execution is claim -> execute -> report with heartbeat during lease.",
+                "rule": "Runner execution is claim -> execute -> report with heartbeat during lease; failed leases or stale heartbeat can quarantine future claims.",
             },
             "controlPlaneReadModel": {
                 "publicEndpoint": "GET /v0/control-plane/status",
-                "contains": ["capability", "runner", "task", "knowledge", "simulation"],
+                "contains": ["capability", "runner", "task", "knowledge", "failureGovernance", "simulation"],
             },
+        },
+        "failureGovernance": {
+            "thresholds": FAILURE_GOVERNANCE_THRESHOLDS,
+            "rules": [
+                "capability failure affects lifecycle and runner eligibility",
+                "runner failure affects claim eligibility",
+                "task failure affects retry, backoff, and handoff",
+            ],
+            "isolationStates": ["continue", "retry_backoff", "manual_review", "quarantined"],
+            "recoveryModes": ["usage_monitoring", "evaluation_based_recovery", "manual_recovery_review", "operator_review", "manual_repair_or_handoff"],
         },
         "capability": {
             "statusCounts": status_counts(capabilities["releases"]),
