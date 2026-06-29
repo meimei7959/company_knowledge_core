@@ -129,6 +129,8 @@
 
 - taskId
 - taskType
+- taskRuntime
+- executionContract
 - projectId
 - title
 - requester
@@ -170,7 +172,7 @@
 
 - 提交人知道事情已经被接收，不会丢在群聊。
 - 调度器知道任务需要什么能力、应该调度到哪台 Runner。
-- Agent Ring 知道自己要处理什么、原始材料在哪里、验收标准是什么。
+- Agent Ring 知道自己要处理什么、原始材料在哪里、验收标准是什么，并能通过 executionContract hash 判断上下文是否仍然新鲜。
 - 本机 Codex、Claude 或本地模型可以按 taskId 拉取 SourceMaterial 和上下文。
 - 完成后可以回填 TaskResult、更新状态、通知提交人。
 
@@ -222,6 +224,7 @@ Runner 解决：
 - sourceMaterialRefs
 - evidenceRefs
 - testsOrChecks
+- executionContractEvaluation
 - nextActions
 - completedAt
 

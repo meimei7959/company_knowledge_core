@@ -18,6 +18,7 @@ from zhenzhi_knowledge.core import (
     load_object,
     read_text,
     rel,
+    refresh_project_task_execution_contract,
     update_frontmatter_file,
     validate_bundle,
     write_text,
@@ -743,6 +744,7 @@ def initialize_project(args: argparse.Namespace) -> int:
             workspace_ref=workspace_ref,
         )
         localize_project_initialization_labels(bundle, args.project_id, args.name)
+        refresh_project_task_execution_contract(bundle, f"project-init-{args.project_id}", actor=submitter)
         source_refs = register_source_repo(bundle, args.project_id, args.name, submitter, source_repo_url, source_repo_path)
         source_refs.extend(register_source_files(bundle, args.project_id, submitter, stored_files))
         update_project_workspace_metadata(bundle, result["projectRef"], source_refs, args.workspace_profile, source_repo_url, source_repo_path)

@@ -31,6 +31,15 @@ priority: normal
 dueAt:
 sourceMaterialRefs: []
 expectedOutput: []
+executionContract:
+  version: execution-contract.v1
+  contractId: EC-KT-YYYYMMDD-001
+  taskId: KT-YYYYMMDD-001
+  status: active
+  generatedAt: 2026-06-18T00:00:00Z
+  ruleRef: docs/workflows/execution-contract-lifecycle.md
+  hashAlgorithm: sha256
+  sourceFactsHash: sha256:<hash of task facts>
 resultRef:
 notificationRefs: []
 auditRefs: []
@@ -57,6 +66,11 @@ What the requester asked for.
 - Structured summary.
 - Evidence-backed conclusions.
 - KnowledgeItem drafts or project updates if applicable.
+
+## Execution Contract
+
+- Refresh with `zhenzhi-knowledge task contract <task-id>` after source materials, expected output, linked requirements/defects, or runtime constraints change.
+- Runner must not close the task when `executionContract.sourceFactsHash` differs from current task facts.
 
 ## Handling Notes
 

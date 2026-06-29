@@ -20,7 +20,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from zhenzhi_knowledge.cli import main as cli_main
-from zhenzhi_knowledge.core import Bundle, KnowledgeError, update_frontmatter_file
+from zhenzhi_knowledge.core import Bundle, KnowledgeError, refresh_project_task_execution_contract, update_frontmatter_file
 from zhenzhi_knowledge.server import KnowledgeHTTPServer
 
 
@@ -109,6 +109,7 @@ Agent Ring must claim tasks, pull portable context, execute locally, and write b
         ),
         encoding="utf-8",
     )
+    refresh_project_task_execution_contract(Bundle(root), "KT-CONTRACT-MISSING-CAP", actor="agent-ring-contract")
 
 
 def create_task(root: Path, task_id: str, title: str, assignee: str, source: Path) -> None:

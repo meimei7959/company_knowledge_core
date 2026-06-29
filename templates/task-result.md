@@ -28,6 +28,17 @@ sourceMaterialRefs: []
 evidenceRefs: []
 testsOrChecks: []
 nextActions: []
+executionContractEvaluation:
+  version: execution-contract-evaluation.v1
+  status: pending
+  passed: false
+  required: true
+  freshnessRequired: true
+  contractRef:
+  storedSourceFactsHash:
+  currentSourceFactsHash:
+  ruleRef: docs/workflows/execution-contract-lifecycle.md
+  reasons: []
 pmCanClose: false
 pmCloseoutScope: ""
 pmDeliveryGate:
@@ -76,6 +87,11 @@ What was completed by the Agent Ring runner.
 ## Next Actions
 
 - Follow-up tasks, review needs, blockers, or notifications.
+
+## Execution Contract
+
+- Confirm the TaskResult was produced from the current `executionContract`.
+- If stale, refresh the task contract and rerun the affected work before closing.
 
 ## Common Operating Rules
 

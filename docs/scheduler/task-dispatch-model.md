@@ -73,6 +73,7 @@ Every dispatched task must have:
 - taskId;
 - taskType;
 - taskRuntime;
+- executionContract with a fresh sourceFactsHash when taskRuntime requires it;
 - status;
 - requiredCapabilities;
 - lease owner/token/expiry after claim;
@@ -84,11 +85,14 @@ Every dispatched task must have:
 - category;
 - qualityGate;
 - acceptancePath;
+- executionContractRequired and executionContractFreshnessRequired;
 - requiresSourceMaterial;
 - requiresKnowledgeDraft;
 - requiresTests.
 
 The scheduler must use `taskRuntime` instead of guessing from title text. Engineering tasks are evaluated by engineering/test evidence, not by KnowledgeItem draft requirements. Knowledge capture tasks are evaluated by SourceMaterial, KnowledgeItem draft, and review path. Project initialization tasks are evaluated by launch context, runner/manual handoff, first task list, and PM review.
+
+`executionContract` is the runner-facing closure contract generated from the task facts and normalized runtime. If source material, expected output, linked requirement/defect refs, handoff contract, or runtime constraints change, the runner or project manager must refresh it with `zhenzhi-knowledge task contract <task-id>` before execution or closure. `TaskResult.executionContractEvaluation` records whether the result came from the current task facts.
 
 Project initialization tasks additionally require:
 
