@@ -103,14 +103,15 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args: object) -> None:
         return
 
-    def _json(self, status: int, payload: dict | list) -> None:
+    def _json(self, status: int, payload: dict | list, write_body: bool = True) -> None:
         body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Connection", "close")
         self.end_headers()
-        self.wfile.write(body)
+        if write_body:
+            self.wfile.write(body)
         self.close_connection = True
 
     def _read_json(self) -> dict:
@@ -142,17 +143,32 @@ class KnowledgeHandler(BaseHTTPRequestHandler):
             ),
         )
 
+    def _health_response(self) -> tuple[int, dict]:
+        problems = validate_bundle(self.server.bundle)
+        try:
+            operational = operational_store_status()
+        except Exception as exc:
+            operational = {"ok": False, "error": str(exc)}
+            problems = [*problems, f"operational store unavailable: {exc}"]
+        return 200 if not problems else 500, {"ok": not problems, "problems": problems, "operationalStore": operational}
+
+    def do_HEAD(self) -> None:
+        parsed = urlparse(self.path)
+        try:
+            if parsed.path == "/health":
+                status, payload = self._health_response()
+                self._json(status, payload, write_body=False)
+            else:
+                self.send_error(404, "not found")
+        except Exception as exc:
+            self._json(500, {"error": str(exc)}, write_body=False)
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         try:
             if parsed.path == "/health":
-                problems = validate_bundle(self.server.bundle)
-                try:
-                    operational = operational_store_status()
-                except Exception as exc:
-                    operational = {"ok": False, "error": str(exc)}
-                    problems = [*problems, f"operational store unavailable: {exc}"]
-                self._json(200 if not problems else 500, {"ok": not problems, "problems": problems, "operationalStore": operational})
+                status, payload = self._health_response()
+                self._json(status, payload)
             elif not self._authorized():
                 self._reject_unauthorized()
             elif parsed.path == "/v0/snapshot":

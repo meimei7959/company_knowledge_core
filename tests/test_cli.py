@@ -10309,6 +10309,10 @@ Use parser.
 
                 health = json.load(urllib.request.urlopen(base + "/health"))
                 self.assertTrue(health["ok"])
+                health_head = urllib.request.Request(base + "/health", method="HEAD")
+                with urllib.request.urlopen(health_head) as response:
+                    self.assertEqual(200, response.status)
+                    self.assertEqual(b"", response.read())
                 feishu_verify = urllib.request.Request(
                     base + "/integrations/feishu/events",
                     data=json.dumps({"type": "url_verification", "challenge": "ok"}).encode("utf-8"),
