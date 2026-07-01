@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REMOTE_URL="${ZHENZHI_KNOWLEDGE_REMOTE:-https://github.com/meimei7959/company_knowledge_core.git}"
-PROD_API_URL="${ZHENZHI_KNOWLEDGE_API_PROD:-http://124.221.138.151/knowledge-api}"
+PROD_API_URL="${ZHENZHI_KNOWLEDGE_API_PROD:-https://zknowai.com/knowledge-api}"
 TOKEN_ENV="${ZHENZHI_KNOWLEDGE_API_TOKEN_ENV:-ZHENZHI_KNOWLEDGE_API_TOKEN_PROD}"
 DEFAULT_PROJECT="company-knowledge-core"
 USER_ID="${USER:-unknown}"
@@ -26,7 +26,7 @@ Options:
   --agent-id <id>            default agent.<user-id>.<ai-tool>
   --agent-name <name>        default "<user-id> <ai-tool>"
   --project <project-id>     default company-knowledge-core
-  --api-url <url>            default http://124.221.138.151/knowledge-api
+  --api-url <url>            default https://zknowai.com/knowledge-api
   --token-env <env-name>     default ZHENZHI_KNOWLEDGE_API_TOKEN_PROD
   --skip-pip-install         skip local package install
 USAGE

@@ -11,7 +11,7 @@ GitHub 私有仓库:
 https://github.com/meimei7959/company_knowledge_core.git
 
 线上知识 API:
-http://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 
 团队 API Token:
 单独通过安全渠道发送，不写进 Git、文档、聊天记录或截图。
@@ -385,7 +385,7 @@ zhenzhi-knowledge profile use production
 production profile 使用：
 
 ```txt
-ZHENZHI_KNOWLEDGE_API_PROD=http://124.221.138.151/knowledge-api
+ZHENZHI_KNOWLEDGE_API_PROD=https://zknowai.com/knowledge-api
 ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<团队 token>
 ```
 
@@ -641,7 +641,7 @@ zhenzhi-knowledge api serve --host 0.0.0.0 --port 8765
 线上已经部署在：
 
 ```txt
-http://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 ```
 
 ### 5.18 `validate`
@@ -890,7 +890,7 @@ FEISHU_APPROVAL_NODE_APPROVER_KEY=<审批节点 key>
 审批回调仍使用同一个事件地址：
 
 ```txt
-http://124.221.138.151/knowledge-api/integrations/feishu/events
+https://zknowai.com/knowledge-api/integrations/feishu/events
 ```
 
 完整流程：
@@ -1030,10 +1030,10 @@ review update -> approved
 
 ```txt
 Knowledge API:
-http://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 
 Health:
-http://124.221.138.151/knowledge-api/health
+https://zknowai.com/knowledge-api/health
 
 服务器端口:
 127.0.0.1:8765

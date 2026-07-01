@@ -130,7 +130,7 @@ Agent feedback Git governance:
 Online API used by the bootstrap script:
 
 ```txt
-https://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 ```
 
 The API token is not stored in Git. Share `ZHENZHI_KNOWLEDGE_API_TOKEN_PROD` through a separate secure channel. Project owners should follow [API Token 从哪里来](docs/guides/team-usage-guide.md#11-api-token-从哪里来) for token lookup, distribution, and rotation.
@@ -161,7 +161,7 @@ Deployment files live in `deploy/lighthouse/`.
 The online API must not be exposed without a token:
 
 ```bash
-export ZHENZHI_KNOWLEDGE_API_PROD=https://124.221.138.151/knowledge-api
+export ZHENZHI_KNOWLEDGE_API_PROD=https://zknowai.com/knowledge-api
 export ZHENZHI_KNOWLEDGE_API_TOKEN_PROD=<team-token>
 zhenzhi-knowledge profile use production
 zhenzhi-knowledge api export

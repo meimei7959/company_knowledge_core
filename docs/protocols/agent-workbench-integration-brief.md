@@ -160,7 +160,7 @@ python -m zhenzhi_knowledge \
 线上服务地址：
 
 ```txt
-http://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 ```
 
 除飞书事件入口外，API 需要鉴权。工作台不要把 token 写入知识库；token 应保存在本地安全存储或 Secret Manager。

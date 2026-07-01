@@ -12,7 +12,7 @@ bash /path/to/agent-os-colleague-kit/agent-os-init.sh
 默认中心服务地址：
 
 ```text
-https://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 ```
 
 如果以后换成公司内网域名，可以运行时指定：
@@ -83,7 +83,7 @@ python3 -m json.tool .agent-os/project.json
 
 - `schemaVersion` 是 `workspace-ai-context-v0`
 - `controlPlaneMode` 是 `central-service`
-- `centralServiceUrl` 是 `https://124.221.138.151/knowledge-api`
+- `centralServiceUrl` 是 `https://zknowai.com/knowledge-api`
 - `planGate.requiredBeforeUnconfirmedWork` 是 `true`
 - `independentReviewGate.requiredForHighImpactWork` 是 `true`
 
@@ -96,7 +96,7 @@ bash /path/to/agent-os-colleague-kit/agent-os-init.sh --verify-only
 ### 2. 中心服务验证
 
 ```bash
-curl -fsS https://124.221.138.151/knowledge-api/health
+curl -fsS https://zknowai.com/knowledge-api/health
 ```
 
 如果这里失败，但文件验证通过，说明本地项目已经接入，问题在网络、证书、VPN、token 或中心服务部署。

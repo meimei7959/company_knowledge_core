@@ -26,7 +26,7 @@
 线上中枢地址：
 
 ```txt
-http://124.221.138.151/knowledge-api
+https://zknowai.com/knowledge-api
 ```
 
 不要把 token 写入文档、Git、聊天记录、截图、任务描述或审计正文。
