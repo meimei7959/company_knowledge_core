@@ -95,11 +95,13 @@ bash /path/to/agent-os-colleague-kit/agent-os-init.sh --verify-only
 
 ### 2. 中心服务验证
 
+脚本会自动做一次可选 health 检查：
+
 ```bash
 curl -fsS https://zknowai.com/knowledge-api/health
 ```
 
-如果这里失败，但文件验证通过，说明本地项目已经接入，问题在网络、证书、VPN、token 或中心服务部署。
+如果这里失败，但文件验证通过，本地项目仍然已经接入。常见原因是 Codex / Claude / Antigravity 的执行沙箱限制公网访问。需要确认中心服务连通性时，在普通终端里单独运行上面的 `curl`。
 
 ### 3. Agent 行为验证
 

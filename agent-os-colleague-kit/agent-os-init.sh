@@ -134,14 +134,17 @@ PY
   fi
 
   if command -v curl >/dev/null 2>&1; then
-    if curl -fsS --max-time 5 "$CENTRAL_SERVICE_URL/health" >/dev/null 2>&1; then
-      echo "OK: central service health reachable: $CENTRAL_SERVICE_URL/health"
+    if curl -fsS --max-time 10 "$CENTRAL_SERVICE_URL/health" >/dev/null 2>&1; then
+      echo "OK: optional central service health reachable: $CENTRAL_SERVICE_URL/health"
     else
-      echo "WARN: central service health not reachable: $CENTRAL_SERVICE_URL/health"
-      echo "      File setup can still be correct; check network, service, certificate, token, or URL."
+      echo "INFO: optional central service health not reachable from this shell: $CENTRAL_SERVICE_URL/health"
+      echo "      Local setup is still valid if all file checks passed."
+      echo "      In Codex/Claude/Antigravity sandbox runs, outbound network may be blocked."
+      echo "      To verify service connectivity, run this in a normal terminal:"
+      echo "      curl -fsS $CENTRAL_SERVICE_URL/health"
     fi
   else
-    echo "WARN: curl not found; skipped central service health check"
+    echo "INFO: curl not found; skipped optional central service health check"
   fi
 
   if [[ "$fail" -ne 0 ]]; then
