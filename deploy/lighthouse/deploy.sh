@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HOST="${LIGHTHOUSE_HOST:-124.221.138.151}"
+PUBLIC_URL="${ZHENZHI_KNOWLEDGE_PUBLIC_URL:-https://zknowai.com/knowledge-api}"
 IDENTITY="${LIGHTHOUSE_IDENTITY:-$HOME/.ssh/lighthouse_agentwork}"
 REMOTE_BASE="/opt/projects/company_knowledge_core"
 REMOTE_REPO="${REMOTE_BASE}/repo"
@@ -262,4 +263,8 @@ curl -fsS \
 echo ""
 REMOTE
 echo ""
-echo "deployed: https://${HOST}/knowledge-api"
+
+echo "==> public health"
+curl -fsS --max-time 10 "${PUBLIC_URL%/}/health" >/dev/null
+echo "public route healthy: ${PUBLIC_URL%/}/health"
+echo "deployed: ${PUBLIC_URL%/}"
