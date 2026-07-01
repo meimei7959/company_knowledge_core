@@ -80,7 +80,7 @@ verify_project() {
   echo "Agent OS verification"
   echo "Project root: $PROJECT_ROOT"
 
-  for path in "AGENTS.md" ".agent-os/project.json" ".agent-os/README.md"; do
+  for path in "AGENTS.md" ".agent-os/project.json" ".agent-os/README.md" ".agent-os/feedback.sh"; do
     if [[ -f "$PROJECT_ROOT/$path" ]]; then
       echo "OK: $path exists"
     else
@@ -164,7 +164,7 @@ mkdir -p "$PROJECT_ROOT/.agent-os"
 
 export PROJECT_ROOT PROJECT_ID PROJECT_NAME CENTRAL_SERVICE_URL
 
-python3 <<'PY'
+python3 <<'PYINIT'
 import json
 import os
 from pathlib import Path
@@ -232,14 +232,220 @@ project_json = {
     "feedback": {
         "systemIssueEndpoint": f"{central_service_url}/v0/defects",
         "capabilityFeedbackEndpoint": f"{central_service_url}/v0/capabilities/feedback",
+        "feedbackCenterCommand": ".agent-os/feedback.sh \"<feedback message>\"",
+        "tokenEnvCandidates": [
+            "AGENT_OS_FEEDBACK_TOKEN",
+            "ZHENZHI_KNOWLEDGE_API_TOKEN_PROD",
+            "ZHENZHI_KNOWLEDGE_API_TOKEN",
+        ],
+        "fallbackOutbox": ".agent-os/feedback-outbox",
+        "promotionGate": "PM review -> role review -> human confirmation before capability/control promotion",
     },
 }
 
 (agent_os_dir / "project.json").write_text(json.dumps(project_json, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 (agent_os_dir / "README.md").write_text(
-    f"# Agent OS 接入说明\n\n本项目已接入中心 Agent OS。\n\n- 项目 ID：`{project_id}`\n- 中心服务：`{central_service_url}`\n- 接入配置：`.agent-os/project.json`\n- Agent 入口：`AGENTS.md`\n",
+    f"# Agent OS 接入说明\n\n本项目已接入中心 Agent OS。\n\n- 项目 ID：`{project_id}`\n- 中心服务：`{central_service_url}`\n- 接入配置：`.agent-os/project.json`\n- Agent 入口：`AGENTS.md`\n- 反馈中心：`.agent-os/feedback.sh \"<反馈内容>\"`\n",
     encoding="utf-8",
 )
+
+feedback_script = r'''#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "ERROR: python3 is required." >&2
+  exit 1
+fi
+
+python3 - "$@" <<'PY'
+import argparse
+import datetime as dt
+import json
+import os
+import sys
+import urllib.error
+import urllib.request
+import uuid
+from pathlib import Path
+
+def find_project_root(start: Path) -> Path:
+    current = start.resolve()
+    for candidate in [current, *current.parents]:
+        if (candidate / ".agent-os" / "project.json").is_file():
+            return candidate
+    return current
+
+def classify(message: str, explicit: str) -> str:
+    if explicit and explicit != "auto":
+        return explicit
+    text = message.lower()
+    if any(word in text for word in ["缺", "少", "技能", "能力", "skill", "capability"]):
+        return "skill-gap"
+    if any(word in text for word in ["规则", "约束", "agents.md", "流程", "规范", "rule"]):
+        return "rule-suggestion"
+    if any(word in text for word in ["问题", "失败", "报错", "不对", "bug", "issue", "broken", "error"]):
+        return "system-issue"
+    if any(word in text for word in ["好用", "有效", "不错", "建议保留", "复用", "useful", "good"]):
+        return "capability-feedback-positive"
+    return "general-feedback"
+
+def token_from_env(token_env: str) -> str:
+    for name in ["AGENT_OS_FEEDBACK_TOKEN", token_env, "ZHENZHI_KNOWLEDGE_API_TOKEN"]:
+        value = os.environ.get(name, "").strip()
+        if value:
+            return value
+    return ""
+
+def write_outbox(root: Path, endpoint: str, payload: dict, reason: str) -> Path:
+    outbox = root / ".agent-os" / "feedback-outbox"
+    outbox.mkdir(parents=True, exist_ok=True)
+    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    path = outbox / f"feedback.{stamp}.{uuid.uuid4().hex[:8]}.json"
+    envelope = {
+        "schemaVersion": "agent-os-feedback-v0",
+        "status": "pending-submit",
+        "createdAt": dt.datetime.now(dt.timezone.utc).isoformat().replace("+00:00", "Z"),
+        "endpoint": endpoint,
+        "reason": reason,
+        "payload": payload,
+        "reviewGate": "PM initial review -> role review -> human confirmation before promotion",
+    }
+    path.write_text(json.dumps(envelope, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
+
+def post_feedback(endpoint: str, token: str, payload: dict) -> dict:
+    data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    request = urllib.request.Request(
+        endpoint,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+def submit_outbox(root: Path, token: str) -> int:
+    if not token:
+        print("ERROR: feedback token missing. Set AGENT_OS_FEEDBACK_TOKEN or ZHENZHI_KNOWLEDGE_API_TOKEN_PROD.", file=sys.stderr)
+        return 1
+    outbox = root / ".agent-os" / "feedback-outbox"
+    sent = root / ".agent-os" / "feedback-sent"
+    sent.mkdir(parents=True, exist_ok=True)
+    files = sorted(outbox.glob("*.json")) if outbox.exists() else []
+    if not files:
+        print("No pending feedback.")
+        return 0
+    ok = 0
+    for path in files:
+        envelope = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            result = post_feedback(str(envelope["endpoint"]), token, envelope["payload"])
+        except Exception as exc:
+            print(f"FAIL: {path.name}: {exc}", file=sys.stderr)
+            continue
+        target = sent / path.name
+        path.replace(target)
+        ok += 1
+        print(f"Submitted {path.name}: {result.get('feedbackRef', result.get('feedbackId', 'ok'))}")
+    print(f"RESULT: submitted {ok}/{len(files)} pending feedback item(s)")
+    return 0 if ok == len(files) else 1
+
+parser = argparse.ArgumentParser(description="Submit simple Agent OS feedback to the central review queue.")
+parser.add_argument("message", nargs="*", help="Feedback message. If omitted, stdin is used.")
+parser.add_argument("--type", default="auto", choices=["auto", "skill-gap", "rule-suggestion", "system-issue", "capability-feedback", "capability-feedback-positive", "general-feedback"])
+parser.add_argument("--actor", default=os.environ.get("AGENT_OS_FEEDBACK_ACTOR") or os.environ.get("USER") or "project-agent")
+parser.add_argument("--rating", default="")
+parser.add_argument("--capability-ref", default="agent-os:workspace-capability-layer")
+parser.add_argument("--source-ref", action="append", default=[])
+parser.add_argument("--token-env", default="ZHENZHI_KNOWLEDGE_API_TOKEN_PROD")
+parser.add_argument("--central-service-url", default="")
+parser.add_argument("--offline", action="store_true", help="Do not call the network; write feedback to local outbox.")
+parser.add_argument("--submit-outbox", action="store_true", help="Submit .agent-os/feedback-outbox items when token/network are available.")
+args = parser.parse_args()
+
+root = find_project_root(Path.cwd())
+config_path = root / ".agent-os" / "project.json"
+config = json.loads(config_path.read_text(encoding="utf-8"))
+central_url = (args.central_service_url or config.get("centralServiceUrl") or "").rstrip("/")
+endpoint = ((config.get("feedback") or {}).get("capabilityFeedbackEndpoint") or f"{central_url}/v0/capabilities/feedback").rstrip("/")
+token = token_from_env(args.token_env)
+
+if args.submit_outbox:
+    raise SystemExit(submit_outbox(root, token))
+
+message = " ".join(args.message).strip()
+if not message and not sys.stdin.isatty():
+    message = sys.stdin.read().strip()
+if not message:
+    print("ERROR: feedback message is required.", file=sys.stderr)
+    print("Usage: .agent-os/feedback.sh \"中心少一个软著材料整理技能\"", file=sys.stderr)
+    raise SystemExit(2)
+
+feedback_type = classify(message, args.type)
+rating = args.rating or ("good" if feedback_type == "capability-feedback-positive" else "")
+if not rating and feedback_type in {"skill-gap", "rule-suggestion", "system-issue"}:
+    rating = "negative"
+project_id = str(config.get("projectId") or root.name)
+project_name = str(config.get("projectName") or root.name)
+content = "\n".join([
+    f"Source project: {project_id}",
+    f"Project name: {project_name}",
+    f"Feedback type: {feedback_type}",
+    "",
+    "Message:",
+    message,
+    "",
+    "Required handling:",
+    "- This is a candidate feedback item, not an approved company rule.",
+    "- PM initial review is required.",
+    "- Role/Knowledge Review is required before reusable promotion.",
+    "- Human confirmation is required before updating Capability Layer or Control Layer.",
+])
+evidence_refs = [f"sourceProject:{project_id}", f"projectRoot:{root}", *[item for item in args.source_ref if item.strip()]]
+payload = {
+    "capabilityRef": args.capability_ref,
+    "actor": args.actor,
+    "content": content,
+    "rating": rating,
+    "feedbackType": feedback_type,
+    "evidenceRefs": evidence_refs,
+}
+
+if args.offline or not token:
+    reason = "offline requested" if args.offline else "feedback token missing"
+    outbox_path = write_outbox(root, endpoint, payload, reason)
+    print("Feedback captured locally")
+    print("status: pending-submit")
+    print(f"type: {feedback_type}")
+    print(f"outbox: {outbox_path.relative_to(root)}")
+    print("next: set AGENT_OS_FEEDBACK_TOKEN or ZHENZHI_KNOWLEDGE_API_TOKEN_PROD, then run .agent-os/feedback.sh --submit-outbox")
+    raise SystemExit(0)
+
+try:
+    result = post_feedback(endpoint, token, payload)
+except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as exc:
+    outbox_path = write_outbox(root, endpoint, payload, f"submit failed: {exc}")
+    print("Feedback captured locally")
+    print("status: pending-submit")
+    print(f"type: {feedback_type}")
+    print(f"outbox: {outbox_path.relative_to(root)}")
+    print(f"submitError: {exc}")
+    raise SystemExit(0)
+
+print("Feedback submitted")
+print("status: pending-review")
+print(f"type: {feedback_type}")
+print(f"feedbackRef: {result.get('feedbackRef', '')}")
+print("next: PM initial review -> role review -> human confirmation before promotion")
+PY
+'''
+
+feedback_path = agent_os_dir / "feedback.sh"
+feedback_path.write_text(feedback_script, encoding="utf-8")
+feedback_path.chmod(0o755)
 
 block = f"""<!-- AGENT_OS_CONTEXT_V0_START -->
 
@@ -279,6 +485,14 @@ Default Independent Review perspectives:
 - Operations: launch, campaign, customer touch, operational risk.
 - Knowledge Review: reusable knowledge, policy, skill, tool, Agent, or governance changes.
 
+Feedback Center:
+
+- If the user says "反馈到中心", "提交反馈", "中心少一个技能", or asks to reuse a good local rule, run:
+  `.agent-os/feedback.sh "<one-sentence feedback>"`
+- Keep the employee experience short. Do not ask the user to fill long templates.
+- Feedback is only a candidate. It must go through PM review, role/Knowledge Review, and human confirmation before promotion to Capability Layer or Control Layer.
+- If the script writes `.agent-os/feedback-outbox/*.json`, tell the user it is captured locally and can be submitted when token/network is available.
+
 Startup check prompt:
 
 ```text
@@ -306,7 +520,7 @@ else:
     new_text = f"# {project_name} Agent Instructions\n\n" + block
 
 agents_path.write_text(new_text.rstrip() + "\n", encoding="utf-8")
-PY
+PYINIT
 
 echo "Agent OS files written."
 verify_project

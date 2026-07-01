@@ -27,6 +27,7 @@ bash /path/to/agent-os-colleague-kit/agent-os-init.sh --central-service-url http
 AGENTS.md
 .agent-os/project.json
 .agent-os/README.md
+.agent-os/feedback.sh
 ```
 
 已有 `AGENTS.md` 不会被覆盖。脚本只维护：
@@ -59,6 +60,50 @@ Draft Plan
 
 Independent Review 必须来自另一个角色视角，不是同一 Agent 自己再复述。
 
+## 反馈中心
+
+员工不需要写长命令。接入后，如果员工说：
+
+```text
+把这个反馈到中心去
+```
+
+Agent 应该调用项目里的反馈入口：
+
+```bash
+.agent-os/feedback.sh "中心少一个软著材料整理技能"
+```
+
+也可以指定类型：
+
+```bash
+.agent-os/feedback.sh --type rule-suggestion "这条本地 AGENTS.md 规则建议回流中心"
+.agent-os/feedback.sh --type skill-gap "中心少一个软著材料整理技能"
+.agent-os/feedback.sh --type system-issue "Agent OS 接入说明容易让员工误解"
+```
+
+如果当前环境有中心 token，脚本会直接提交到中心 pending-review。可用 token 环境变量：
+
+```text
+AGENT_OS_FEEDBACK_TOKEN
+ZHENZHI_KNOWLEDGE_API_TOKEN_PROD
+ZHENZHI_KNOWLEDGE_API_TOKEN
+```
+
+如果没有 token 或 Agent 沙箱不能访问公网，脚本会写入：
+
+```text
+.agent-os/feedback-outbox/
+```
+
+之后在有 token / 网络的环境里运行：
+
+```bash
+.agent-os/feedback.sh --submit-outbox
+```
+
+所有反馈都只是候选，不会自动回流中心规则。必须经过 PM 初审、角色/Knowledge Review 复审、你确认后，才允许进入 Capability Layer 或 Control Layer。
+
 默认审查视角：
 
 - 通用方案、排期、交接、验收路径：Project Manager Agent。
@@ -75,7 +120,7 @@ Independent Review 必须来自另一个角色视角，不是同一 Agent 自己
 在项目根目录运行：
 
 ```bash
-ls AGENTS.md .agent-os/project.json .agent-os/README.md
+ls AGENTS.md .agent-os/project.json .agent-os/README.md .agent-os/feedback.sh
 python3 -m json.tool .agent-os/project.json
 ```
 
