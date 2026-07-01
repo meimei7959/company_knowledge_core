@@ -10332,6 +10332,7 @@ def render_project_task_context(bundle: Bundle, task_path: Path) -> str:
     operating_rule_refs = task_operating_rule_refs(bundle, fm)
     project_id = str(fm.get("projectId", ""))
     actor_context = actor_context_for(bundle, str(fm.get("assignee") or fm.get("leaseOwner") or ""), project_id)
+    tool_assets = task_context_tool_assets(bundle, project_id)
     lines = [
         "# Current Task Context",
         "",
@@ -10383,6 +10384,19 @@ def render_project_task_context(bundle: Bundle, task_path: Path) -> str:
             "- notificationPreferences:",
             *([f"  - {item}" for item in as_list(actor_context.get("notificationPreferences"))] or ["  - none"]),
             "",
+            "## Allowed ToolAssets",
+            "",
+            *(
+                [
+                    "- "
+                    f"{tool.get('toolId', '')}: {tool.get('title', '')} "
+                    f"({tool.get('status', '')}, {tool.get('riskLevel', '')}) -> "
+                    f"{tool.get('toolRef', '')}"
+                    for tool in tool_assets
+                ]
+                or ["- none"]
+            ),
+            "",
             "## Memory Policy",
             "",
             *[f"- {key}: {value}" for key, value in dict(actor_context.get("memoryPolicy") or actor_memory_policy()).items()],
@@ -10425,6 +10439,38 @@ def render_project_task_context(bundle: Bundle, task_path: Path) -> str:
         ]
     )
     return "\n".join(lines) + "\n"
+
+
+def tool_asset_context_summary(tool: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "toolId": str(tool.get("toolId") or ""),
+        "title": str(tool.get("title") or ""),
+        "description": str(tool.get("description") or ""),
+        "status": str(tool.get("status") or ""),
+        "riskLevel": str(tool.get("riskLevel") or ""),
+        "toolRef": str(tool.get("path") or tool.get("toolRef") or ""),
+        "resource": str(tool.get("resource") or ""),
+        "entrypoint": str(tool.get("entrypoint") or ""),
+        "packageName": str(tool.get("packageName") or ""),
+        "version": str(tool.get("version") or ""),
+        "executionMode": str(tool.get("executionMode") or ""),
+        "installCommand": str(tool.get("installCommand") or ""),
+        "usageCommands": as_list(tool.get("usageCommands")),
+        "capabilities": as_list(tool.get("capabilities")),
+        "allowedAgents": as_list(tool.get("allowedAgents")),
+        "allowedProjects": as_list(tool.get("allowedProjects")),
+        "lastVerifiedAt": str(tool.get("lastVerifiedAt") or ""),
+    }
+
+
+def task_context_tool_assets(bundle: Bundle, project_id: str) -> list[dict[str, Any]]:
+    visible_statuses = {"approved", "active"}
+    summaries: list[dict[str, Any]] = []
+    for tool in project_tools(bundle, project_id):
+        if str(tool.get("status") or "") not in visible_statuses:
+            continue
+        summaries.append(tool_asset_context_summary(tool))
+    return summaries
 
 
 def project_context_bundle(bundle: Bundle, task_path: Path) -> dict[str, Any]:
@@ -10471,6 +10517,7 @@ def project_context_bundle(bundle: Bundle, task_path: Path) -> dict[str, Any]:
         for ref in object_refs(project_dir, limit=50)
         if "environment" in ref.lower() or "manifest" in ref.lower() or "env" in Path(ref).name.lower()
     ]
+    tool_assets = task_context_tool_assets(bundle, project_id)
     return {
         "bundleVersion": "0.1",
         "operatingRules": common_operating_rules_payload(bundle),
@@ -10493,6 +10540,10 @@ def project_context_bundle(bundle: Bundle, task_path: Path) -> dict[str, Any]:
             "leaseExpiresAt": task.get("leaseExpiresAt", ""),
         },
         "actorContext": actor_context_for(bundle, actor_id, project_id),
+        "capabilities": {
+            "toolAssetRefs": [tool["toolRef"] for tool in tool_assets if tool.get("toolRef")],
+            "toolAssets": tool_assets,
+        },
         "knowledge": {
             "knowledgeItemRefs": object_refs(bundle.root / "knowledge", "KnowledgeItem", limit=30),
             "decisionRefs": object_refs(project_dir, "Decision", limit=20),

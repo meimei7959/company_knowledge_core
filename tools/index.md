@@ -18,3 +18,4 @@ Each ToolAsset file must include:
 - [Knowledge Material Reader Toolkit](tool.knowledge-material-readers.md)
 - [Architecture Engineering Toolkit](tool.architecture-engineering-toolkit.md)
 - [Development Engineering Quality Toolkit](tool.development-engineering-quality-toolkit.md)
+- [DESIGN.md Toolkit](tool.design-md.md)

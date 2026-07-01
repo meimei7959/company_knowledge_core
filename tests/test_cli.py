@@ -9142,6 +9142,38 @@ Agent Ring should pull tasks from the central processor and write back evidence.
 """,
                 encoding="utf-8",
             )
+            (root / "tools" / "tool.design-md.md").write_text(
+                """---
+type: ToolAsset
+title: DESIGN.md Toolkit
+description: Validates and exports project DESIGN.md files.
+toolId: tool.design-md
+owner: agent.company.design
+resource: npm:@google/design.md
+entrypoint: design.md
+packageName: "@google/design.md"
+version: 0.3.0
+status: approved
+riskLevel: L2
+installCommand: npm install @google/design.md --ignore-scripts --no-audit --no-fund
+usageCommands:
+  - npx --no-install design.md lint DESIGN.md
+  - npx --no-install design.md export --format json-tailwind DESIGN.md
+allowedAgents:
+  - agent.company.design
+  - agent.company.development
+  - agent.company.test
+allowedProjects: []
+capabilities:
+  - design_md_lint
+  - design_md_export_tailwind
+lastVerifiedAt: "2026-07-01T07:13:27Z"
+---
+
+# DESIGN.md Toolkit
+""",
+                encoding="utf-8",
+            )
             self.assertEqual(
                 main(
                     [
@@ -9258,6 +9290,13 @@ Agent Ring should pull tasks from the central processor and write back evidence.
                 self.assertEqual(context["projectContextBundle"]["project"]["projectId"], "core")
                 self.assertEqual(context["projectContextBundle"]["task"]["taskId"], "KT-20260618-010")
                 self.assertIn("projects/core/sources/sm-meeting.md", context["projectContextBundle"]["task"]["sourceMaterialRefs"])
+                self.assertIn("tool.design-md", context["context"])
+                self.assertEqual(context["projectContextBundle"]["capabilities"]["toolAssetRefs"], ["tools/tool.design-md.md"])
+                tool_asset = context["projectContextBundle"]["capabilities"]["toolAssets"][0]
+                self.assertEqual(tool_asset["toolId"], "tool.design-md")
+                self.assertEqual(tool_asset["packageName"], "@google/design.md")
+                self.assertEqual(tool_asset["installCommand"], "npm install @google/design.md --ignore-scripts --no-audit --no-fund")
+                self.assertIn("npx --no-install design.md lint DESIGN.md", tool_asset["usageCommands"])
                 self.assertEqual(context["projectContextBundle"]["handoff"]["requiredFields"][0], "done")
 
                 task_heartbeat = post(
