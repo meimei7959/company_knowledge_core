@@ -6078,7 +6078,7 @@ Product package complete.
             notifications = list((root / "notifications").glob("notification*.md"))
             self.assertTrue(any("status: failed" in path.read_text(encoding="utf-8") and task_id in path.read_text(encoding="utf-8") for path in notifications))
 
-    def test_feishu_research_link_duplicate_reuses_existing_task(self) -> None:
+    def test_feishu_research_link_duplicate_reuses_existing_source(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             write_minimal_bundle(root)
@@ -6113,16 +6113,16 @@ Product package complete.
                 settings,
             )
 
-            self.assertIn("资料整理结果：", first)
-            self.assertIn("之前已经保存过", second)
+            self.assertIn("资料已入库：", first)
+            self.assertIn("之前已经入库", second)
             self.assertIn("不会重复解析或切片", second)
-            self.assertIn("当前状态：已完成", second)
+            self.assertIn("状态：已入库", second)
             self.assertNotIn("cancelled", second)
             self.assertEqual(feishu_module.human_task_status_label("cancelled"), "已取消重复处理")
             sources = list((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
             tasks = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("taskType") == "knowledge_capture"]
             self.assertEqual(len(sources), 1)
-            self.assertEqual(len(tasks), 1)
+            self.assertEqual(tasks, [])
             self.assertIn("material.ingest.duplicate", audit_actions(root))
 
     def test_secret_scan_allows_article_title_discussing_api_key_with_url(self) -> None:
@@ -6178,22 +6178,344 @@ Product package complete.
             finally:
                 feishu_material_processor_module.extract_external_material_text = original_extract
 
-            self.assertIn("资料整理结果：", reply)
-            self.assertIn("对 Agent 团队提升：", reply)
-            self.assertIn("初步判断：有潜在作用", reply)
-            self.assertIn("可能优化点：", reply)
-            self.assertIn("任务编号：", reply)
+            self.assertIn("资料已入库：", reply)
+            self.assertIn("存储内容预览：", reply)
+            self.assertIn("AI 工程实践文章", reply)
+            self.assertNotIn("对 Agent 团队提升：", reply)
+            self.assertNotIn("任务编号：", reply)
             self.assertNotIn("等待", reply)
             self.assertNotIn("Codex", reply)
             self.assertNotIn("融入体系", reply)
             tasks = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("intakeSource") == "feishu_research_material"]
-            self.assertEqual(len(tasks), 1)
-            task_text = (root / tasks[0]["path"]).read_text(encoding="utf-8")
-            self.assertIn("processingMode: feishu_direct_reply", task_text)
-            self.assertNotIn("dispatchTarget:", task_text)
-            self.assertNotIn("primaryControlRunner:", task_text)
-            self.assertNotIn("codexThreadId:", task_text)
-            self.assertTrue(tasks[0]["resultRef"])
+            self.assertEqual(tasks, [])
+            sources = list((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
+            self.assertEqual(len(sources), 1)
+            source = load_object(sources[0])
+            self.assertEqual(source["status"], "stored")
+            self.assertEqual(source["processingMode"], "feishu_direct_store")
+            self.assertEqual(source["knowledgeCategory"], "agent_engineering")
+            self.assertIn("retrieval_index_chunk_text", source["chunkingStrategy"])
+            self.assertFalse([problem for problem in validate_bundle(bundle) if "unknown status stored" in problem])
+            source_text = sources[0].read_text(encoding="utf-8")
+            self.assertIn("这篇文章包含 workflow", source_text)
+
+    def test_feishu_wechat_link_intake_is_searchable_without_project_binding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            agent_path = make_agent(
+                bundle,
+                "agent.company-knowledge-core.knowledge-engineering",
+                "Knowledge Engineering Agent",
+                "owner",
+                "codex",
+                "Process research materials.",
+            )
+            update_frontmatter_file(agent_path, {"writePermissions": ["knowledge:draft"]})
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            seen_urls: list[str] = []
+
+            def fake_extract(url):
+                seen_urls.append(url)
+                return {
+                    "ok": True,
+                    "kind": "wechat_article",
+                    "title": "公众号标题：Agent Hub 知识工程",
+                    "text": "公众号正文：Agent Hub 可以接收公众号链接，解析正文并保存为 SourceMaterial。检索标记 wechat-probe-token-71x。",
+                    "error": "",
+                }
+
+            try:
+                feishu_material_processor_module.extract_external_material_text = fake_extract
+                reply = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_wechat_material",
+                        "chatId": "oc_wechat_material",
+                        "chatType": "group",
+                        "text": "https://mp.weixin.qq.com/s/example",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertEqual(seen_urls, ["https://mp.weixin.qq.com/s/example"])
+            self.assertIn("资料已入库：", reply)
+            self.assertIn("存储内容预览：", reply)
+            query = feishu_module.run_knowledge_query(
+                bundle,
+                {
+                    "messageId": "om_wechat_query",
+                    "chatId": "oc_unbound_query",
+                    "chatType": "group",
+                    "text": "查知识 wechat-probe-token-71x",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                },
+                "查知识 wechat-probe-token-71x",
+            )
+            self.assertEqual(query["answerMode"], "source_reference")
+            self.assertEqual(query["chunks"][0]["type"], "SourceMaterial")
+            self.assertEqual(query["chunks"][0]["status"], "stored")
+            self.assertIn("公众号标题：Agent Hub 知识工程", query["chunks"][0]["title"])
+            self.assertIn("找到已入库资料", query["reply"])
+
+            correction = feishu_module.build_reply(
+                bundle,
+                {
+                    "messageId": "om_wechat_correction",
+                    "chatId": "oc_wechat_material",
+                    "chatType": "group",
+                    "text": "修正：这篇资料主要讲公众号链接入库后的人工核对，不是 draft 流程。",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                    "mentionedOpenIds": "",
+                    "mentionedUserIds": "",
+                },
+                minimal_feishu_settings(),
+            )
+            self.assertIn("修正已写入", correction)
+            sources = list((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
+            self.assertIn("人工核对", sources[0].read_text(encoding="utf-8"))
+
+    def test_feishu_wechat_access_wall_is_not_stored_as_article_body(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            html_body = """
+            <html><body>
+            <title>微信安全打开</title>
+            <div>知道了</div>
+            <div>微信扫一扫</div>
+            <div>使用小程序</div>
+            <div>取消</div><div>允许</div>
+            <div>取消</div><div>允许</div>
+            <div>微信扫一扫可打开此内容，使用完整服务</div>
+            <div>视频</div><div>小程序</div><div>赞</div>
+            <div>分享</div><div>留言</div><div>收藏</div><div>听过</div>
+            </body></html>
+            """.encode("utf-8")
+
+            class FakeResponse:
+                headers = {"Content-Type": "text/html; charset=utf-8"}
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *_args):
+                    return False
+
+                def read(self, _limit=-1):
+                    return html_body
+
+            original = feishu_material_processor_module.urllib.request.urlopen
+            original_browser = feishu_material_processor_module.fetch_wechat_article_text_with_browser
+            try:
+                feishu_material_processor_module.urllib.request.urlopen = lambda *_args, **_kwargs: FakeResponse()
+                feishu_material_processor_module.fetch_wechat_article_text_with_browser = lambda _url: {
+                    "ok": False,
+                    "kind": "wechat_article_browser",
+                    "title": "",
+                    "text": "",
+                    "error": "测试浏览器未拿到正文",
+                }
+                reply = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_wechat_wall",
+                        "chatId": "oc_wechat_wall",
+                        "chatType": "group",
+                        "text": "https://mp.weixin.qq.com/s/access-wall",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.urllib.request.urlopen = original
+                feishu_material_processor_module.fetch_wechat_article_text_with_browser = original_browser
+
+            self.assertIn("资料已接收，正在浏览器补抓：", reply)
+            self.assertIn("正文抽取：等待浏览器补抓", reply)
+            self.assertIn("微信返回了打开/授权中间页", reply)
+            self.assertIn("浏览器补抽失败", reply)
+            self.assertNotIn("微信扫一扫", reply)
+            self.assertNotIn("取消", reply)
+            self.assertNotIn("允许", reply)
+            source_path = next((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
+            source = load_object(source_path)
+            self.assertEqual(source["status"], "browser_pending")
+            self.assertFalse([problem for problem in validate_bundle(bundle) if "unknown status browser_pending" in problem])
+            source_text = source_path.read_text(encoding="utf-8")
+            self.assertIn("正文尚未入库", source_text)
+            self.assertNotIn("微信扫一扫", source_text)
+            self.assertNotIn("使用小程序", source_text)
+            query = feishu_module.run_knowledge_query(
+                bundle,
+                {
+                    "messageId": "om_wechat_wall_query",
+                    "chatId": "oc_wechat_wall",
+                    "chatType": "group",
+                    "text": "查知识 微信扫一扫",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                },
+                "查知识 微信扫一扫",
+            )
+            self.assertNotEqual(query["answerMode"], "source_reference")
+
+    def test_feishu_wechat_browser_repair_promotes_pending_source_to_searchable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            original_browser = feishu_material_processor_module.fetch_wechat_article_text_with_browser
+            try:
+                feishu_material_processor_module.extract_external_material_text = lambda _url: {
+                    "ok": False,
+                    "kind": "wechat_article",
+                    "title": "待补抓公众号",
+                    "text": "",
+                    "error": "微信返回了打开/授权中间页，未拿到公众号正文；浏览器补抽失败：测试",
+                    "browserPending": True,
+                }
+                reply = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_wechat_pending",
+                        "chatId": "oc_wechat_pending",
+                        "chatType": "group",
+                        "text": "https://mp.weixin.qq.com/s/pending",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+                self.assertIn("正在浏览器补抓", reply)
+                source_path = next((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
+                self.assertEqual(load_object(source_path)["status"], "browser_pending")
+
+                feishu_material_processor_module.fetch_wechat_article_text_with_browser = lambda _url: {
+                    "ok": True,
+                    "kind": "wechat_article_browser",
+                    "title": "浏览器补抓标题",
+                    "text": "浏览器补抓后的公众号正文，包含 browser-repair-token-42x 和完整资料内容。",
+                    "error": "",
+                }
+                repaired = feishu_material_processor_module.repair_pending_wechat_browser_sources(bundle, publish_index=True)
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+                feishu_material_processor_module.fetch_wechat_article_text_with_browser = original_browser
+
+            self.assertEqual(len(repaired["repaired"]), 1)
+            source = load_object(source_path)
+            self.assertEqual(source["status"], "stored")
+            source_text = source_path.read_text(encoding="utf-8")
+            self.assertIn("browser-repair-token-42x", source_text)
+            query = feishu_module.run_knowledge_query(
+                bundle,
+                {
+                    "messageId": "om_wechat_repaired_query",
+                    "chatId": "oc_wechat_pending",
+                    "chatType": "group",
+                    "text": "查知识 browser-repair-token-42x",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                },
+                "查知识 browser-repair-token-42x",
+            )
+            self.assertEqual(query["answerMode"], "source_reference")
+
+    def test_feishu_duplicate_wechat_link_with_manual_body_completes_pending_source(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write_minimal_bundle(root)
+            bundle = Bundle(root)
+            make_project(bundle, "company-knowledge-core", "Company Knowledge Core", "owner", str(root))
+            original_extract = feishu_material_processor_module.extract_external_material_text
+            try:
+                feishu_material_processor_module.extract_external_material_text = lambda _url: {
+                    "ok": False,
+                    "kind": "wechat_article",
+                    "title": "待补正文公众号",
+                    "text": "",
+                    "error": "微信返回了打开/授权中间页，未拿到公众号正文",
+                    "browserPending": True,
+                }
+                first = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_manual_body_first",
+                        "chatId": "oc_manual_body",
+                        "chatType": "group",
+                        "text": "https://mp.weixin.qq.com/s/manual-body",
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+                self.assertIn("正在浏览器补抓", first)
+                source_path = next((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md"))
+                self.assertEqual(load_object(source_path)["status"], "browser_pending")
+                manual_body = (
+                    "https://mp.weixin.qq.com/s/manual-body\n"
+                    "手工补齐公众号标题\n"
+                    "这是一段用户从公众号复制过来的完整正文，用于补齐之前没有读到的文章内容。"
+                    "它包含 手工补齐检索标记八八，方便后续检索验证，也包含足够长的正文以便切片入库。"
+                )
+                second = feishu_module.build_reply(
+                    bundle,
+                    {
+                        "messageId": "om_manual_body_second",
+                        "chatId": "oc_manual_body",
+                        "chatType": "group",
+                        "text": manual_body,
+                        "openId": "ou_sender",
+                        "userId": "u_sender",
+                        "mentionedOpenIds": "",
+                        "mentionedUserIds": "",
+                    },
+                    minimal_feishu_settings(),
+                )
+            finally:
+                feishu_material_processor_module.extract_external_material_text = original_extract
+
+            self.assertIn("资料已入库：", second)
+            self.assertIn("已使用你补充的正文", second)
+            source = load_object(source_path)
+            self.assertEqual(source["status"], "stored")
+            self.assertEqual(source["extractionStatus"], "extracted")
+            self.assertIn("手工补齐检索标记八八", source_path.read_text(encoding="utf-8"))
+            query = feishu_module.run_knowledge_query(
+                bundle,
+                {
+                    "messageId": "om_manual_body_query",
+                    "chatId": "oc_manual_body",
+                    "chatType": "group",
+                    "text": "查知识 手工补齐检索标记八八",
+                    "openId": "ou_sender",
+                    "userId": "u_sender",
+                },
+                "查知识 手工补齐检索标记八八",
+            )
+            self.assertEqual(query["answerMode"], "source_reference")
 
     def test_feishu_business_material_does_not_force_agent_capability_judgment(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -6240,11 +6562,10 @@ Product package complete.
             finally:
                 feishu_material_processor_module.extract_external_material_text = original_extract
 
-            self.assertIn("资料整理结果：", reply)
-            self.assertIn("知识归类：", reply)
-            self.assertIn("业务/产品/市场知识", reply)
-            self.assertIn("沉淀为企业知识", reply)
-            self.assertIn("任务编号：", reply)
+            self.assertIn("资料已入库：", reply)
+            self.assertIn("存储内容预览：", reply)
+            self.assertIn("业务/产品/市场资料", reply)
+            self.assertNotIn("任务编号：", reply)
             self.assertNotIn("对 Agent 团队提升：", reply)
             self.assertNotIn("进入能力候选复核", reply)
             self.assertNotIn("融入体系", reply)
@@ -6305,9 +6626,9 @@ Product package complete.
             finally:
                 feishu_material_processor_module.extract_external_material_text = original_extract
 
-            self.assertIn("资料整理结果：", first)
-            self.assertIn("之前已经保存过", second)
-            self.assertIn("当前状态：已完成", second)
+            self.assertIn("资料已入库：", first)
+            self.assertIn("之前已经入库", second)
+            self.assertIn("状态：已入库", second)
             self.assertEqual(calls, 1)
 
     def test_feishu_material_followup_creates_candidate_review_task(self) -> None:
@@ -6365,17 +6686,12 @@ Product package complete.
             finally:
                 feishu_material_processor_module.extract_external_material_text = original_extract
 
-            self.assertIn("资料整理结果：", first)
-            self.assertIn("能力候选复核结果：", second)
-            self.assertIn("是否有用：", second)
-            self.assertIn("对比现有：", second)
-            self.assertIn("不会直接改 Skill、Tool、Workflow、AGENTS、规则或权限", second)
+            self.assertIn("资料已入库：", first)
+            self.assertIn("这条资料已入库", second)
+            self.assertIn("周期统一复盘", second)
+            self.assertNotIn("能力候选复核结果：", second)
             followups = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("intakeSource") == "feishu_material_followup"]
-            self.assertEqual(len(followups), 1)
-            self.assertEqual(followups[0]["processingMode"], "capability_candidate_review_queue")
-            self.assertTrue(followups[0]["upstreamTaskId"])
-            self.assertNotEqual(followups[0]["status"], "pending")
-            self.assertTrue(followups[0]["resultRef"])
+            self.assertEqual(followups, [])
 
     def test_feishu_material_status_followup_uses_latest_material_task(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -6432,9 +6748,10 @@ Product package complete.
             finally:
                 feishu_material_processor_module.extract_external_material_text = original_extract
 
-            self.assertIn("资料整理结果：", first)
-            self.assertIn("上一条资料已经整理完成", second)
-            self.assertIn("进入能力候选复核", second)
+            self.assertIn("资料已入库：", first)
+            self.assertIn("上一条资料已入库", second)
+            self.assertIn("存储内容预览：", second)
+            self.assertNotIn("进入能力候选复核", second)
             self.assertNotIn("没有找到已审核答案", second)
             self.assertNotIn("没有找到可靠答案", second)
             followups = [task for task in list_project_tasks(bundle, project_id="company-knowledge-core") if task.get("intakeSource") == "feishu_material_followup"]
@@ -6460,7 +6777,7 @@ Product package complete.
                 minimal_feishu_settings(),
             )
 
-            self.assertIn("没有找到上一条资料任务", reply)
+            self.assertIn("没有找到上一条已入库资料", reply)
             self.assertIn("请先发链接或资料", reply)
             self.assertNotIn("没有找到已审核答案", reply)
 
@@ -6548,6 +6865,110 @@ Product package complete.
         self.assertIn("公众号正文第一段", result["text"])
         self.assertIn("公众号正文第二段", result["text"])
         self.assertNotIn("页面噪音", result["text"])
+
+    def test_feishu_material_processor_retries_wechat_with_micromessenger_ua(self) -> None:
+        wall_body = """
+        <html><body>
+        <div>微信扫一扫</div><div>使用小程序</div>
+        <div>取消</div><div>允许</div><div>分享</div><div>留言</div><div>收藏</div>
+        <div>微信扫一扫可打开此内容，使用完整服务</div>
+        </body></html>
+        """.encode("utf-8")
+        article_body = """
+        <html><body>
+        <h1 id="activity-name"> AI 做 PPT 的 8 个开源 Skill </h1>
+        <div id="js_content"><p>真正的公众号正文第一段。</p><p>真正的公众号正文第二段。</p></div>
+        </body></html>
+        """.encode("utf-8")
+        seen_user_agents: list[str] = []
+
+        class FakeResponse:
+            headers = {"Content-Type": "text/html; charset=utf-8"}
+
+            def __init__(self, body: bytes):
+                self.body = body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit=-1):
+                return self.body
+
+        def fake_urlopen(request, **_kwargs):
+            user_agent = request.get_header("User-agent") or request.get_header("User-Agent") or ""
+            seen_user_agents.append(user_agent)
+            if "MicroMessenger" in user_agent:
+                return FakeResponse(article_body)
+            return FakeResponse(wall_body)
+
+        original = feishu_material_processor_module.urllib.request.urlopen
+        feishu_material_processor_module.urllib.request.urlopen = fake_urlopen
+        try:
+            result = feishu_material_processor_module.extract_external_material_text("https://mp.weixin.qq.com/s/example")
+        finally:
+            feishu_material_processor_module.urllib.request.urlopen = original
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["kind"], "wechat_article")
+        self.assertTrue(any("MicroMessenger" in item for item in seen_user_agents))
+        self.assertIn("AI 做 PPT 的 8 个开源 Skill", result["title"])
+        self.assertIn("真正的公众号正文第一段", result["text"])
+        self.assertNotIn("微信扫一扫", result["text"])
+
+    def test_feishu_material_processor_uses_browser_when_wechat_http_returns_wall(self) -> None:
+        wall_body = """
+        <html><body>
+        <div>微信扫一扫</div><div>使用小程序</div>
+        <div>取消</div><div>允许</div><div>分享</div><div>留言</div><div>收藏</div>
+        <div>微信扫一扫可打开此内容，使用完整服务</div>
+        </body></html>
+        """.encode("utf-8")
+        browser_dom = """
+        <html><body>
+        <h1 id="activity-name"> 浏览器打开后的公众号标题 </h1>
+        <div id="js_content"><p>浏览器真正读到的公众号正文第一段。</p><p>浏览器真正读到的公众号正文第二段。</p></div>
+        </body></html>
+        """
+        seen_commands: list[list[str]] = []
+
+        class FakeResponse:
+            headers = {"Content-Type": "text/html; charset=utf-8"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def read(self, _limit=-1):
+                return wall_body
+
+        def fake_run(command, **_kwargs):
+            seen_commands.append(command)
+            return types.SimpleNamespace(stdout=browser_dom, stderr="", returncode=0)
+
+        original_urlopen = feishu_material_processor_module.urllib.request.urlopen
+        original_find_browser = feishu_material_processor_module.find_browser_executable
+        original_run = feishu_material_processor_module.subprocess.run
+        try:
+            feishu_material_processor_module.urllib.request.urlopen = lambda *_args, **_kwargs: FakeResponse()
+            feishu_material_processor_module.find_browser_executable = lambda: "/usr/bin/chromium"
+            feishu_material_processor_module.subprocess.run = fake_run
+            result = feishu_material_processor_module.extract_external_material_text("https://mp.weixin.qq.com/s/browser")
+        finally:
+            feishu_material_processor_module.urllib.request.urlopen = original_urlopen
+            feishu_material_processor_module.find_browser_executable = original_find_browser
+            feishu_material_processor_module.subprocess.run = original_run
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["kind"], "wechat_article_browser")
+        self.assertTrue(seen_commands)
+        self.assertIn("--dump-dom", seen_commands[0])
+        self.assertIn("浏览器打开后的公众号标题", result["title"])
+        self.assertIn("浏览器真正读到的公众号正文第一段", result["text"])
+        self.assertNotIn("微信扫一扫", result["text"])
 
     def test_feishu_material_processor_extracts_feishu_docx_body(self) -> None:
         original_token = feishu_material_processor_module.feishu_module.get_tenant_access_token
@@ -10406,11 +10827,12 @@ Use parser.
                     method="POST",
                 )
                 intake_result = json.load(urllib.request.urlopen(feishu_intake))
-                self.assertIn("资料整理结果：", intake_result["reply"])
-                self.assertIn("对 Agent 团队提升：", intake_result["reply"])
+                self.assertIn("资料已入库：", intake_result["reply"])
+                self.assertIn("存储内容预览：", intake_result["reply"])
+                self.assertNotIn("对 Agent 团队提升：", intake_result["reply"])
                 self.assertNotIn("分析任务", intake_result["reply"])
                 self.assertNotIn("正在分析", intake_result["reply"])
-                self.assertIn("任务编号", intake_result["reply"])
+                self.assertNotIn("任务编号", intake_result["reply"])
                 self.assertNotIn("本机 Codex", intake_result["reply"])
                 self.assertNotIn("是否需要你操作", intake_result["reply"])
                 self.assertNotIn("说明", intake_result["reply"])
@@ -10419,14 +10841,7 @@ Use parser.
                 self.assertNotIn("任务卡", intake_result["reply"])
                 self.assertTrue(list((root / "projects" / "company-knowledge-core" / "sources").glob("source.*.md")))
                 research_tasks = list((root / "tasks").glob("kt-*.md")) + list((root / "projects" / "company-knowledge-core" / "tasks").glob("kt-*.md"))
-                self.assertTrue(research_tasks)
-                research_task_text = research_tasks[0].read_text(encoding="utf-8")
-                self.assertIn("workSourceType: research", research_task_text)
-                self.assertIn("processingMode: feishu_direct_reply", research_task_text)
-                self.assertNotIn("dispatchTarget:", research_task_text)
-                self.assertNotIn("primaryControlRunner:", research_task_text)
-                self.assertNotIn("codexThreadId:", research_task_text)
-                self.assertIn("approvalRequired: false", research_task_text)
+                self.assertFalse([path for path in research_tasks if "feishu_direct_store" in path.read_text(encoding="utf-8")])
                 feishu_material = urllib.request.Request(
                     base + "/integrations/feishu/events",
                     data=json.dumps(

@@ -17,7 +17,8 @@ relatedAgents:
   - agent.zknowai-official-website.knowledge-engineering
   - agent.zknowai-official-website.executor
   - agent.zknowai-official-website.product-manager
-relatedTools: []
+relatedTools:
+  - tool.picpeek
 projectSourceMode: existing_repo
 projectGoal: 接管已有官网老项目，系统化完成产品梳理、UI/UX 重设计、前端改版、测试验收和上线闭环。
 expectedDeliverable: ""
@@ -33,7 +34,7 @@ suggestedAgents:
   - 执行 Agent
 createGroup: confirm
 requiresRunner: true
-updatedAt: "2026-06-25T03:09:35Z"
+updatedAt: "2026-07-02T08:07:17Z"
 workspaceProfile: development
 workspaceMaterialPolicy: workspace_keeps_materials_source_repo_is_reference_only
 sourceMaterialRefs:

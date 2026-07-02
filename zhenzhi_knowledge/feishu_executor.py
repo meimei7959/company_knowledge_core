@@ -38,6 +38,7 @@ from .core import (
     make_tool,
     needs_product_manager_agent,
     parse_frontmatter,
+    publish_knowledge_bundle,
     product_manager_agent_decision,
     render_doc,
     review_path,
@@ -61,7 +62,9 @@ from .operational_store import (
 FEISHU_API_BASE = "https://open.feishu.cn/open-apis"
 FORMAL_STATUSES = {"verified", "approved", "active"}
 REVIEWABLE_REFERENCE_STATUSES = {"draft", "observed", "reviewing", "pending"}
-SEARCH_ANSWER_TYPES = {"KnowledgeItem", "Decision", "Policy", "Workflow", "ToolAsset", "SkillAsset", "Agent", "Project"}
+SOURCE_REFERENCE_STATUSES = {"stored"}
+SEARCH_ANSWER_TYPES = {"KnowledgeItem", "SourceMaterial", "Decision", "Policy", "Workflow", "ToolAsset", "SkillAsset", "Agent", "Project"}
+GLOBAL_KNOWLEDGE_PROJECT_IDS = {"company-knowledge-core"}
 APPROVAL_TYPE_AGENT_TOKEN = "agent_token"
 APPROVAL_TYPE_PROJECT_INIT = "project_init"
 APPROVAL_TYPE_KNOWLEDGE_INGEST = "knowledge_ingest"
@@ -1268,6 +1271,8 @@ def bind_project_group(bundle: Bundle, incoming: dict[str, str], project_name: s
 
 def retrieval_row_allowed_for_query(row: dict[str, Any], project_id: str) -> tuple[bool, str]:
     row_project = str(row.get("projectId") or "")
+    if row_project in GLOBAL_KNOWLEDGE_PROJECT_IDS:
+        return True, ""
     if project_id:
         if row_project and row_project != project_id:
             return False, "wrong_project"
@@ -1301,6 +1306,15 @@ def render_knowledge_query_answer(result: dict[str, Any]) -> str:
             lines.append(f"   知识文件: {row.get('path')}")
             lines.append(f"   摘要: {snippet}")
         lines.append("需要正式复用时，发送“沉淀：<内容>”补充材料，知识工程 Agent Review 后才能提升为 verified。")
+        return "\n".join(lines)
+    if result["answerMode"] == "source_reference":
+        lines = ["找到已入库资料："]
+        for idx, row in enumerate(result["chunks"][:3], 1):
+            snippet = compact_snippet(str(row.get("text", "")))
+            lines.append(f"{idx}. {row.get('title') or row.get('path')}")
+            lines.append(f"   来源: {row.get('sourceRef') or row.get('path')}")
+            lines.append(f"   资料文件: {row.get('path')}")
+            lines.append(f"   内容预览: {snippet}")
         return "\n".join(lines)
     if result["answerMode"] == "no_reliable_answer":
         return no_reliable_answer_text(result["incoming"])
@@ -1408,11 +1422,32 @@ def run_knowledge_query(bundle: Bundle, incoming: dict[str, str], text: str, pro
     result["candidateCount"] = len(allowed_rows)
     result["rejectedCandidates"] = rejected
     answerable_rows = unique_retrieval_rows(
-        [row for row in allowed_rows if row.get("status") in FORMAL_STATUSES or row.get("status") in REVIEWABLE_REFERENCE_STATUSES]
+        [
+            row
+            for row in allowed_rows
+            if (
+                row.get("type") != "SourceMaterial"
+                and (row.get("status") in FORMAL_STATUSES or row.get("status") in REVIEWABLE_REFERENCE_STATUSES)
+            )
+            or (
+                row.get("type") == "SourceMaterial"
+                and row.get("status") in SOURCE_REFERENCE_STATUSES
+                and "Classified source reference stored by Feishu direct material intake." in str(row.get("text") or "")
+            )
+        ]
     )
     if answerable_rows and answerable_rows[0].get("status") in FORMAL_STATUSES:
         result["answerMode"] = "verified_answer"
         result["chunks"] = [row for row in answerable_rows if row.get("status") in FORMAL_STATUSES]
+    elif answerable_rows and answerable_rows[0].get("type") == "SourceMaterial":
+        result["answerMode"] = "source_reference"
+        result["chunks"] = [
+            row
+            for row in answerable_rows
+            if row.get("type") == "SourceMaterial"
+            and row.get("status") in SOURCE_REFERENCE_STATUSES
+            and "Classified source reference stored by Feishu direct material intake." in str(row.get("text") or "")
+        ]
     elif answerable_rows and answerable_rows[0].get("status") in REVIEWABLE_REFERENCE_STATUSES:
         result["answerMode"] = "reviewable_reference"
         result["chunks"] = [row for row in answerable_rows if row.get("status") in REVIEWABLE_REFERENCE_STATUSES]
@@ -1447,7 +1482,17 @@ def classify_feishu_intent(bundle: Bundle, incoming: dict[str, str], settings: F
     del settings
     text = incoming["text"].strip()
     local_intent = classify_local_intent(text)
-    previous_material = latest_research_material_task_for_chat(bundle, incoming)
+    previous_material = latest_research_material_source_for_chat(bundle, incoming)
+    material_correction = parse_material_correction(text)
+    if material_correction:
+        return FeishuIntentDecision(
+            intent="material_correction",
+            confidence=0.96,
+            fields={
+                "hasPreviousMaterial": str(bool(previous_material)).lower(),
+            },
+            reason="material_correction_signal",
+        )
     material_followup = parse_material_followup(text)
     if material_followup:
         return FeishuIntentDecision(
@@ -1510,10 +1555,15 @@ def handle_feishu_intent(bundle: Bundle, incoming: dict[str, str], settings: Fei
         if not research_material:
             intake = parse_intake(text)
             research_material = {"title": "研究资料：飞书记录", "content": intake, "sourceRef": ""}
-        material_task = create_research_material_task(bundle, incoming, settings, research_material)
-        if material_task.get("idempotent"):
-            return render_existing_research_material_reply(bundle, material_task)
-        return process_research_material_task_inline(bundle, material_task["taskId"], material_task["runnerId"])
+        material_source = create_research_material_source(bundle, incoming, settings, research_material)
+        if material_source.get("idempotent"):
+            manual_body = substantial_manual_research_body(research_material)
+            if manual_body:
+                return complete_research_material_from_manual_body(bundle, material_source["sourceRef"], research_material, incoming, manual_body)
+            return render_existing_research_material_reply(bundle, material_source)
+        return process_research_material_source_inline(bundle, material_source["sourceRef"])
+    if decision.intent == "material_correction":
+        return handle_material_correction(bundle, incoming, text)
     if decision.intent == "material_followup":
         return handle_material_followup(bundle, incoming, {"action": decision.fields.get("action", ""), "keyword": decision.fields.get("keyword", "")})
     if decision.intent == "material_status":
@@ -1560,21 +1610,107 @@ def render_research_material_reply(bundle: Bundle, task_ref: str, task_id: str, 
 
 
 def render_existing_research_material_reply(bundle: Bundle, material_task: dict[str, Any]) -> str:
-    task_id = str(material_task.get("taskId") or "")
-    task_status = ""
-    task_ref = str(material_task.get("taskRef") or "")
-    if task_ref and (bundle.root / task_ref).exists():
+    source_ref = str(material_task.get("sourceRef") or "")
+    title = "资料"
+    status = "已入库"
+    if source_ref and (bundle.root / source_ref).exists():
         try:
-            task_status = str(load_object(bundle.root / task_ref).get("status") or "")
+            source = load_object(bundle.root / source_ref)
+            title = str(source.get("title") or title)
+            status = human_source_status_label(str(source.get("status") or "stored"))
         except Exception:
-            task_status = ""
+            pass
     lines = [
-        "这个资料之前已经保存过，不会重复解析或切片。",
-        f"任务编号：{task_id or '已记录'}",
+        "这个资料之前已经接收，不会重复解析或切片。" if status == "等待浏览器补抓" else "这个资料之前已经入库，不会重复解析或切片。",
+        f"标题：{title}",
+        f"状态：{status}",
     ]
-    if task_status:
-        lines.append(f"当前状态：{human_task_status_label(task_status)}")
     return "\n".join(lines)
+
+
+def substantial_manual_research_body(material: dict[str, str]) -> str:
+    content = str(material.get("content") or "")
+    if not content.strip():
+        return ""
+    cleaned = URL_PATTERN.sub("", content)
+    for prefix in RESEARCH_INTAKE_PREFIXES:
+        cleaned = cleaned.replace(prefix, "")
+    cleaned = re.sub(r"\r\n?", "\n", cleaned)
+    cleaned = re.sub(r"[ \t\f\v]+", " ", cleaned)
+    cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip(" ：:，,\n")
+    return cleaned if len(cleaned) >= 80 else ""
+
+
+def title_from_manual_research_body(material: dict[str, str], manual_body: str, fallback: str) -> str:
+    for line in manual_body.splitlines():
+        line = line.strip(" #：:，,")
+        if 4 <= len(line) <= 80:
+            return line
+    material_title = str(material.get("title") or "").strip()
+    if material_title and "mp.weixin.qq.com" not in material_title:
+        return material_title
+    return fallback or "公众号资料"
+
+
+def complete_research_material_from_manual_body(
+    bundle: Bundle,
+    source_ref: str,
+    material: dict[str, str],
+    incoming: dict[str, str],
+    manual_body: str,
+) -> str:
+    from .feishu_material_processor import classify_research_reference, store_research_material_reference
+
+    source_path = bundle.root / source_ref
+    if not source_ref or not source_path.exists():
+        return "没有找到可补齐的原资料，请重新发送链接和正文。"
+    source = load_object(source_path)
+    source_url = str(source.get("sourceRef") or material.get("sourceRef") or "")
+    title = title_from_manual_research_body(material, manual_body, str(source.get("title") or "公众号资料"))
+    classification = classify_research_reference(title, manual_body, "user_supplied_text")
+    reference = {
+        "title": title,
+        "sourceUrl": source_url,
+        "sourceKind": "user_supplied_text",
+        "extractionOk": True,
+        "extractionError": "",
+        "browserPending": False,
+        "content": manual_body,
+        "summary": f"已使用用户补充正文入库《{title}》。 原始链接：{source_url or '未识别'}。 已归类为{classification['categoryLabel']}并存入来源资料库。",
+        "category": classification["category"],
+        "categoryLabel": classification["categoryLabel"],
+        "tags": classification["tags"],
+        "sourceRefs": [source_ref],
+    }
+    stored_ref = store_research_material_reference(bundle, source_ref, reference)
+    try:
+        publish_knowledge_bundle(bundle, actor="feishu-manual-material-completion", reason=f"manual body completed {stored_ref or source_ref}")
+    except Exception:
+        pass
+    preview = compact_snippet(manual_body, 220)
+    return "\n".join(
+        [
+            "资料已入库：",
+            f"- 标题：{title}",
+            f"- 来源：{source_url or '未识别'}",
+            f"- 分类：{classification['categoryLabel']}",
+            "- 正文抽取：已使用你补充的正文",
+            "",
+            "存储内容预览：",
+            preview,
+            "",
+            "内容不对可直接回复：修正：<正确内容>。",
+        ]
+    )
+
+
+def human_source_status_label(status: str) -> str:
+    normalized = status.strip().lower()
+    if normalized in {"stored", "captured", "registered", "referenced"}:
+        return "已入库"
+    if normalized in {"browser_pending"}:
+        return "等待浏览器补抓"
+    return display_status(normalized)
 
 
 def human_task_status_label(status: str) -> str:
@@ -1604,78 +1740,174 @@ def parse_material_followup(text: str) -> dict[str, str]:
     return {}
 
 
-def latest_research_material_task_for_chat(bundle: Bundle, incoming: dict[str, str]) -> dict[str, Any]:
+def parse_material_correction(text: str) -> str:
+    stripped = text.strip()
+    for prefix in ["修正：", "修正:", "更正：", "更正:", "纠正：", "纠正:"]:
+        if stripped.startswith(prefix):
+            return stripped.removeprefix(prefix).strip()
+    normalized = normalize_for_keyword_match(stripped)
+    if any(signal in normalized for signal in ["内容不对", "存错了", "解析错了", "提取错了", "标题错了"]):
+        return stripped
+    return ""
+
+
+def latest_research_material_source_for_chat(bundle: Bundle, incoming: dict[str, str]) -> dict[str, Any]:
     chat_id = str(incoming.get("chatId") or "").strip()
     open_id = str(incoming.get("openId") or "").strip()
     user_id = str(incoming.get("userId") or "").strip()
-    task_root = bundle.root / "projects" / "company-knowledge-core" / "tasks"
+    source_root = bundle.root / "projects" / "company-knowledge-core" / "sources"
     candidates: list[dict[str, Any]] = []
-    for path in sorted(task_root.glob("*.md")):
+    for path in sorted(source_root.glob("*.md")):
         try:
-            task = load_object(path)
+            source = load_object(path)
         except Exception:
             continue
-        if str(task.get("intakeSource") or "") != "feishu_research_material":
+        if str(source.get("intakeSource") or "") != "feishu_research_material":
             continue
-        same_chat = chat_id and str(task.get("feishuChatId") or "") == chat_id
-        same_sender = open_id and str(task.get("feishuOpenId") or "") == open_id
-        same_user = user_id and str(task.get("feishuUserId") or "") == user_id
+        same_chat = chat_id and str(source.get("feishuChatId") or "") == chat_id
+        same_sender = open_id and str(source.get("feishuOpenId") or "") == open_id
+        same_user = user_id and str(source.get("feishuUserId") or "") == user_id
         if not (same_chat or same_sender or same_user):
             continue
-        task["path"] = str(path.relative_to(bundle.root))
-        candidates.append(task)
+        source["path"] = str(path.relative_to(bundle.root))
+        candidates.append(source)
     candidates.sort(key=lambda item: str(item.get("timestamp") or ""), reverse=True)
     return candidates[0] if candidates else {}
 
 
 def handle_material_followup(bundle: Bundle, incoming: dict[str, str], followup: dict[str, str]) -> str:
-    previous = latest_research_material_task_for_chat(bundle, incoming)
+    del followup
+    previous = latest_research_material_source_for_chat(bundle, incoming)
     if not previous:
-        return "没有找到上一条已整理资料。请先发链接或资料，我整理完成后再继续复核。"
+        return "没有找到上一条已入库资料。请先发链接或资料。"
     status = str(previous.get("status") or "")
-    if status not in {"done", "completed", "accepted"}:
+    if status == "browser_pending":
         return "\n".join(
             [
-                "上一条资料还没整理完成，暂时不能进入能力候选复核。",
-                f"当前状态：{human_task_status_label(status)}",
+                "这条资料已接收，正在等待浏览器补抓正文。",
+                f"标题：{previous.get('title') or '资料'}",
+                "正文读到后会自动保存、切片并更新索引。",
             ]
         )
-    review_task = create_material_capability_candidate_review_task(bundle, incoming, previous, followup)
-    return process_material_capability_candidate_review_inline(bundle, previous, review_task)
+    return "\n".join(
+        [
+            "这条资料已入库。",
+            f"标题：{previous.get('title') or '资料'}",
+            "不会在单条资料里创建能力候选任务；知识工程 Agent 会按周期统一复盘、清理和系统化。",
+        ]
+    )
 
 
 def handle_material_status_followup(bundle: Bundle, incoming: dict[str, str]) -> str:
-    previous = latest_research_material_task_for_chat(bundle, incoming)
+    previous = latest_research_material_source_for_chat(bundle, incoming)
     if not previous:
-        return "没有找到上一条资料任务。请先发链接或资料，我整理完成后会把结果发回来。"
-    task_id = str(previous.get("taskId") or "")
+        return "没有找到上一条已入库资料。请先发链接或资料。"
     status = str(previous.get("status") or "")
-    title = str(previous.get("title") or task_id or "上一条资料")
-    if status not in {"done", "completed", "accepted"}:
-        return "\n".join(
-            [
-                "上一条资料还没整理完成。",
-                f"资料：{title}",
-                f"任务编号：{task_id or '已记录'}",
-                f"当前状态：{human_task_status_label(status)}",
-            ]
-        )
-    summary = material_task_result_summary(bundle, previous)
+    title = str(previous.get("title") or "上一条资料")
+    summary = material_source_preview(bundle, previous)
+    pending = status == "browser_pending"
     lines = [
-        "上一条资料已经整理完成。",
+        "上一条资料已接收，正在等待浏览器补抓。" if pending else "上一条资料已入库。",
         f"资料：{title}",
-        f"任务编号：{task_id or '已记录'}",
+        f"当前状态：{human_source_status_label(status or 'stored')}",
     ]
     if summary:
-        lines.extend(["", "整理摘要：", summary])
+        lines.extend(["", "存储内容预览：", summary])
     lines.extend(
         [
             "",
-            "如果要判断它是否值得提升 Agent 团队能力，请回复：进入能力候选复核。",
-            "如果要查已沉淀知识，请直接问具体问题。",
+            "内容不对可直接回复：修正：<正确内容>。",
         ]
     )
     return "\n".join(lines)
+
+
+def source_markdown_frontmatter_and_body(source_path: Path) -> tuple[dict[str, Any], str]:
+    raw = source_path.read_text(encoding="utf-8")
+    parsed = parse_frontmatter(raw)
+    if isinstance(parsed, tuple) and len(parsed) == 2:
+        return dict(parsed[0]), str(parsed[1])
+    body = raw
+    if raw.startswith("---"):
+        parts = raw.split("---", 2)
+        if len(parts) == 3:
+            body = parts[2].strip()
+    return dict(parsed), body
+
+
+def material_source_preview(bundle: Bundle, source: dict[str, Any], limit: int = 260) -> str:
+    source_path = bundle.root / str(source.get("path") or "")
+    if not source_path.exists():
+        return ""
+    try:
+        _fm, body = source_markdown_frontmatter_and_body(source_path)
+    except Exception:
+        return ""
+    preview = body
+    marker = "## Extracted Text"
+    if marker in body:
+        preview = body.split(marker, 1)[1]
+        next_section = preview.find("\n## ")
+        if next_section >= 0:
+            preview = preview[:next_section]
+    return compact_snippet(preview, limit)
+
+
+def handle_material_correction(bundle: Bundle, incoming: dict[str, str], text: str) -> str:
+    correction = parse_material_correction(text)
+    if not correction:
+        return "请直接回复：修正：<正确内容>。"
+    previous = latest_research_material_source_for_chat(bundle, incoming)
+    if not previous:
+        return "没有找到可修正的上一条入库资料。请先发链接或资料。"
+    source_path = bundle.root / str(previous.get("path") or "")
+    if not source_path.exists():
+        return "上一条入库资料文件不存在，无法修正。"
+    frontmatter, body = source_markdown_frontmatter_and_body(source_path)
+    before_status = str(frontmatter.get("status") or "")
+    frontmatter.update(
+        {
+            "status": "stored",
+            "userCorrectionStatus": "applied",
+            "userCorrectionAt": utc_now(),
+            "userCorrectionMessageId": incoming.get("messageId", ""),
+            "updatedAt": utc_now(),
+        }
+    )
+    body = "\n".join(
+        [
+            body.rstrip(),
+            "",
+            "## User Correction",
+            "",
+            correction,
+            "",
+        ]
+    )
+    write_text(source_path, render_doc(frontmatter, body))
+    create_audit_log(
+        bundle,
+        incoming.get("openId") or incoming.get("userId") or "feishu-user",
+        "material.referenceCorrectionApplied",
+        str(source_path.relative_to(bundle.root)),
+        before=before_status,
+        after="stored",
+        policy_result="source_reference_corrected",
+        details=f"messageId={incoming.get('messageId', '')}\ncorrection={compact_snippet(correction, 180)}",
+    )
+    try:
+        publish_knowledge_bundle(bundle, actor="feishu-material-correction", reason=f"source correction {source_path.relative_to(bundle.root)}")
+    except Exception:
+        pass
+    return "\n".join(
+        [
+            "修正已写入。",
+            f"资料：{frontmatter.get('title') or '上一条资料'}",
+            "",
+            "修正内容预览：",
+            compact_snippet(correction, 260),
+        ]
+    )
 
 
 def material_task_result_summary(bundle: Bundle, task: dict[str, Any]) -> str:
@@ -1870,6 +2102,21 @@ def process_research_material_task_inline(bundle: Bundle, task_id: str, runner_i
     if detail:
         return "\n".join([detail, "", f"任务编号：{task_id}"])
     return "\n".join(["资料已整理完成。", f"任务编号：{task_id}"])
+
+
+def process_research_material_source_inline(bundle: Bundle, source_ref: str) -> str:
+    from .feishu_material_processor import process_research_material_source
+
+    try:
+        result = process_research_material_source(bundle, source_ref, publish_index=True)
+    except Exception as exc:
+        return "\n".join(
+            [
+                "资料已收到，但正文抽取或入库更新失败。",
+                f"原因：{exc}",
+            ]
+        )
+    return str(result.get("detail") or "资料已入库。")
 
 
 def manual_runner_label(bundle: Bundle, runner_id: str = "") -> str:
@@ -5882,12 +6129,54 @@ def create_project_material_task(bundle: Bundle, incoming: dict[str, str], setti
     return result["sourceRef"], result["taskRef"], task_id, assignee
 
 
-def create_research_material_task(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, material: dict[str, str]) -> dict[str, Any]:
+def create_research_material_source(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, material: dict[str, str]) -> dict[str, Any]:
+    del settings
     content = material.get("content", "").strip()
     if not content:
         raise KnowledgeError("research material content is required")
     if looks_like_secret(content):
         raise KnowledgeError("material looks like it contains a secret; refusing to store it")
+    owner = incoming.get("openId") or incoming.get("userId") or "feishu-user"
+    source_ref = material.get("sourceRef", "").strip() or f"feishu://message/{incoming.get('messageId')}"
+    result = create_source_material(
+        bundle,
+        title=material.get("title", "").strip() or "研究资料",
+        source_ref=source_ref,
+        submitter=owner,
+        project_id="company-knowledge-core",
+        material_type="research_reference",
+        storage_ref="",
+        content=content,
+        sensitivity="internal",
+        extraction_tool="feishu-bot-research-intake",
+        extraction_status="captured",
+        create_task_flag=False,
+    )
+    source_path = bundle.root / result["sourceRef"]
+    if source_path.exists():
+        update_frontmatter_file(
+            source_path,
+            {
+                "intakeSource": "feishu_research_material",
+                "processingMode": "feishu_direct_store",
+                "feishuMessageId": incoming.get("messageId", ""),
+                "feishuChatId": incoming.get("chatId", ""),
+                "feishuChatType": incoming.get("chatType", ""),
+                "feishuOpenId": incoming.get("openId", ""),
+                "feishuUserId": incoming.get("userId", ""),
+                "updatedAt": utc_now(),
+            },
+        )
+    return {
+        "sourceRef": result["sourceRef"],
+        "idempotent": bool(result.get("idempotent")),
+    }
+
+
+def create_research_material_task(bundle: Bundle, incoming: dict[str, str], settings: FeishuSettings, material: dict[str, str]) -> dict[str, Any]:
+    content = material.get("content", "").strip()
+    if not content:
+        raise KnowledgeError("research material content is required")
     owner = incoming.get("openId") or incoming.get("userId") or "feishu-user"
     source_ref = material.get("sourceRef", "").strip() or f"feishu://message/{incoming.get('messageId')}"
     assignee = "agent.company-knowledge-core.knowledge-engineering"
@@ -5908,17 +6197,16 @@ def create_research_material_task(bundle: Bundle, incoming: dict[str, str], sett
         assignee=assignee,
         task_work_source_type="research",
         task_research_question=content,
-        task_source_reason="Feishu research/reference material intake. Save and analyze first; do not mutate Skill, Workflow, AGENTS, policy, or operating rules without a separate system-change approval.",
+        task_source_reason="Legacy task-status harness for source material processing.",
         task_extra_frontmatter={
             "intakeSource": "feishu_research_material",
-            "processingMode": "feishu_direct_reply",
+            "processingMode": "legacy_task_status_test",
             "feishuMessageId": incoming.get("messageId", ""),
             "feishuChatId": incoming.get("chatId", ""),
             "feishuChatType": incoming.get("chatType", ""),
             "feishuOpenId": incoming.get("openId", ""),
             "feishuUserId": incoming.get("userId", ""),
             "approvalRequired": False,
-            "approvalReason": "Source material capture and research parsing do not require approval; system mutations require a separate reviewed change.",
         },
     )
     task_path = bundle.root / result["taskRef"]
@@ -6273,4 +6561,3 @@ def execute_message_command(bundle: Bundle, incoming: dict[str, str], settings: 
     complete_feishu_message_event(bundle, incoming, reply, sent, reply_error)
     update_knowledge_query_delivery(bundle, incoming, sent, reply_error)
     return result
-

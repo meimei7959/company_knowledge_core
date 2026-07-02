@@ -16,7 +16,8 @@ relatedAgents:
   - agent.labi-touping.knowledge-engineering
   - agent.labi-touping.executor
   - agent.labi-touping.product-manager
-relatedTools: []
+relatedTools:
+  - tool.picpeek
 projectSourceMode: new_project
 projectGoal: 基于蜡笔投屏 PRD 完成移动 App 和 PC 客户端的产品需求澄清、方案设计、研发测试和上线交付闭环。
 expectedDeliverable: 移动 App、PC 客户端、双端协同能力、测试验收证据和上线交付材料。
@@ -32,7 +33,7 @@ suggestedAgents:
   - 执行 Agent
 createGroup: confirm
 requiresRunner: true
-updatedAt: "2026-06-24T11:40:05Z"
+updatedAt: "2026-07-02T08:07:17Z"
 workspaceProfile: development
 workspaceMaterialPolicy: workspace_keeps_materials_source_repo_is_reference_only
 sourceMaterialRefs:

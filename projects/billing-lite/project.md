@@ -16,7 +16,8 @@ relatedAgents:
   - agent.billing-lite.knowledge-engineering
   - agent.billing-lite.executor
   - agent.billing-lite.product-manager
-relatedTools: []
+relatedTools:
+  - tool.picpeek
 projectSourceMode: new_project
 projectGoal: 多端统一付费轻服务，支持 App/PC 接入、支付/权益/设备授权和上线验收闭环
 expectedDeliverable: ""
@@ -32,7 +33,7 @@ suggestedAgents:
   - 执行 Agent
 createGroup: confirm
 requiresRunner: true
-updatedAt: "2026-06-24T12:37:34Z"
+updatedAt: "2026-07-02T08:07:17Z"
 workspaceProfile: delivery
 workspaceMaterialPolicy: workspace_keeps_materials_source_repo_is_reference_only
 sourceMaterialRefs:

@@ -21,6 +21,8 @@ STATUS_VALUES = {
     "draft",
     "pending",
     "observed",
+    "stored",
+    "browser_pending",
     "processing",
     "submitted",
     "reviewing",

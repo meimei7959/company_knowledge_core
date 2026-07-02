@@ -3,6 +3,8 @@ from __future__ import annotations
 import hmac
 import json
 import os
+import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -83,6 +85,7 @@ from .core import (
     workbench_project_execution_read_model,
 )
 from .feishu import handle_feishu_event, notify_feishu_task_status, run_knowledge_query, update_knowledge_query_log_delivery
+from .feishu_material_processor import repair_pending_wechat_browser_sources
 from .operational_store import ensure_operational_schema, operational_store_status, record_api_command_envelope
 
 
@@ -95,6 +98,32 @@ class KnowledgeHTTPServer(ThreadingHTTPServer):
         self.bundle = bundle
         self.api_token = api_token
         super().__init__(server_address, KnowledgeHandler)
+
+
+def browser_repair_enabled() -> bool:
+    value = os.environ.get("ZHENZHI_BROWSER_REPAIR_ENABLED", "1").strip().lower()
+    return value not in {"0", "false", "no", "off", "disabled"}
+
+
+def start_browser_repair_worker(bundle: Bundle) -> None:
+    if not browser_repair_enabled():
+        return
+
+    def run() -> None:
+        initial_delay = float(os.environ.get("ZHENZHI_BROWSER_REPAIR_INITIAL_DELAY_SECONDS", "5") or "5")
+        interval = float(os.environ.get("ZHENZHI_BROWSER_REPAIR_INTERVAL_SECONDS", "300") or "300")
+        limit = int(os.environ.get("ZHENZHI_BROWSER_REPAIR_LIMIT", "20") or "20")
+        time.sleep(max(0.0, initial_delay))
+        while True:
+            try:
+                result = repair_pending_wechat_browser_sources(bundle, limit=limit, publish_index=True)
+                if result.get("repaired") or result.get("failed"):
+                    print(f"wechat browser repair: {json.dumps(result, ensure_ascii=False)}")
+            except Exception as exc:
+                print(f"wechat browser repair failed: {exc}")
+            time.sleep(max(30.0, interval))
+
+    threading.Thread(target=run, name="wechat-browser-repair", daemon=True).start()
 
 
 class KnowledgeHandler(BaseHTTPRequestHandler):
@@ -1054,5 +1083,6 @@ def list_field(payload: dict, key: str) -> list[str]:
 
 def serve(bundle: Bundle, host: str, port: int) -> None:
     httpd = KnowledgeHTTPServer((host, port), bundle, os.environ.get("ZHENZHI_KNOWLEDGE_API_TOKEN", ""))
+    start_browser_repair_worker(bundle)
     print(f"zhenzhi-knowledge API listening on http://{host}:{httpd.server_port}")
     httpd.serve_forever()

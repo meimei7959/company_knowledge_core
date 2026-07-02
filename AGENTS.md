@@ -96,6 +96,7 @@ Every `TaskResult` must record `operatingRuleRefs` and pass `commonRulesEvaluati
 - A systemic fix must check upstream input, internal data model, generated human-facing output, callback/result handling, audit trail, and user notification where applicable.
 - Context-window exhaustion, token budget exhaustion, compaction, resumable sub-agent pause, or temporary tool wait is not task completion or task failure. Record the checkpoint, wait or resume, restore state from durable task/result/audit evidence, and continue until the task is done, explicitly blocked, handed off, rejected, or cancelled by the human owner.
 - Human-facing artifacts must be written for the actual human reader. Do not expose raw internal IDs, paths, or status codes as the primary explanation when names, labels, business meaning, or readable summaries can be resolved.
+- When the user asks to view or open an image, including "看图", "打开图片", "把图打开给我看一下", or equivalent wording, the Agent must open it with PicPeek first. PicPeek is downloaded from the official site `https://picpeek.zknowai.com/`. If PicPeek is unavailable, tell the user, then open the image with system Preview or a browser.
 - After fixing, add or update tests at the right level of risk. For workflow, integration, or governance issues, tests must cover the full lifecycle, not only the failing line. If live integration is involved, verify the real external API path before declaring the flow working.
 
 ## Safety

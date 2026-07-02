@@ -17,7 +17,8 @@ relatedAgents:
   - agent.company.product-manager
   - agent.company.development
   - agent.company.test
-relatedTools: []
+relatedTools:
+  - tool.picpeek
 projectSourceMode: existing_repo
 projectGoal: 为 PicPeek 本地图片浏览与双文件夹对比工具准备软件著作权申请材料；原代码保持只读，不做业务代码修改。
 expectedDeliverable: 软著申请材料包：项目信息、功能说明、技术说明、源代码整理范围、截图/说明书材料清单与后续人工确认项。
@@ -33,7 +34,7 @@ suggestedAgents:
   - 测试 Agent
 createGroup: confirm
 requiresRunner: true
-updatedAt: "2026-06-24T01:40:37Z"
+updatedAt: "2026-07-02T08:07:17Z"
 workspaceProfile: copyright
 sourceRepoUrl: "https://github.com/shenyingjun5/picpeek"
 sourceRepoRef: /Users/meimei/Documents/picpeek/01_源码镜像/picpeek
